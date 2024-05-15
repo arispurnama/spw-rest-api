@@ -1,6 +1,7 @@
 import Sequelize from "sequelize";
 import db from "../config/Database.js";
 const {DataTypes} = Sequelize;
+
 const Role = db.define('TB_MD_ROLE', {
     id: {
         type: DataTypes.INTEGER,

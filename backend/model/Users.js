@@ -1,5 +1,7 @@
 import Sequelize from "sequelize";
 import db from "../config/Database.js";
+import Role from "./Role.js";
+
 const {DataTypes} = Sequelize;
 
 const Users = db.define('TB_MD_USER', {
@@ -33,25 +35,32 @@ const Users = db.define('TB_MD_USER', {
         type: DataTypes.STRING,
         allowNull: false,
     },
+    roleId:{
+        type: DataTypes.INTEGER,
+        allowNull:false
+    },
     createdAt: {
         type: DataTypes.DATE,
-        allowNull: false,
+        allowNull: true,
     },
-    updateAt: {
+    updatedAt: {
         type: DataTypes.DATE,
-        allowNull: false,
+        allowNull: true,
     },
     deletedAt: {
         type: DataTypes.DATE,
-        allowNull: false,
+        allowNull: true,
     },
     isDeleted: {
         type: DataTypes.BOOLEAN,
-        allowNull: false,
+        allowNull: true,
     },
 }, {
     freezeTableName: true
 })
+Role.hasMany(Users,{
+    foreignKey: 'roleId'
+});
 
 export default Users;
 (async () => {
