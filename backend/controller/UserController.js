@@ -3,6 +3,7 @@ import Sequelize from "sequelize";
 import db from "../config/Database.js"
 import bcrypt from "bcrypt"
 import jwt from "jsonwebtoken"
+const jwtSecret = "9fdba4617683cc4ae6e685293bccf7692a8be1591c6d6f2920a442aa719d038499fa09";
 import { QueryString } from "../Helper/QueryHalper.js";
 
 const { QueryTypes } = Sequelize;
@@ -120,21 +121,35 @@ export const Login = async (req, res) => {
                 username: username
             }
         })
-        
+
         if (!user) {
             return res.status(401).json({ msg: 'Authentication failed, username password salah' });
         }
+
         const passwordMatch = bcrypt.compareSync(passsword, user.dataValues.passsword);
         if (!passwordMatch) {
             return res.status(401).json({ error: 'Authentication failed' });
         }
-        const token = jwt.sign({ userId: user.id }, 'spw', {
-            expiresIn: '1h',
-        });
-        console.log('userxxxxxx :', token);
+        const name = `${user.dataValues.firstName} ${user.dataValues.lastName}`; 
+        const maxAge = 1 * 60 * 60;
+        //generet token
+        const token = jwt.sign({
+            id: user.id,
+            username,
+            name,
+            role: user.dataValues.roleId
+        },
+            jwtSecret,
+            {
+                expiresIn: '1h',
+            });
+            res.cookie("jwt", token, {
+                httpOnly: true,
+                maxAge: maxAge * 1000, // 1hrs in ms
+              });
         res.status(200).json({ token });
     } catch (error) {
-        console.log('userxxxxxx :', error);
+        console.log('eror :', error)
         res.status(500).json({ msg: error });
     }
 }
