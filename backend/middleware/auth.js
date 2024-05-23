@@ -6,9 +6,7 @@ export const verifyToken = async (req, res, next) =>{
     if (!token) return res.status(401).json({ error: 'Access denied' });
     try {
         var tokenRep = token.replace('Bearer ', '');
-        console.log("token : ",tokenRep)
         const decoded = jwt.verify(tokenRep, jwtSecret);
-        console.log("decode : ",decoded)
         next();
     } catch (error) {
         console.log(error)
