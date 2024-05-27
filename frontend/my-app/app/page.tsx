@@ -1,13 +1,34 @@
 'use client'
 import { useRouter } from "next/navigation";
+import Card from "@/components/Card";
+import Header from "@/components/Header";
+import Head from 'next/head'
+import Image from 'next/image'
 
+import Gambar from "@/public/images/gambar-bg-1.jpg";
+import Footer from "@/components/Footer";
 export default function Home() {
-const router = useRouter()
+  const router = useRouter()
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <p className="text-7xl text-red-500 font-bold">ARISSSS pakboy</p>
-      <button className="py-3 px-5 rounded-full bg-purple-950 text-white" onClick={() => router.push('/homepage')}>Route me to home page</button>
+    <main>
+        <div >
+          <Header />
+          <div className="relative min-h-screen flex flex-col items-center justify-center bg-teal-100">
+            <Image
+              src={Gambar}
+              alt="Picture of the author"
+              className="blur-sm h-screen"
+            />
+            <h6 className="absolute z-20 left-10 top-[30%] text-4xl text-white font-bold">SEKOLAH PENCETAK WIRAUSAHA</h6>
+            <div className="absolute z-20 left-10 top-[35%] text-white font-bold max-w-[60%]">
+              Lorem ipsum dolor sit, amet consectetur adipisicing elit. Quos, hic fuga quia veniam consectetur deserunt molestiae vero nobis minus voluptatibus itaque saepe maiores qui voluptas incidunt ab. Rem, temporibus eum.
+            </div>
+          </div>
+        </div>
+        <div>
+          <Footer />
+        </div>
     </main>
   );
 }

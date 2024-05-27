@@ -1,9 +1,8 @@
 import Card from "@/components/Card";
 import Header from "@/components/Header";
-import Head from 'next/head'
 import Image from 'next/image'
 
-import Gambar from "@/public/images/pexels-pixabay-51947.jpg";
+import Gambar from "@/public/images/gambar-bg-1.jpg";
 import Footer from "@/components/Footer";
 
 export default function homepage() {

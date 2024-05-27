@@ -31,7 +31,7 @@ const Users = db.define('TB_MD_USER', {
         type: DataTypes.STRING,
         allowNull: false,
     },
-    passsword: {
+    password: {
         type: DataTypes.STRING,
         allowNull: false,
     },

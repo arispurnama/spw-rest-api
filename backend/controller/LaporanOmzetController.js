@@ -1,15 +1,58 @@
-import Sequelize from "sequelize";
+import Sequelize, { DATE } from "sequelize";
 import db from "../config/Database.js"
 import LaporanOmzet from "../model/Laporan.js";
 
 const { QueryTypes } = Sequelize;
 
-export const createLaporanOmzet = async (req, res) => {
+export const getListLaporanOmzet = async (req, res) => {
+    const responsePagination = new Object();
     try {
-        await LaporanOmzet.create(req.body);
-        res.status(201).json({ msg: "Laporan Omzet Created" });
+        let page = req.query.page;
+        let size = req.query.size;
+        let search = req.query.search;
+        let searchColumn = 'tl.id, tl."userId", tl."tanggalLaporan", tl."jumlahOmzet", tl."JumlahModal", tl."buktiTransaksi", tl.keterangan, tl."createdAt", tl."updatedAt", tl."deletedAt", tl."isDeleted", tmu."firstName", tmu."lastName"';
+        let query = 'SELECT count(*) over () TOTALDATA, tl.id, tl."userId", tl."tanggalLaporan", tl."jumlahOmzet", tl."JumlahModal", tl."buktiTransaksi", tl.keterangan, tl."createdAt", tl."updatedAt", tl."deletedAt", tl."isDeleted", tmu."firstName", tmu."lastName" FROM public."TB_TR_LAPORAN" tl inner join public."TB_MD_USER" tmu on tl."userId" = tmu.id where tl."isDeleted" = false and tmu."isDeleted" = false ';
+        let paggination = PaginationHelper(page, size);
+        let  queryString = QueryHelper(query, "", search, searchColumn,"",paggination, "");
+        const response = await db.query(queryString, {
+            type: QueryTypes.SELECT,
+        })
+
+        
+        let  queryStringCount = QueryHelper(query, "", search, searchColumn, "", "", "");
+        const total = await db.query(queryStringCount, {
+            type: QueryTypes.SELECT,
+        })
+
+        responsePagination.page = (page);
+        responsePagination.size = parseInt(size);
+        responsePagination.total = parseInt(total[0].totaldata);
+        responsePagination.data = response;
+        responsePagination.error = false;
+        responsePagination.errorMessage = "Sukses";
+        res.status(200).json(responsePagination);
     } catch (error) {
+        responsePagination.error = true;
+        responsePagination.errorMessage = error.message;
         console.log(error.message);
+    }
+}
+
+export const createLaporanOmzet = async (req, res) => {
+    const response = new Object();
+    try {
+        let payload = req.body;
+        payload.createdAt = new Date().toDateString();
+        payload.updatedAt = new Date().toDateString();
+        const result = await LaporanOmzet.create(payload);
+        response.data = result;
+        response.error = false;
+        response.errorMessage = "Sukses";
+        res.status(201).json({ response });
+    } catch (error) {
+        response.error = true;
+        response.errorMessage = error.message;
+        res.status(500).json({ response });
     }
 }
 export const updateLaporanOmzet = async (req, res) => {

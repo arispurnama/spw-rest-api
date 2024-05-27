@@ -1,32 +1,171 @@
-'use client'
-import React from 'react'
-import Link from 'next/link'
+"use client";
+import React from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 const Header = () => {
-    return (
-        <header className="bg-teal-500 text-white z-50 w-full top-0 sticky">
-            <div className="container mx-auto flex justify-between items-center py-4 px-6">
-                <div className="text-2xl font-bold">
-                    <Link href="/">
-                        DJAGOAN
-                    </Link>
+  const router = useRouter();
+  const [isOpen, setIsOpen] = useState(false);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+
+  const toggleMenu = () => {
+    setIsOpen(!isOpen);
+  };
+  let user = null;
+  try {
+    user = localStorage.user ? JSON.parse(localStorage.user) : null;
+    console.log("user for header", user);
+  } catch (e) {
+    console.error("Error parsing user from localStorage:", e);
+  }
+  const logout = () => {
+    localStorage.clear();
+    setTimeout(() => {
+      router.push("/Auth");
+    }, 200);
+  };
+
+  return (
+    <header className="bg-teal-500 text-white z-50 w-full top-0 sticky">
+      <div className="container mx-auto flex justify-between items-center py-4 px-6">
+        <div className="text-2xl font-bold">DJAGOAN</div>
+        <div className="md:hidden">
+          <button
+            onClick={toggleMenu}
+            className="text-white focus:outline-none"
+          >
+            <svg
+              className="h-6 w-6"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M4 6h16M4 12h16M4 18h16"
+              ></path>
+            </svg>
+          </button>
+        </div>
+
+        <div
+          className={`flex flex-row gap-2 items-center  ${
+            isOpen ? "hidden" : "block"
+          }`}
+        >
+          {user?.id ? (
+            <>
+              <div className="px-7 py-2 hover:bg-white hover:rounded-full hover:px-7 hover:py-2 hover:text-black">
+                <button>Statistik</button>
+              </div>
+              <div className="px-7 py-2 hover:bg-white hover:rounded-full hover:px-7 hover:py-2 hover:text-black">
+                <button>Laporan Omzet</button>
+              </div>
+              <div className="px-7 py-2 hover:bg-white hover:rounded-full hover:px-7 hover:py-2 hover:text-black">
+                <button>Galeri dan Berita</button>
+              </div>
+              <div className="px-7 py-2 hover:bg-white hover:rounded-full hover:px-7 hover:py-2 hover:text-black">
+                <button>Produk Siswa</button>
+              </div>
+              <div className="px-7 py-2 hover:bg-white hover:rounded-full hover:px-7 hover:py-2 hover:text-black">
+                <button onClick={() => router.push("/datauser")}>
+                  Data User
+                </button>
+              </div>
+              <div className="relative">
+                <div
+                  onClick={() => setDropdownOpen(!dropdownOpen)}
+                  className="focus:outline-none"
+                >
+                  <svg
+                    className="w-8 h-8 text-gray-800 dark:text-white"
+                    aria-hidden="true"
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="24"
+                    height="24"
+                    fill="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      fill-rule="evenodd"
+                      d="M12 20a7.966 7.966 0 0 1-5.002-1.756l.002.001v-.683c0-1.794 1.492-3.25 3.333-3.25h3.334c1.84 0 3.333 1.456 3.333 3.25v.683A7.966 7.966 0 0 1 12 20ZM2 12C2 6.477 6.477 2 12 2s10 4.477 10 10c0 5.5-4.44 9.963-9.932 10h-.138C6.438 21.962 2 17.5 2 12Zm10-5c-1.84 0-3.333 1.455-3.333 3.25S10.159 13.5 12 13.5c1.84 0 3.333-1.455 3.333-3.25S13.841 7 12 7Z"
+                      clip-rule="evenodd"
+                    />
+                  </svg>
                 </div>
-                <div className='flex flex-row items-center gap-4'>
-                    <nav className="flex space-x-6">
+                {dropdownOpen && (
+                  <ul className="absolute right-0 mt-2 w-48 bg-white text-black shadow-lg">
+                    <li className="px-4 py-2 hover:bg-gray-100">
+                      <a href="#">Profile</a>
+                    </li>
+                    <li className="px-4 py-2 hover:bg-gray-100">
+                      <button onClick={() => logout()}>Logout</button>
+                    </li>
+                  </ul>
+                )}
+              </div>
+              {/* <p className='font-bold text-white text-xl'>{user?.firstName}</p>
+                        <button onClick={() => logout()} className='bg-green-950 py-2 px-7 rounded-full hover:bg-green-600'>Logout</button> */}
+            </>
+          ) : (
+            <>
+              <div>
+                <button
+                // onClick={() => window.scrollTo(0, 500)}
+                >
+                  About
+                </button>
+              </div>
+              <div>
+                <button>Contact</button>
+              </div>
+              <div>
+                <button
+                  onClick={() => router.push("/Auth")}
+                  className="bg-green-950 py-2 px-7 rounded-full hover:bg-green-600"
+                >
+                  Login
+                </button>
+              </div>
+              <div>
+                <Link href="/">
+                  <button className="bg-green-950 py-2 px-7 rounded-full hover:bg-green-600">
+                    Sign Up
+                  </button>
+                </Link>
+              </div>
+            </>
+          )}
+        </div>
+
+        {/* <div className={`flex flex-row gap-2 items-center ${isOpen ? 'block' : 'hiddden'}`}>
+                    {/* <div className="text-2xl font-bold">
+                            DJAGOAN
+                    </div>}
+                    <div>
                         <button onClick={() => window.scrollTo(0, 500)}>
                             About
                         </button>
-                        <Link href="/contact">
-                            Contact
-                        </Link>
-                    </nav>
-                    <div>
-                        <Link href="/signup"><button className='bg-green-950 py-2 px-9 rounded-full hover:bg-green-600'>Sign Up</button></Link>
                     </div>
-                </div>
-            </div>
-        </header>
-    )
-}
+                    <div>
+                        <button>
+                            Contact
+                        </button>
+                    </div>
+                    <div>
+                        <button onClick={() => router.push('/Auth')} className='bg-green-950 py-2 px-7 rounded-full hover:bg-green-600'>Login</button>
+                    </div>
+                    <div>
+                        <Link href="/signup"><button className='bg-green-950 py-2 px-7 rounded-full hover:bg-green-600'>Sign Up</button></Link>
+                    </div>
+                </div>  */}
+      </div>
+    </header>
+  );
+};
 
-export default Header
+export default Header;
