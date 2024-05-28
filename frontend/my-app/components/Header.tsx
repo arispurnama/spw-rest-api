@@ -3,6 +3,10 @@ import React from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import Image from "next/image";
+
+import logoSekolah from "@/public/images/logo-sekolah-removebg-preview.png";
+import logoSpw from "@/public/images/logo-spw-removebg-preview.png";
 
 const Header = () => {
   const router = useRouter();
@@ -27,49 +31,32 @@ const Header = () => {
   };
 
   return (
-    <header className="bg-teal-500 text-white z-50 w-full top-0 sticky">
-      <div className="container mx-auto flex justify-between items-center py-4 px-6">
-        <div className="text-2xl font-bold">DJAGOAN</div>
-        <div className="md:hidden">
-          <button
-            onClick={toggleMenu}
-            className="text-white focus:outline-none"
-          >
-            <svg
-              className="h-6 w-6"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M4 6h16M4 12h16M4 18h16"
-              ></path>
-            </svg>
-          </button>
+    <header className="min-h-28 bg-teal-900 text-white z-50 w-full top-0 sticky flex flex-row">
+      <div className="container flex justify-between py-4 px-6">
+        <div>
+          <div className="flex flex-row gap-4 items-center">
+            <div className="p-0 max-w-20 max-h-5">
+              <Image src={logoSekolah} alt="Picture of the author" />
+            </div>
+            <div className="p-0 max-w-40 max-h-1">
+              <Image src={logoSpw} alt="Picture of the author"/>
+            </div>
+          </div>
         </div>
-
-        <div
-          className={`flex flex-row gap-2 items-center  ${
-            isOpen ? "hidden" : "block"
-          }`}
-        >
+        <div className="flex flex-row gap-2 items-center">
           {user?.id ? (
             <>
               <div className="px-7 py-2 hover:bg-white hover:rounded-full hover:px-7 hover:py-2 hover:text-black">
-                <button>Statistik</button>
+                <button>Statistics</button>
               </div>
               <div className="px-7 py-2 hover:bg-white hover:rounded-full hover:px-7 hover:py-2 hover:text-black">
-                <button>Laporan Omzet</button>
+                <button onClick={() => router.push("/laporanomzet")}>Laporan Omzet</button>
               </div>
               <div className="px-7 py-2 hover:bg-white hover:rounded-full hover:px-7 hover:py-2 hover:text-black">
                 <button>Galeri dan Berita</button>
               </div>
               <div className="px-7 py-2 hover:bg-white hover:rounded-full hover:px-7 hover:py-2 hover:text-black">
-                <button>Produk Siswa</button>
+                <button onClick={() => router.push("/produksiswa")}>Produk Siswa</button>
               </div>
               <div className="px-7 py-2 hover:bg-white hover:rounded-full hover:px-7 hover:py-2 hover:text-black">
                 <button onClick={() => router.push("/datauser")}>
@@ -79,7 +66,7 @@ const Header = () => {
               <div className="relative">
                 <div
                   onClick={() => setDropdownOpen(!dropdownOpen)}
-                  className="focus:outline-none"
+                  className="focus:outline-none hover:cursor-pointer"
                 >
                   <svg
                     className="w-8 h-8 text-gray-800 dark:text-white"
@@ -132,11 +119,12 @@ const Header = () => {
                 </button>
               </div>
               <div>
-                <Link href="/">
-                  <button className="bg-green-950 py-2 px-7 rounded-full hover:bg-green-600">
-                    Sign Up
-                  </button>
-                </Link>
+                <button
+                  onClick={() => router.push("/register")}
+                  className="bg-green-950 py-2 px-7 rounded-full hover:bg-green-600"
+                >
+                  Sign Up
+                </button>
               </div>
             </>
           )}

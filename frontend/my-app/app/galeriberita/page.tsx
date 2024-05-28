@@ -1,11 +1,12 @@
 "use client";
+import Footer from "@/components/Footer";
+import Header from "@/components/Header";
 import React, { useEffect } from "react";
 import { useState } from "react";
 import axios from "axios";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
 import { useRouter } from "next/navigation";
 
+//library
 import Paper from "@mui/material/Paper";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
@@ -17,12 +18,12 @@ import TableRow from "@mui/material/TableRow";
 import IconTrashBinOutline from "@/components/icons/IconTrashBinOutline";
 import IconFileDocumentEditOutline from "@/components/icons/IconFileDocumentEditOutline"
 
-const DataUser = () => {
+
+const DataGaleriBerita = () => {
   const router = useRouter();
-  const [dataUser, setDataUser] = useState([]);
+  const [DataGaleriBerita, setDataGaleriBerita] = useState([]);
   const [totalData, setTotalData] = useState(0);
   const [searchQuery, setSearchQuery] = useState("");
-
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
 
@@ -46,10 +47,10 @@ const DataUser = () => {
     console.error("Error parsing token from localStorage:", e);
   }
 
-  const getUserAll = async () => {
+  const getAllDataGaleriBerita = async () => {
     try {
       axios
-        .get("http://localhost:3030/list-user", {
+        .get("http://localhost:3030/galeri-berita", {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -63,7 +64,7 @@ const DataUser = () => {
           console.log("response get all user :", response);
           if (response.data.erorr === "Invalid token") {
           }
-          setDataUser(response.data.data);
+          setDataGaleriBerita(response.data.data);
           setTotalData(response.data.total);
         })
         .catch((e) => {
@@ -78,55 +79,30 @@ const DataUser = () => {
     }
   };
   useEffect(() => {
-    getUserAll();
+    getAllDataGaleriBerita();
   }, []);
-
-  const deleteUser = async (userId: any) => {
-    try {
-      axios
-        .delete(`http://localhost:3030/user/${userId}`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        })
-        .then((response) => {
-          console.log("delete :", response.data.response.data);
-          window.location.href = "/datauser";
-        })
-        .catch((e) => {
-          console.log("error :", e);
-          if (e.response.status === 401) {
-            console.error("Unauthorized access - perhaps you need to log in?");
-            router.push("/Auth");
-          }
-        });
-    } catch (error) {
-      console.error("Error fetching User: ", error);
-    }
-  };
-
+  
   const handleSearchChange = (event: any) => {
     setSearchQuery(event);
-    getUserAll();
+    getAllDataGaleriBerita();
   };
-
   return (
     <main>
       <div>
         <Header />
         <div>
-          <div className="flex flex-col gap-1 m-0">
+          <div className="flex flex-col gap-4 m-0">
             <div>
               <h2 className="pl-10 pt-8 pb-0 m-0 font-bold text-2xl">
-                DATA USER
+                DATA GALERI BERITA
               </h2>
             </div>
-            <div className="flex flex-row justify-end pr-10 pt-0">
+            <div className="flex flex-row justify-end">
               <div className="flex gap-4 p-3">
                 <input
                   type="text"
                   placeholder="search"
-                  className="rounded-full min-w-[78]"
+                  className="rounded-full px-10"
                   onChange={(e: any) => {
                     handleSearchChange(e.target.value);
                     console.log(searchQuery);
@@ -139,69 +115,47 @@ const DataUser = () => {
             </div>
           </div>
           <div className="pr-10 pl-10">
-            <Paper sx={{ width: "100%" }}>
+          <Paper sx={{ width: "100%" }}>
               <TableContainer sx={{ maxHeight: 450 }}>
                 <Table stickyHeader aria-label="customized table">
                   <TableHead>
                     <TableRow>
                       <TableCell>First Name</TableCell>
                       <TableCell align="right">Last Name</TableCell>
-                      <TableCell align="right">Email</TableCell>
-                      <TableCell align="right">Kelas</TableCell>
-                      <TableCell align="right">Username</TableCell>
-                      <TableCell align="right">Role</TableCell>
+                      <TableCell align="right">Judul</TableCell>
+                      <TableCell align="right">Keterangan</TableCell>
+                      <TableCell align="right">Tanggal</TableCell>
                       <TableCell align="right">Action</TableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {dataUser
+                    {DataGaleriBerita
                       ?.slice(
                         page * rowsPerPage,
                         page * rowsPerPage + rowsPerPage
                       )
                       ?.map((row: any) => (
-                        //return (
-                        // <TableRow>
-                        //   //   hover
-                        //   //   role="checkbox"
-                        //   //   tabIndex={-1}
-                        //   //   key={row}
-                        //   // >
-                        //   //   {columns.map((column) => {
-                        //   //     const value = row[column.id];
-                        //   //     return (
-                        //   //       <TableCell key={column.id} align={column.align}>
-                        //   //         {column.format && typeof value === "number"
-                        //   //           ? column.format(value)
-                        //   //           : value}
-                        //   //       </TableCell>
-                        //   //     );
-                        //   //   })}
-                        //   </TableRow>
-                        // );
                         <TableRow>
                           <TableCell component="th" scope="row">
                             {row.firstName}
                           </TableCell>
                           <TableCell align="right">{row.lastName}</TableCell>
-                          <TableCell align="right">{row.email}</TableCell>
-                          <TableCell align="right">{row.kelas}</TableCell>
-                          <TableCell align="right">{row.username}</TableCell>
-                          <TableCell align="right">{row.name}</TableCell>
+                          <TableCell align="right">{row.judulBerita}</TableCell>
+                          <TableCell align="right">{row.keterangan}</TableCell>
+                          <TableCell align="right">{row.tanggal}</TableCell>
                           <TableCell className="flex flex-row gap-4 justify-end">
                             <button><IconFileDocumentEditOutline/></button>
                             <button><IconTrashBinOutline/></button>
                           </TableCell>
                         </TableRow>
                       ))}
-                    ;
                   </TableBody>
                 </Table>
               </TableContainer>
               <TablePagination
                 rowsPerPageOptions={[10, 25, 100]}
                 component="div"
-                count={dataUser.length}
+                count={DataGaleriBerita.length}
                 rowsPerPage={rowsPerPage}
                 page={page}
                 onPageChange={handleChangePage}
@@ -218,4 +172,4 @@ const DataUser = () => {
   );
 };
 
-export default DataUser;
+export default DataGaleriBerita;

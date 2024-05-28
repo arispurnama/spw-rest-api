@@ -1,6 +1,7 @@
 import Sequelize, { DATE } from "sequelize";
 import db from "../config/Database.js"
 import LaporanOmzet from "../model/Laporan.js";
+import { PaginationHelper, QueryHelper } from "../Helper/QueryHalper.js";
 
 const { QueryTypes } = Sequelize;
 
@@ -23,10 +24,13 @@ export const getListLaporanOmzet = async (req, res) => {
         const total = await db.query(queryStringCount, {
             type: QueryTypes.SELECT,
         })
-
+        let totalData = 0;
+        if(total.length > 0){
+            totalData =total[0].totaldata;
+        }
         responsePagination.page = (page);
         responsePagination.size = parseInt(size);
-        responsePagination.total = parseInt(total[0].totaldata);
+        responsePagination.total = parseInt(totalData);
         responsePagination.data = response;
         responsePagination.error = false;
         responsePagination.errorMessage = "Sukses";

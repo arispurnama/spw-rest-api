@@ -47,7 +47,10 @@ export const getRoleById = async (req, res) => {
 
 export const createRole = async (req, res) => {
     try {
-        await Roles.create(req.body);
+        let payload = req.body;
+        payload.createdAt = new Date().toDateString();
+        payload.updatedAt = new Date().toDateString();
+        await Roles.create(payload);
         res.status(201).json({ msg: "Roles Created" });
     } catch (error) {
         console.log(error.message);

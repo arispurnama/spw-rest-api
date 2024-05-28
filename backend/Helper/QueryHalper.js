@@ -28,9 +28,12 @@ export const QueryHelper = function (query, filter, search, searchColumn, order,
 export const PaginationHelper = function(page, size){
     let paggination = "";
 
-    if(parseInt(page) > 0){ 
-        let skip = (page - 1) * size;
-        paggination = `OFFSET ${skip} ROWS FETCH NEXT ${size} ROWS ONLY`;
+    console.log('page', page ,size)
+    if(page != undefined && size != undefined){
+        if(parseInt(page) > 0){ 
+            let skip = (page - 1) * size;
+            paggination = `OFFSET ${skip} ROWS FETCH NEXT ${size} ROWS ONLY`;
+        }
     }
     return paggination;
 }

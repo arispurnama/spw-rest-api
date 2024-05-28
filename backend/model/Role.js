@@ -15,19 +15,19 @@ const Role = db.define('TB_MD_ROLE', {
     },
     createdAt: {
         type: DataTypes.DATE,
-        allowNull: false,
+        allowNull: true,
     },
-    updateAt: {
+    updatedAt: {
         type: DataTypes.DATE,
-        allowNull: false,
+        allowNull: true,
     },
     deletedAt: {
         type: DataTypes.DATE,
-        allowNull: false,
+        allowNull: true,
     },
     isDeleted: {
         type: DataTypes.BOOLEAN,
-        allowNull: false,
+        allowNull: true,
     },
 }, {
     freezeTableName: true

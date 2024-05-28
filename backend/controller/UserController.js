@@ -6,6 +6,7 @@ import jwt from "jsonwebtoken"
 const jwtSecret = "9fdba4617683cc4ae6e685293bccf7692a8be1591c6d6f2920a442aa719d038499fa09";
 import { PaginationHelper, QueryHelper } from "../Helper/QueryHalper.js";
 import { response } from "express";
+import Role from "../model/Role.js";
 
 const { QueryTypes } = Sequelize;
 
@@ -28,10 +29,13 @@ export const getListUsers = async (req, res) => {
         const total = await db.query(queryStringCount, {
             type: QueryTypes.SELECT,
         })
-
+        let totalData = 0;
+        if(total.length > 0){
+            totalData =total[0].totaldata;
+        }
         responsePagination.page = (page);
         responsePagination.size = parseInt(size);
-        responsePagination.total = parseInt(total[0].totaldata);
+        responsePagination.total = parseInt(totalData);
         responsePagination.data = response;
         responsePagination.error = false;
         responsePagination.errorMessage = "Sukses";
@@ -114,12 +118,6 @@ export const deleteUsers = async (req, res) => {
                 id: req.params.id
             }
         });
-
-        // await Users.destroy({
-        //     where: {
-        //         id: req.params.id
-        //     }
-        // });
         response.data = result;
         response.error = false;
         response.errorMessage = "Sukses";
@@ -162,13 +160,23 @@ export const Registers = async (req, res) => {
             if (userData[0].username == req.body.username) {
                 response.error = true;
                 response.errorMessage = "Username Already!!!!";
-                return res.status(401).json({ response });
+                return res.status(500).json({ response });
             }
+        }
+        const dataRole = await Role.findOne({
+            where: {
+                name: 'User'
+            }
+        });
+        console.log(dataRole)
+        if(!dataRole){
+            console.log(dataRole)
         }
         const password = user.password;
         let hashesPassword = await bcrypt.hash(password, 10);
 
         user.password = hashesPassword;
+        user.roleId = dataRole.dataValues.id;
         await Users.create(user);
 
         response.data = user;
