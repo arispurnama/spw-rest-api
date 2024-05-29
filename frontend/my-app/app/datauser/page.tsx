@@ -5,7 +5,9 @@ import axios from "axios";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { useRouter } from "next/navigation";
+import DeleteConfirmationModal from "@/components/DeleteConfirmationModal"
 
+//library
 import Paper from "@mui/material/Paper";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
@@ -15,13 +17,16 @@ import TableHead from "@mui/material/TableHead";
 import TablePagination from "@mui/material/TablePagination";
 import TableRow from "@mui/material/TableRow";
 import IconTrashBinOutline from "@/components/icons/IconTrashBinOutline";
-import IconFileDocumentEditOutline from "@/components/icons/IconFileDocumentEditOutline"
+import IconFileDocumentEditOutline from "@/components/icons/IconFileDocumentEditOutline";
+import SnackBar from "@/components/SnackBar";
 
 const DataUser = () => {
   const router = useRouter();
   const [dataUser, setDataUser] = useState([]);
   const [totalData, setTotalData] = useState(0);
   const [searchQuery, setSearchQuery] = useState("");
+  const [showModal, setShowModal] = useState(false);
+  const [selectedUserId, setSelectedUserId] = useState('');
 
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
@@ -43,7 +48,7 @@ const DataUser = () => {
       ? JSON.parse(localStorage.access_token)
       : null;
   } catch (e) {
-    console.error("Error parsing token from localStorage:", e);
+    console.log("Error parsing token from localStorage:", e);
   }
 
   const getUserAll = async () => {
@@ -109,6 +114,10 @@ const DataUser = () => {
     setSearchQuery(event);
     getUserAll();
   };
+  const handleDeleteClick = (userId: string) => {
+    setSelectedUserId(userId);
+    setShowModal(true);
+  };
 
   return (
     <main>
@@ -160,25 +169,6 @@ const DataUser = () => {
                         page * rowsPerPage + rowsPerPage
                       )
                       ?.map((row: any) => (
-                        //return (
-                        // <TableRow>
-                        //   //   hover
-                        //   //   role="checkbox"
-                        //   //   tabIndex={-1}
-                        //   //   key={row}
-                        //   // >
-                        //   //   {columns.map((column) => {
-                        //   //     const value = row[column.id];
-                        //   //     return (
-                        //   //       <TableCell key={column.id} align={column.align}>
-                        //   //         {column.format && typeof value === "number"
-                        //   //           ? column.format(value)
-                        //   //           : value}
-                        //   //       </TableCell>
-                        //   //     );
-                        //   //   })}
-                        //   </TableRow>
-                        // );
                         <TableRow>
                           <TableCell component="th" scope="row">
                             {row.firstName}
@@ -189,8 +179,12 @@ const DataUser = () => {
                           <TableCell align="right">{row.username}</TableCell>
                           <TableCell align="right">{row.name}</TableCell>
                           <TableCell className="flex flex-row gap-4 justify-end">
-                            <button><IconFileDocumentEditOutline/></button>
-                            <button><IconTrashBinOutline/></button>
+                            <button>
+                              <IconFileDocumentEditOutline />
+                            </button>
+                            <button onClick={() => handleDeleteClick(row.id)}>
+                              <IconTrashBinOutline />
+                            </button>
                           </TableCell>
                         </TableRow>
                       ))}
@@ -213,6 +207,13 @@ const DataUser = () => {
         <div>
           <Footer />
         </div>
+        <DeleteConfirmationModal
+          isOpen={showModal}
+          Id={selectedUserId}
+          url="user"
+          page="datauser"
+          onClosed={() => setShowModal(false)} 
+        />
       </div>
     </main>
   );

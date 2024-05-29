@@ -55,8 +55,8 @@ const DataProdukSiswa = () => {
             Authorization: `Bearer ${token}`,
           },
           params: {
-            page: 1, // ganti dengan nilai yang sesuai
-            size: 10, // ganti dengan nilai yang sesuai
+            page: page, // ganti dengan nilai yang sesuai
+            size: rowsPerPage, // ganti dengan nilai yang sesuai
             search: searchQuery,
           },
         })

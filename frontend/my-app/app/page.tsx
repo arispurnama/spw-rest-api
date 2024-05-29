@@ -5,7 +5,7 @@ import Header from "@/components/Header";
 import Head from 'next/head'
 import Image from 'next/image'
 
-import Gambar from "@/public/images/gambar-bg-1.jpg";
+import Gambar from "@/public/images/sekolah.jpeg";
 import Footer from "@/components/Footer";
 export default function Home() {
   const router = useRouter()
