@@ -23,9 +23,8 @@ const EditLaporanOmzetForm = ({
   userData = [],
   onClosed,
 }: Props) => {
-
   let renderMenuItems;
-  
+
   if (!isOpen) {
     return null;
   } else {
@@ -33,13 +32,14 @@ const EditLaporanOmzetForm = ({
     const [omzet, setOmzet] = useState(laporanDataEdit?.jumlahOmzet);
     const [modal, setModal] = useState(laporanDataEdit?.JumlahModal);
     const [keterangan, setKeterangan] = useState(laporanDataEdit?.keterangan);
-    const [tanggal, setTanggal] = useState();
-    const [buktiTransaksi, setBuktiTransaksi] = useState("");
+    const [tanggal, setTanggal] = useState(laporanDataEdit?.tanggallaporan);
+    const [buktiTransaksi, setBuktiTransaksi] = useState(null);
     const [errorMessage, setErrorMessage] = useState("");
     const router = useRouter();
     const [errorType, setErrorType] = useState("");
     const [showSnackBar, setSnackBar] = useState(false);
     const [userIdState, setUserIdState] = useState(laporanDataEdit?.userId);
+    const [buktiTransaksiCurrent, setBuktiTransaksiCurrent] = useState(laporanDataEdit?.buktiTransaksi);
     //localstorage
     let token = null;
     try {
@@ -57,34 +57,72 @@ const EditLaporanOmzetForm = ({
     }
     const handlerSubmit = async () => {
       try {
-        if (user?.name != "Admin") {
-          const userId = user?.id;
-          const payload = {
-            userId: userId,
-            jumlahOmzet: omzet,
-            JumlahModal: modal,
-            keterangan: keterangan,
-            tanggalLaporan: tanggal,
-            buktiTransaksi: buktiTransaksi,
-          };
-          console.log("payload lap : ", payload);
+        const userId = user?.name != "Admin" ? user?.id : userIdState;
+
+        //post file
+        let payloadFormData = new FormData();
+        if (buktiTransaksi) {
+          payloadFormData.append("file", buktiTransaksi);
           axios
-            .patch(`http://localhost:3030/laporan-omzet/${id}`, payload, {
+            .post("http://localhost:3030/upload", payloadFormData, {
               headers: {
-                "Content-Type": "application/json",
+                "Content-Type": "multipart/form-data",
                 Authorization: `Bearer ${token}`, // Add your token or any other header here
               },
             })
             .then((response) => {
-              setErrorType("success");
-              setErrorMessage(
-                "Update Data Laporan " + response.data.response.errorMessage
-              );
-              setSnackBar(true);
-              setTimeout(() => {
-                onClosed();
-                window.location.reload();
-              }, 1000);
+              console.log("response upload : ", response.data.response.data);
+              //post laporan
+              const payload = {
+                userId: userId,
+                jumlahOmzet: omzet,
+                JumlahModal: modal,
+                keterangan: keterangan,
+                tanggalLaporan: tanggal,
+                buktiTransaksi: response.data.response.data,
+              };
+              axios
+                .patch(`http://localhost:3030/laporan-omzet/${id}`, payload, {
+                  headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`, // Add your token or any other header here
+                  },
+                })
+                .then((response) => {
+                  setErrorType("success");
+                  setErrorMessage(
+                    "Edit Data Laporan " + response.data.response.errorMessage
+                  );
+                  setSnackBar(true);
+                  setTimeout(() => {
+                    onClosed();
+                    window.location.reload();
+                  }, 1000);
+                })
+                .catch((e) => {
+                  console.log("error :", e);
+                  if (e.response.status === 401) {
+                    console.error(
+                      "Unauthorized access - perhaps you need to log in?"
+                    );
+                    setErrorType("error");
+                    setErrorMessage(
+                      "Unauthorized access - perhaps you need to log in?"
+                    );
+                    setTimeout(() => {
+                      setSnackBar(true);
+                      router.push("/Auth");
+                    }, 1000);
+                  } else if (e.response.status === 500) {
+                    setErrorType("error");
+                    setErrorMessage(
+                      "Data Gagal di Edit" + e.response.data.errorMessage
+                    );
+                    setTimeout(() => {
+                      setSnackBar(true);
+                    }, 1000);
+                  }
+                });
             })
             .catch((e) => {
               console.log("error :", e);
@@ -103,67 +141,63 @@ const EditLaporanOmzetForm = ({
               } else if (e.response.status === 500) {
                 setErrorType("error");
                 setErrorMessage(
-                  "Data Gagal diUpdate " + e.response.data.errorMessage
+                  "Data Gagal di Edit " + e.response.data.errorMessage
                 );
                 setTimeout(() => {
                   setSnackBar(true);
                 }, 1000);
               }
             });
-        } else {
-          const userId = userIdState;
-          const payload = {
-            userId: userId,
-            jumlahOmzet: omzet,
-            JumlahModal: modal,
-            keterangan: keterangan,
-            tanggalLaporan: tanggal,
-            buktiTransaksi: buktiTransaksi,
-          };
-          console.log("payload lap : ", payload);
-          axios
-            .patch(`http://localhost:3030/laporan-omzet/${id}`, payload, {
-              headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${token}`, // Add your token or any other header here
-              },
-            })
-            .then((response) => {
-              setErrorType("success");
-              setErrorMessage(
-                "Update Data Laporan " + response.data.response.errorMessage
+        } //post laporan
+        const payload = {
+          userId: userId,
+          jumlahOmzet: omzet,
+          JumlahModal: modal,
+          keterangan: keterangan,
+          tanggalLaporan: tanggal
+        };
+        axios
+          .patch(`http://localhost:3030/laporan-omzet/${id}`, payload, {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`, // Add your token or any other header here
+            },
+          })
+          .then((response) => {
+            setErrorType("success");
+            setErrorMessage(
+              "Edit Data Laporan " + response.data.response.errorMessage
+            );
+            setSnackBar(true);
+            setTimeout(() => {
+              onClosed();
+              window.location.reload();
+            }, 1000);
+          })
+          .catch((e) => {
+            console.log("error :", e);
+            if (e.response.status === 401) {
+              console.error(
+                "Unauthorized access - perhaps you need to log in?"
               );
-              setSnackBar(true);
+              setErrorType("error");
+              setErrorMessage(
+                "Unauthorized access - perhaps you need to log in?"
+              );
               setTimeout(() => {
-                onClosed();
-                window.location.reload();
+                setSnackBar(true);
+                router.push("/Auth");
               }, 1000);
-            })
-            .catch((e) => {
-              console.log("error :", e);
-              if (e.response.status === 401) {
-                console.error(
-                  "Unauthorized access - perhaps you need to log in?"
-                );
-                setErrorType("error");
-                setErrorMessage(
-                  "Unauthorized access - perhaps you need to log in?"
-                );
-                setTimeout(() => {
-                  setSnackBar(true);
-                  router.push("/Auth");
-                }, 1000);
-              } else if (e.response.status === 500) {
-                setErrorType("error");
-                setErrorMessage(
-                  "Data Gagal diUpdate " + e.response.data.errorMessage
-                );
-                setTimeout(() => {
-                  setSnackBar(true);
-                }, 1000);
-              }
-            });
-        }
+            } else if (e.response.status === 500) {
+              setErrorType("error");
+              setErrorMessage(
+                "Data Gagal di Edit " + e.response.data.errorMessage
+              );
+              setTimeout(() => {
+                setSnackBar(true);
+              }, 1000);
+            }
+          });
       } catch (error) {
         console.error("Error fetching laporan: ", error);
       }
@@ -172,15 +206,20 @@ const EditLaporanOmzetForm = ({
     const handleChange = (event: SelectChangeEvent) => {
       setUserIdState(event.target.value as string);
     };
+    const handleChangeFile = async (e: any) => {
+      const fileInput = e.target.files[0];
+      setBuktiTransaksi(fileInput);
+    };
+
     renderMenuItems = () => {
-      console.log("user data :hbjsdhsdhfsdkbfd ", userData);
+      console.log('dfgdgdfh', tanggal)
       const adminItems = (
         <>
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
             <div className="flex items-center justify-center bg-gray-100">
               <div className="bg-white rounded-lg shadow-lg p-8 max-w-screen-md w-full">
                 <h2 className="text-2xl font-bold mb-4">Edit Laporan</h2>
-                <div className="flex flex-row gap-24">
+                <div className="flex flex-row gap-24 pb-2">
                   <div>
                     <label className="block text-sm font-medium text-gray-700">
                       Nama Siswa
@@ -191,7 +230,7 @@ const EditLaporanOmzetForm = ({
                       value={userIdState}
                       onChange={handleChange}
                       label="Name"
-                      className="w-72"
+                      className="w-80 h-10"
                     >
                       {userData?.map((name: any) => (
                         <MenuItem key={name.id} value={name.id}>
@@ -200,8 +239,9 @@ const EditLaporanOmzetForm = ({
                       ))}
                     </Select>
                   </div>
+                  <div></div>
                 </div>
-                <div className="flex flex-row gap-24">
+                <div className="flex flex-row gap-16">
                   <div className="mb-4">
                     <label className="block text-sm font-medium text-gray-700">
                       Omzet
@@ -210,7 +250,7 @@ const EditLaporanOmzetForm = ({
                       type="text"
                       value={omzet}
                       onChange={(e) => setOmzet(e.target.value)}
-                      className="ps-2 mt-1 block w-full px-20 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                      className="ps-2 mt-1 block w-80 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                       required
                     />
                   </div>
@@ -222,12 +262,12 @@ const EditLaporanOmzetForm = ({
                       type="text"
                       value={modal}
                       onChange={(e) => setModal(e.target.value)}
-                      className="ps-2 mt-1 block w-full px-20 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                      className="ps-2 mt-1 block w-80 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                       required
                     />
                   </div>
                 </div>
-                <div className="flex flex-row gap-24">
+                <div className="flex flex-row gap-16">
                   <div className="mb-4">
                     <label className="block text-sm font-medium text-gray-700">
                       Tanggal Pelaporan
@@ -236,19 +276,19 @@ const EditLaporanOmzetForm = ({
                       type="date"
                       value={tanggal}
                       onChange={(e: any) => setTanggal(e.target.value)}
-                      className="mt-1 block w-full px-20 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                      className="ps-2 pr-2 mt-1 block w-80 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                       required
+                      pattern="\d{2}/\d{2}/\d{4}"
                     />
                   </div>
                   <div className="mb-4">
                     <label className="block text-sm font-medium text-gray-700">
                       Keterangan
                     </label>
-                    <input
-                      type="text"
+                    <textarea
                       value={keterangan}
                       onChange={(e) => setKeterangan(e.target.value)}
-                      className="ps-2 mt-1 block w-full px-20 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                      className="ps-2 mt-1 block w-80 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                       required
                     />
                   </div>
@@ -260,27 +300,28 @@ const EditLaporanOmzetForm = ({
                     </label>
                     <input
                       type="file"
-                      value={buktiTransaksi}
-                      onChange={(e) => setBuktiTransaksi(e.target.value)}
+                      onChange={(e) => {handleChangeFile(e); setBuktiTransaksiCurrent(e.target.value)}}
                       className="ps-2 mt-1 block w-full px-20 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                       required
                     />
+                    <span>{buktiTransaksiCurrent}</span>
                   </div>
                 </div>
-
-                <button
-                  type="button"
-                  onClick={() => handlerSubmit()}
-                  className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                >
-                  Add Laporan
-                </button>
-                <button
-                  onClick={onClosed}
-                  className="mt-4 w-full bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500"
-                >
-                  Close
-                </button>
+                <div className="flex flex-row justify-end gap-4">
+                  <button
+                    onClick={onClosed}
+                    className="w-20 bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500"
+                  >
+                    Close
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handlerSubmit()}
+                    className="w-20 bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  >
+                    Save
+                  </button>
+                </div>
               </div>
             </div>{" "}
             <SnackBar
@@ -298,8 +339,8 @@ const EditLaporanOmzetForm = ({
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
             <div className="flex items-center justify-center bg-gray-100">
               <div className="bg-white rounded-lg shadow-lg p-8 max-w-screen-md w-full">
-                <h2 className="text-2xl font-bold mb-4">Edit Laporan</h2>
-                <div className="flex flex-row gap-24">
+                <h2 className="text-2xl font-bold mb-4">Buat Laporan</h2>
+                <div className="flex flex-row gap-16">
                   <div className="mb-4">
                     <label className="block text-sm font-medium text-gray-700">
                       Omzet
@@ -308,7 +349,7 @@ const EditLaporanOmzetForm = ({
                       type="text"
                       value={omzet}
                       onChange={(e) => setOmzet(e.target.value)}
-                      className="ps-2 mt-1 block w-full px-20 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                      className="ps-2 mt-1 block w-80 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                       required
                     />
                   </div>
@@ -320,12 +361,12 @@ const EditLaporanOmzetForm = ({
                       type="text"
                       value={modal}
                       onChange={(e) => setModal(e.target.value)}
-                      className="ps-2 mt-1 block w-full px-20 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                      className="ps-2 mt-1 block w-80 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                       required
                     />
                   </div>
                 </div>
-                <div className="flex flex-row gap-24">
+                <div className="flex flex-row gap-16">
                   <div className="mb-4">
                     <label className="block text-sm font-medium text-gray-700">
                       Tanggal Pelaporan
@@ -334,7 +375,7 @@ const EditLaporanOmzetForm = ({
                       type="date"
                       value={tanggal}
                       onChange={(e: any) => setTanggal(e.target.value)}
-                      className="mt-1 block w-full px-20 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                      className="mt-1 block w-80 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                       required
                     />
                   </div>
@@ -342,11 +383,10 @@ const EditLaporanOmzetForm = ({
                     <label className="block text-sm font-medium text-gray-700">
                       Keterangan
                     </label>
-                    <input
-                      type="text"
+                    <textarea
                       value={keterangan}
                       onChange={(e) => setKeterangan(e.target.value)}
-                      className="ps-2 mt-1 block w-full px-20 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                      className="ps-2 mt-1 block w-80 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                       required
                     />
                   </div>
@@ -358,27 +398,28 @@ const EditLaporanOmzetForm = ({
                     </label>
                     <input
                       type="file"
-                      value={buktiTransaksi}
-                      onChange={(e) => setBuktiTransaksi(e.target.value)}
-                      className="ps-2 mt-1 block w-full px-20 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                      onChange={(e) => handleChangeFile(e)}
+                      className="ps-2 mt-1 block w-80 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                       required
                     />
                   </div>
                 </div>
 
-                <button
-                  type="button"
-                  onClick={() => handlerSubmit()}
-                  className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                >
-                  Add Laporan
-                </button>
-                <button
-                  onClick={onClosed}
-                  className="mt-4 w-full bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500"
-                >
-                  Close
-                </button>
+                <div className="flex flex-row justify-end gap-4">
+                  <button
+                    onClick={onClosed}
+                    className="w-20 bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500"
+                  >
+                    Close
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handlerSubmit()}
+                    className="w-20 bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  >
+                    Save
+                  </button>
+                </div>
               </div>
             </div>{" "}
             <SnackBar

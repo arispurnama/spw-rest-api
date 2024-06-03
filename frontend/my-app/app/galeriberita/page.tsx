@@ -16,8 +16,10 @@ import TableHead from "@mui/material/TableHead";
 import TablePagination from "@mui/material/TablePagination";
 import TableRow from "@mui/material/TableRow";
 import IconTrashBinOutline from "@/components/icons/IconTrashBinOutline";
-import IconFileDocumentEditOutline from "@/components/icons/IconFileDocumentEditOutline"
-
+import IconFileDocumentEditOutline from "@/components/icons/IconFileDocumentEditOutline";
+import AddGaleriBeritaForm from "@/components/galeriberita/AddGaleriBeritaForm";
+import DeleteConfirmationModal from "@/components/DeleteConfirmationModal";
+import EditLaporanOmzetForm from "@/components/galeriberita/EditGaleriBeritaForm";
 
 const DataGaleriBerita = () => {
   const router = useRouter();
@@ -26,6 +28,12 @@ const DataGaleriBerita = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
+  const [showModalAdd, setShowModalAdd] = useState(false);
+  const [dataUser, setDataUser] = useState([]);
+  const [showModal, setShowModal] = useState(false);
+  const [selectedUserId, setSelectedUserId] = useState("");
+  const [dataEdit, setDataEdit] = useState();
+  const [showModalEdit, setShowModalEdit] = useState(false);
 
   const handleChangePage = (event: unknown, newPage: number) => {
     setPage(newPage);
@@ -78,13 +86,50 @@ const DataGaleriBerita = () => {
       console.log("Error fetching products: ", error);
     }
   };
+  const getUserAll = async () => {
+    try {
+      axios
+        .get("http://localhost:3030/list-user", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          params: {
+            page: -1, // ganti dengan nilai yang sesuai
+            size: -1, // ganti dengan nilai yang sesuai
+            //search: searchQuery,
+          },
+        })
+        .then((response) => {
+          setDataUser(response.data.data);
+        })
+        .catch((e) => {
+          console.log("error :", e);
+          if (e.response.status === 401) {
+            console.error("Unauthorized access - perhaps you need to log in?");
+            router.push("/Auth");
+          }
+        });
+    } catch (error) {
+      console.log("Error fetching products: ", error);
+    }
+  };
   useEffect(() => {
     getAllDataGaleriBerita();
+    getUserAll();
   }, []);
-  
+
   const handleSearchChange = (event: any) => {
     setSearchQuery(event);
     getAllDataGaleriBerita();
+  };
+  const handleDeleteClick = (userId: string) => {
+    setSelectedUserId(userId);
+    setShowModal(true);
+  };
+  const handleEditClick = (userId: string, data: any) => {
+    setSelectedUserId(userId);
+    setDataEdit(data);
+    setShowModalEdit(true);
   };
   return (
     <main>
@@ -97,7 +142,7 @@ const DataGaleriBerita = () => {
                 DATA GALERI BERITA
               </h2>
             </div>
-            <div className="flex flex-row justify-end">
+            <div className="flex flex-row justify-end pr-9 pt-0">
               <div className="flex gap-4 p-3">
                 <input
                   type="text"
@@ -108,14 +153,17 @@ const DataGaleriBerita = () => {
                     console.log(searchQuery);
                   }}
                 />
-                <button className="px-6 py-2 bg-blue-400 rounded-lg">
+                <button
+                  className="px-6 py-2 bg-blue-400 rounded-lg"
+                  onClick={() => setShowModalAdd(true)}
+                >
                   + add
                 </button>
               </div>
             </div>
           </div>
           <div className="pr-10 pl-10">
-          <Paper sx={{ width: "100%" }}>
+            <Paper sx={{ width: "100%" }}>
               <TableContainer sx={{ maxHeight: 450 }}>
                 <Table stickyHeader aria-label="customized table">
                   <TableHead>
@@ -129,26 +177,28 @@ const DataGaleriBerita = () => {
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {DataGaleriBerita
-                      ?.slice(
-                        page * rowsPerPage,
-                        page * rowsPerPage + rowsPerPage
-                      )
-                      ?.map((row: any) => (
-                        <TableRow>
-                          <TableCell component="th" scope="row">
-                            {row.firstName}
-                          </TableCell>
-                          <TableCell align="right">{row.lastName}</TableCell>
-                          <TableCell align="right">{row.judulBerita}</TableCell>
-                          <TableCell align="right">{row.keterangan}</TableCell>
-                          <TableCell align="right">{row.tanggal}</TableCell>
-                          <TableCell className="flex flex-row gap-4 justify-end">
-                            <button><IconFileDocumentEditOutline/></button>
-                            <button><IconTrashBinOutline/></button>
-                          </TableCell>
-                        </TableRow>
-                      ))}
+                    {DataGaleriBerita?.slice(
+                      page * rowsPerPage,
+                      page * rowsPerPage + rowsPerPage
+                    )?.map((row: any) => (
+                      <TableRow>
+                        <TableCell component="th" scope="row">
+                          {row.firstName}
+                        </TableCell>
+                        <TableCell align="right">{row.lastName}</TableCell>
+                        <TableCell align="right">{row.judulBerita}</TableCell>
+                        <TableCell align="right">{row.keterangan}</TableCell>
+                        <TableCell align="right">{row.tanggal}</TableCell>
+                        <TableCell className="flex flex-row gap-4 justify-end">
+                          <button onClick={() => handleEditClick(row.id, row)}>
+                            <IconFileDocumentEditOutline />
+                          </button>
+                          <button onClick={() => handleDeleteClick(row.id)}>
+                            <IconTrashBinOutline />
+                          </button>
+                        </TableCell>
+                      </TableRow>
+                    ))}
                   </TableBody>
                 </Table>
               </TableContainer>
@@ -164,7 +214,26 @@ const DataGaleriBerita = () => {
             </Paper>
           </div>
         </div>
-        <div>
+        <DeleteConfirmationModal
+          isOpen={showModal}
+          Id={selectedUserId}
+          url="galeri-berita"
+          page="galeriberita"
+          onClosed={() => setShowModal(false)}
+        />
+        <AddGaleriBeritaForm
+          isOpen={showModalAdd}
+          userData={dataUser}
+          onClosed={() => setShowModalAdd(false)}
+        />
+        <EditLaporanOmzetForm
+          isOpen={showModalEdit}
+          id={selectedUserId}
+          DataEdit={dataEdit}
+          userData={dataUser}
+          onClosed={() => setShowModalEdit(false)}
+        />
+        <div className="pt-14">
           <Footer />
         </div>
       </div>

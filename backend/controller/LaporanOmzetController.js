@@ -12,9 +12,9 @@ export const getListLaporanOmzet = async (req, res) => {
     let size = req.query.size;
     let search = req.query.search;
     let searchColumn =
-      'tl.id, tl."userId", tl."tanggalLaporan", tl."jumlahOmzet", tl."JumlahModal", tl."buktiTransaksi", tl.keterangan, tl."createdAt", tl."updatedAt", tl."deletedAt", tl."isDeleted", tmu."firstName", tmu."lastName"';
+      'tl.id, tl."userId", tl."tanggalLaporan", tl."jumlahOmzet", tl."JumlahModal", to_char(tl."tanggalLaporan", '+ "'YYYY-MM-DD'" + '), tl.keterangan, tl."createdAt", tl."updatedAt", tl."deletedAt", tl."isDeleted", tmu."firstName", tmu."lastName"';
     let query =
-      'SELECT count(*) over () TOTALDATA, tl.id, tl."userId", tl."tanggalLaporan", tl."jumlahOmzet", tl."JumlahModal", tl."buktiTransaksi", tl.keterangan, tl."createdAt", tl."updatedAt", tl."deletedAt", tl."isDeleted", tmu."firstName", tmu."lastName" FROM public."TB_TR_LAPORAN" tl inner join public."TB_MD_USER" tmu on tl."userId" = tmu.id where tl."isDeleted" = false and tmu."isDeleted" = false ';
+      'SELECT count(*) over () TOTALDATA, tl.id, tl."userId", to_char(tl."tanggalLaporan", '+ "'YYYY-MM-DD'" + ')  as tanggalLaporan, tl."jumlahOmzet", tl."JumlahModal", tl."buktiTransaksi", tl.keterangan, tl."createdAt", tl."updatedAt", tl."deletedAt", tl."isDeleted", tmu."firstName", tmu."lastName" FROM public."TB_TR_LAPORAN" tl inner join public."TB_MD_USER" tmu on tl."userId" = tmu.id where tl."isDeleted" = false and tmu."isDeleted" = false ';
     let paggination = PaginationHelper(page, size);
     let queryString = QueryHelper(
       query,
@@ -80,7 +80,9 @@ export const createLaporanOmzet = async (req, res) => {
 export const updateLaporanOmzet = async (req, res) => {
   const response = new Object();
   try {
-    await LaporanOmzet.update(req.body, {
+    const payload = req.body;
+    payload.updatedAt = new Date().toDateString();
+    await LaporanOmzet.update(payload, {
       where: {
         id: req.params.id,
       },
@@ -98,7 +100,11 @@ export const updateLaporanOmzet = async (req, res) => {
 export const deleteLaporanOmzet = async (req, res) => {
   const response = new Object();
   try {
-    await LaporanOmzet.destroy({
+    let payload ={
+      deletedAt: new Date().toDateString(),
+      isDeleted: true
+    }
+    await LaporanOmzet.update(payload, {
       where: {
         id: req.params.id,
       },

@@ -26,6 +26,10 @@ const ProdukSiswa = db.define('TB_TR_PRODUK_SISWA', {
         type: DataTypes.STRING,
         allowNull: true,
     },
+    fileName: {
+        type: DataTypes.STRING,
+        allowNull: true,
+    },
     createdAt: {
         type: DataTypes.DATE,
         allowNull: true,

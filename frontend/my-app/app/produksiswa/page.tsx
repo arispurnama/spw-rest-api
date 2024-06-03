@@ -16,7 +16,10 @@ import TableHead from "@mui/material/TableHead";
 import TablePagination from "@mui/material/TablePagination";
 import TableRow from "@mui/material/TableRow";
 import IconTrashBinOutline from "@/components/icons/IconTrashBinOutline";
-import IconFileDocumentEditOutline from "@/components/icons/IconFileDocumentEditOutline"
+import IconFileDocumentEditOutline from "@/components/icons/IconFileDocumentEditOutline";
+import DeleteConfirmationModal from "@/components/DeleteConfirmationModal";
+import AddProdukSiswaForm from "@/components/produksiswa/AddProdukSiswaForm";
+import EditProdukSiswaForm from "@/components/produksiswa/EditProdukSiswaForm";
 
 const DataProdukSiswa = () => {
   const router = useRouter();
@@ -25,6 +28,13 @@ const DataProdukSiswa = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
+
+  const [showModalAdd, setShowModalAdd] = useState(false);
+  const [dataUser, setDataUser] = useState([]);
+  const [showModal, setShowModal] = useState(false);
+  const [selectedUserId, setSelectedUserId] = useState("");
+  const [dataEdit, setDataEdit] = useState();
+  const [showModalEdit, setShowModalEdit] = useState(false);
 
   const handleChangePage = (event: unknown, newPage: number) => {
     setPage(newPage);
@@ -36,7 +46,6 @@ const DataProdukSiswa = () => {
     setRowsPerPage(+event.target.value);
     setPage(0);
   };
-
 
   let token = null;
   try {
@@ -78,15 +87,51 @@ const DataProdukSiswa = () => {
       console.log("Error fetching products: ", error);
     }
   };
+  const getUserAll = async () => {
+    try {
+      axios
+        .get("http://localhost:3030/list-user", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          params: {
+            page: -1, // ganti dengan nilai yang sesuai
+            size: -1, // ganti dengan nilai yang sesuai
+            //search: searchQuery,
+          },
+        })
+        .then((response) => {
+          setDataUser(response.data.data);
+        })
+        .catch((e) => {
+          console.log("error :", e);
+          if (e.response.status === 401) {
+            console.error("Unauthorized access - perhaps you need to log in?");
+            router.push("/Auth");
+          }
+        });
+    } catch (error) {
+      console.log("Error fetching products: ", error);
+    }
+  };
   useEffect(() => {
     getAllDataProdukSiswa();
+    getUserAll();
   }, []);
- 
+
   const handleSearchChange = (event: any) => {
     setSearchQuery(event);
     getAllDataProdukSiswa();
   };
-
+  const handleDeleteClick = (userId: string) => {
+    setSelectedUserId(userId);
+    setShowModal(true);
+  };
+  const handleEditClick = (userId: string, data: any) => {
+    setSelectedUserId(userId);
+    setDataEdit(data);
+    setShowModalEdit(true);
+  };
   return (
     <main>
       <div>
@@ -98,7 +143,7 @@ const DataProdukSiswa = () => {
                 DATA PRODUK SISWA
               </h2>
             </div>
-            <div className="flex flex-row justify-end">
+            <div className="flex flex-row justify-end pr-9">
               <div className="flex gap-4 p-3">
                 <input
                   type="text"
@@ -109,14 +154,17 @@ const DataProdukSiswa = () => {
                     console.log(searchQuery);
                   }}
                 />
-                <button className="px-6 py-2 bg-blue-400 rounded-lg">
+                <button
+                  className="px-6 py-2 bg-blue-400 rounded-lg"
+                  onClick={() => setShowModalAdd(true)}
+                >
                   + add
                 </button>
               </div>
             </div>
           </div>
           <div className="pr-10 pl-10">
-          <Paper sx={{ width: "100%" }}>
+            <Paper sx={{ width: "100%" }}>
               <TableContainer sx={{ maxHeight: 450 }}>
                 <Table stickyHeader aria-label="customized table">
                   <TableHead>
@@ -143,11 +191,19 @@ const DataProdukSiswa = () => {
                           <TableCell align="right">{row.lastName}</TableCell>
                           <TableCell align="right">{row.namaProduk}</TableCell>
                           <TableCell align="right">{row.keterangan}</TableCell>
-                          <TableCell align="right">{row.tanggalProduk}</TableCell>
+                          <TableCell align="right">
+                            {row.tanggalproduk}
+                          </TableCell>
                           <TableCell align="right">{row.keterangan}</TableCell>
                           <TableCell className="flex flex-row gap-4 justify-end">
-                            <button><IconFileDocumentEditOutline/></button>
-                            <button><IconTrashBinOutline/></button>
+                            <button
+                              onClick={() => handleEditClick(row.id, row)}
+                            >
+                              <IconFileDocumentEditOutline />
+                            </button>
+                            <button onClick={() => handleDeleteClick(row.id)}>
+                              <IconTrashBinOutline />
+                            </button>
                           </TableCell>
                         </TableRow>
                       ))}
@@ -165,10 +221,28 @@ const DataProdukSiswa = () => {
               />
             </Paper>
           </div>
-
+          <DeleteConfirmationModal
+            isOpen={showModal}
+            Id={selectedUserId}
+            url="produk-siswa"
+            page="produksiswa"
+            onClosed={() => setShowModal(false)}
+          />
+          <AddProdukSiswaForm
+            isOpen={showModalAdd}
+            userData={dataUser}
+            onClosed={() => setShowModalAdd(false)}
+          />
+          <EditProdukSiswaForm
+            isOpen={showModalEdit}
+            id={selectedUserId}
+            DataEdit={dataEdit}
+            userData={dataUser}
+            onClosed={() => setShowModalEdit(false)}
+          />
         </div>
 
-        <div>
+        <div className="pt-14">
           <Footer />
         </div>
       </div>

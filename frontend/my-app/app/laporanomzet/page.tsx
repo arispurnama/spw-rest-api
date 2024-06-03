@@ -6,7 +6,8 @@ import { useState } from "react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import DeleteConfirmationModal from "@/components/DeleteConfirmationModal";
-import EditLaporanOmzetForm from "@/components/laporanomzet/EditLaporanOmzetForm"
+import EditLaporanOmzetForm from "@/components/laporanomzet/EditLaporanOmzetForm";
+import downloadService from "@/service/downloadService.js"
 
 //library
 import Paper from "@mui/material/Paper";
@@ -20,6 +21,7 @@ import TableRow from "@mui/material/TableRow";
 import IconTrashBinOutline from "@/components/icons/IconTrashBinOutline";
 import IconFileDocumentEditOutline from "@/components/icons/IconFileDocumentEditOutline";
 import AddLaporanOmzetForm from "@/components/laporanomzet/AddLaporanOmzetForm";
+import { button } from "@nextui-org/react";
 
 const DataLaporanOmzet = () => {
   const router = useRouter();
@@ -138,6 +140,9 @@ const DataLaporanOmzet = () => {
     setDataEdit(data);
     setShowModalEdit(true);
   };
+  const handleDownloadFile = async (name:string) =>{
+    await downloadService(name);
+  }
   return (
     <main>
       <div>
@@ -181,6 +186,7 @@ const DataLaporanOmzet = () => {
                       <TableCell align="right">Modal</TableCell>
                       <TableCell align="right">Tanggal Laporan</TableCell>
                       <TableCell align="right">Keterangan</TableCell>
+                      <TableCell align="right">Bukti Transaksi</TableCell>
                       <TableCell align="right">Action</TableCell>
                     </TableRow>
                   </TableHead>
@@ -199,11 +205,38 @@ const DataLaporanOmzet = () => {
                           <TableCell align="right">{row.jumlahOmzet}</TableCell>
                           <TableCell align="right">{row.JumlahModal}</TableCell>
                           <TableCell align="right">
-                            {row.tanggalLaporan}
+                            {row.tanggallaporan}
                           </TableCell>
                           <TableCell align="right">{row.keterangan}</TableCell>
+                          <TableCell>
+                            {row.buktiTransaksi ? (
+                              <button onClick={() => handleDownloadFile(row.buktiTransaksi)}>
+                                <svg
+                                  className="w-6 h-6 text-gray-800 dark:text-white"
+                                  aria-hidden="true"
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  width="24"
+                                  height="24"
+                                  fill="none"
+                                  viewBox="0 0 24 24"
+                                >
+                                  <path
+                                    stroke="currentColor"
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    stroke-width="2"
+                                    d="M12 13V4M7 14H5a1 1 0 0 0-1 1v4a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-4a1 1 0 0 0-1-1h-2m-1-5-4 5-4-5m9 8h.01"
+                                  />
+                                </svg>
+                              </button>
+                            ) : (
+                              ""
+                            )}
+                          </TableCell>
                           <TableCell className="flex flex-row gap-4 justify-end">
-                            <button onClick={() => handleEditClick(row.id, row)}>
+                            <button
+                              onClick={() => handleEditClick(row.id, row)}
+                            >
                               <IconFileDocumentEditOutline />
                             </button>
                             <button onClick={() => handleDeleteClick(row.id)}>
