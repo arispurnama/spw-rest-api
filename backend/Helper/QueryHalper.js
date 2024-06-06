@@ -13,7 +13,7 @@ export const QueryHelper = function (query, filter, search, searchColumn, order,
         queryString += querySearch;
     }
     if(order != ""){
-        queryString += order;
+        queryString += ` ORDER BY ${order} `;
     }
     if(groupBy != ""){
         queryString += groupBy;

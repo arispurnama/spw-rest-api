@@ -39,6 +39,14 @@ const Users = db.define('TB_MD_USER', {
         type: DataTypes.INTEGER,
         allowNull:false
     },
+    fullName: {
+        type: DataTypes.STRING,
+        allowNull: false,
+    },
+    noHp:{
+        type: DataTypes.STRING,
+        allowNull:false
+    },
     createdAt: {
         type: DataTypes.DATE,
         allowNull: true,

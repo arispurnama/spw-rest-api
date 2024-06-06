@@ -6,8 +6,8 @@ const Footer = () => {
     <footer className="bg-teal-900 text-white py-7  w-full ">
       <div className="container mx-auto flex flex-col md:flex-row justify-between items-center px-6">
         <div className="text-center md:text-left mb-4 md:mb-0">
-          <h2 className="text-2xl font-bold">SIJAGOAN</h2>
-          <p>&copy; 2024 SPW. All rights reserved.</p>
+          <h2 className="md:text-2xl font-bold sm:text-xl">SIJAGOAN</h2>
+          <p className="md:text-2xl sm:text-sm">&copy; 2024 SPW. All rights reserved.</p>
         </div>
         <div>
           <div className='flex flex-row gap-2'>

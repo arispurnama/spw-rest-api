@@ -35,6 +35,8 @@ const DataProdukSiswa = () => {
   const [selectedUserId, setSelectedUserId] = useState("");
   const [dataEdit, setDataEdit] = useState();
   const [showModalEdit, setShowModalEdit] = useState(false);
+  const [userIdParam, setUserIdParam] = useState(null);
+  const [roleName, setRoleName] = useState("");
 
   const handleChangePage = (event: unknown, newPage: number) => {
     setPage(newPage);
@@ -55,7 +57,13 @@ const DataProdukSiswa = () => {
   } catch (e) {
     console.error("Error parsing token from localStorage:", e);
   }
-
+  let user = null;
+  try {
+    user = localStorage.user ? JSON.parse(localStorage.user) : null;
+    //console.log("user for header", user);
+  } catch (e) {
+    console.error("Error parsing user from localStorage:", e);
+  }
   const getAllDataProdukSiswa = async () => {
     try {
       axios
@@ -67,6 +75,7 @@ const DataProdukSiswa = () => {
             page: page, // ganti dengan nilai yang sesuai
             size: rowsPerPage, // ganti dengan nilai yang sesuai
             search: searchQuery,
+            userId: user?.name == "Admin" ? null : user?.id,
           },
         })
         .then((response) => {
@@ -97,7 +106,7 @@ const DataProdukSiswa = () => {
           params: {
             page: -1, // ganti dengan nilai yang sesuai
             size: -1, // ganti dengan nilai yang sesuai
-            //search: searchQuery,
+            userId: user?.name == "Admin" ? null : user?.id,
           },
         })
         .then((response) => {
@@ -115,6 +124,9 @@ const DataProdukSiswa = () => {
     }
   };
   useEffect(() => {
+    var x: any = localStorage.getItem("user");
+    let userLocalStorage: any = JSON.parse(x);
+    setRoleName(userLocalStorage?.name);
     getAllDataProdukSiswa();
     getUserAll();
   }, []);

@@ -8,6 +8,7 @@ const jwtSecret =
 import { PaginationHelper, QueryHelper } from "../Helper/QueryHalper.js";
 import { response } from "express";
 import Role from "../model/Role.js";
+import { sendEmail } from "../middleware/senEmail.js";
 
 const { QueryTypes } = Sequelize;
 
@@ -18,9 +19,9 @@ export const getListUsers = async (req, res) => {
     let size = req.query.size;
     let search = req.query.search;
     let searchColumn =
-      'users."id", users."firstName", users."lastName", users."kelas", users."email", users."username", users."password", users."roleId", users."createdAt", users."updatedAt", users."deletedAt", users."isDeleted", roles.name';
+      'users."id", users."fullName", users."noHp", users."firstName", users."lastName", users."kelas", users."email", users."username", users."password", users."roleId", users."createdAt", users."updatedAt", users."deletedAt", users."isDeleted", roles.name';
     let query =
-      'SELECT count(*) over () TOTALDATA, users."id", users."firstName", users."lastName", users."kelas", users."email", users."username", users."password", users."roleId", users."createdAt", users."updatedAt", users."deletedAt", users."isDeleted", roles.name FROM public."TB_MD_USER" as users INNER JOIN public."TB_MD_ROLE" as roles on users."roleId" = roles.id where users."isDeleted" = false ';
+      'SELECT count(*) over () TOTALDATA, users."id", users."fullName", users."noHp", users."firstName", users."lastName", users."kelas", users."email", users."username", users."password", users."roleId", users."createdAt", users."updatedAt", users."deletedAt", users."isDeleted", roles.name FROM public."TB_MD_USER" as users INNER JOIN public."TB_MD_ROLE" as roles on users."roleId" = roles.id where users."isDeleted" = false ';
     let paggination = PaginationHelper(page, size);
     let queryString = QueryHelper(
       query,
@@ -69,7 +70,7 @@ export const createUsers = async (req, res) => {
   try {
     let user = req.body;
     let filter = "";
-    let query = `SELECT count(*) over () TOTALDATA, users."id", users."firstName", users."lastName", users."kelas", users."email", users."username", users."password", users."roleId", users."createdAt", users."updatedAt", users."deletedAt", users."isDeleted", roles.name FROM public."TB_MD_USER" as users INNER JOIN public."TB_MD_ROLE" as roles on users."roleId" = roles.id where users."isDeleted" = false and users."deletedAt" is null`;
+    let query = `SELECT count(*) over () TOTALDATA, users."id", users."firstName", users."fullName", users."noHp", users."lastName", users."kelas", users."email", users."username", users."password", users."roleId", users."createdAt", users."updatedAt", users."deletedAt", users."isDeleted", roles.name FROM public."TB_MD_USER" as users INNER JOIN public."TB_MD_ROLE" as roles on users."roleId" = roles.id where users."isDeleted" = false and users."deletedAt" is null`;
 
     if (user.username != "") {
       filter += ` and users."username" = '${req.body.username}' `;
@@ -93,6 +94,7 @@ export const createUsers = async (req, res) => {
     user.isDeleted = false;
     user.createdAt = new Date().toDateString();
     user.updatedAt = new Date().toDateString();
+    user.fullName = `${user.firstName} ${user.lastName}`;
     await Users.create(user);
 
     response.data = user;
@@ -202,6 +204,7 @@ export const Registers = async (req, res) => {
     user.isDeleted = false;
     user.createdAt = new Date().toDateString();
     user.updatedAt = new Date().toDateString();
+    user.fullName = `${user.firstName} ${user.lastName}`;
     await Users.create(user);
 
     response.data = user;
@@ -247,7 +250,7 @@ export const Login = async (req, res) => {
     const passwordMatch = bcrypt.compareSync(password, objUser.password);
     if (!passwordMatch) {
       response.error = true;
-      response.errorMessage = "Authentication failed";
+      response.errorMessage = "Authentication failed, username password salah";
       return res.status(401).json({ response });
     }
     const name = `${objUser.firstName} ${objUser.lastName}`;
@@ -279,5 +282,14 @@ export const Login = async (req, res) => {
     response.error = true;
     response.errorMessage = error.message;
     res.status(500).json({ response });
+  }
+};
+
+export const CheckUsername = async (req, res) => {
+  try {
+    sendEmail("","","");
+    res.status(200).json({ msg: "Roles Updated" });
+  } catch (error) {
+    console.log(error.message);
   }
 };

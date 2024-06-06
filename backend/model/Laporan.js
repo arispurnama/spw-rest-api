@@ -1,6 +1,7 @@
 import Sequelize from "sequelize";
 import db from "../config/Database.js";
 import Users from "./Users.js";
+import ProdukSiswa from "./ProdukSiswa.js";
 const {DataTypes} = Sequelize;
 
 const LaporanOmzet = db.define('TB_TR_LAPORAN', {
@@ -14,8 +15,12 @@ const LaporanOmzet = db.define('TB_TR_LAPORAN', {
         type: DataTypes.INTEGER,
         allowNull:false
     },
+    // produkId:{
+    //     type: DataTypes.INTEGER,
+    //     allowNull:false
+    // },
     tanggalLaporan: {
-        type: DataTypes.DATE,
+        type: DataTypes.DATEONLY,
         allowNull: true,
     },
     jumlahOmzet: {
@@ -31,6 +36,10 @@ const LaporanOmzet = db.define('TB_TR_LAPORAN', {
         allowNull: true,
     },
     keterangan: {
+        type: DataTypes.STRING,
+        allowNull: true,
+    },
+    laporanMingguan: {
         type: DataTypes.STRING,
         allowNull: true,
     },
@@ -50,6 +59,10 @@ const LaporanOmzet = db.define('TB_TR_LAPORAN', {
         type: DataTypes.BOOLEAN,
         allowNull: true,
     },
+    isApproved: {
+        type: DataTypes.BOOLEAN,
+        allowNull: true,
+    },
 }, {
     freezeTableName: true
 })
@@ -57,7 +70,9 @@ const LaporanOmzet = db.define('TB_TR_LAPORAN', {
 Users.hasMany(LaporanOmzet,{
     foreignKey: 'userId'
 });
-
+// ProdukSiswa.hasMany(LaporanOmzet, {
+//     foreignKey: 'produkId'
+// })
 export default LaporanOmzet;
 (async () => {
     await db.sync();

@@ -27,7 +27,10 @@ const AddLaporanOmzetForm = ({ isOpen, userData = [], onClosed }: Props) => {
   const router = useRouter();
   const [errorType, setErrorType] = useState("");
   const [showSnackBar, setSnackBar] = useState(false);
-  const [userIdState, setUserIdState] = React.useState("");
+  const [userIdState, setUserIdState] = useState("");
+  const [laporanMinggu, setLaporanMinggu] = useState("");
+  const [errorOmzet, setErrorOmzet] = useState("");
+  const [errorModal, setErrorModal] = useState("");
 
   if (!isOpen) return null;
 
@@ -48,7 +51,7 @@ const AddLaporanOmzetForm = ({ isOpen, userData = [], onClosed }: Props) => {
   const handlerSubmit = async () => {
     try {
       const userId = user?.name != "Admin" ? user?.id : userIdState;
-      
+
       //post file
       let payloadFormData = new FormData();
       if (buktiTransaksi) {
@@ -72,6 +75,7 @@ const AddLaporanOmzetForm = ({ isOpen, userData = [], onClosed }: Props) => {
             keterangan: keterangan,
             tanggalLaporan: tanggal,
             buktiTransaksi: response.data.response.data,
+            laporanMingguan: laporanMinggu,
           };
           axios
             .post("http://localhost:3030/laporan-omzet", payload, {
@@ -138,7 +142,6 @@ const AddLaporanOmzetForm = ({ isOpen, userData = [], onClosed }: Props) => {
             }, 1000);
           }
         });
-
     } catch (error) {
       console.error("Error fetching laporan: ", error);
     }
@@ -147,10 +150,43 @@ const AddLaporanOmzetForm = ({ isOpen, userData = [], onClosed }: Props) => {
   const handleChange = (event: SelectChangeEvent) => {
     setUserIdState(event.target.value as string);
   };
+  const handleChangeLaporanMingguan = (event: SelectChangeEvent) => {
+    setLaporanMinggu(event.target.value as string);
+  };
 
   const handleChangeFile = async (e: any) => {
     const fileInput = e.target.files[0];
     setBuktiTransaksi(fileInput);
+  };
+  const validateAngkaOnly = (value: any) => {
+    // Check if the value contains only numeric characters
+    return /^\d+$/.test(value);
+  };
+  const handleChangeOmzet = async (value: any) => {
+    const input = value;
+    console.log("input: ", input);
+    // Perform validation before submitting
+    if (!validateAngkaOnly(input)) {
+      setErrorOmzet("Omzet must contain only numeric characters.");
+      return;
+    } else {
+      setOmzet(input);
+      setErrorOmzet("");
+      return;
+    }
+  };
+  const handleChangeModal = async (value: any) => {
+    const input = value;
+    console.log("input: ", input);
+    // Perform validation before submitting
+    if (!validateAngkaOnly(input)) {
+      setErrorModal("Omzet must contain only numeric characters.");
+      return;
+    } else {
+      setModal(input);
+      setErrorModal("");
+      return;
+    }
   };
   const renderMenuItems = () => {
     const adminItems = (
@@ -188,10 +224,13 @@ const AddLaporanOmzetForm = ({ isOpen, userData = [], onClosed }: Props) => {
                   <input
                     type="text"
                     value={omzet}
-                    onChange={(e) => setOmzet(e.target.value)}
+                    onChange={(e) => handleChangeOmzet(e.target?.value)}
                     className="ps-2 mt-1 block w-80 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                     required
                   />
+                  {errorOmzet && (
+                    <p className="text-red-500 text-[10px]">{errorOmzet}</p>
+                  )}
                 </div>
                 <div className="mb-4">
                   <label className="block text-sm font-medium text-gray-700">
@@ -200,10 +239,12 @@ const AddLaporanOmzetForm = ({ isOpen, userData = [], onClosed }: Props) => {
                   <input
                     type="text"
                     value={modal}
-                    onChange={(e) => setModal(e.target.value)}
+                    onChange={(e) => handleChangeModal(e.target?.value)}
                     className="ps-2 mt-1 block w-80 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                     required
-                  />
+                  /> {errorModal && (
+                    <p className="text-red-500 text-[10px]">{errorModal}</p>
+                  )}
                 </div>
               </div>
               <div className="flex flex-row gap-16">
@@ -230,6 +271,35 @@ const AddLaporanOmzetForm = ({ isOpen, userData = [], onClosed }: Props) => {
                     required
                   />
                 </div>
+              </div>
+              <div className="flex flex-row gap-16">
+                <div className="mb-4">
+                  <label className="block text-sm font-medium text-gray-700">
+                    Laporan Minggu ke-
+                  </label>
+                  <Select
+                    labelId="demo-multiple-name-label"
+                    id="demo-multiple-name"
+                    value={laporanMinggu}
+                    onChange={handleChangeLaporanMingguan}
+                    label="Name"
+                    className="w-80 h-10"
+                  >
+                    <MenuItem key="minggu1" value="minggu1">
+                      Minggu 1
+                    </MenuItem>
+                    <MenuItem key="minggu2" value="minggu2">
+                      Minggu 2
+                    </MenuItem>
+                    <MenuItem key="minggu3" value="minggu3">
+                      Minggu 3
+                    </MenuItem>
+                    <MenuItem key="minggu4" value="minggu4">
+                      Minggu 4
+                    </MenuItem>
+                  </Select>
+                </div>
+                <div className="mb-4"></div>
               </div>
               <div>
                 <div className="mb-4">
@@ -285,10 +355,13 @@ const AddLaporanOmzetForm = ({ isOpen, userData = [], onClosed }: Props) => {
                   <input
                     type="text"
                     value={omzet}
-                    onChange={(e) => setOmzet(e.target.value)}
+                    onChange={(e) => handleChangeOmzet(e.target?.value)}
                     className="ps-2 mt-1 block w-80 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                     required
                   />
+                  {errorOmzet && (
+                    <p className="text-red-500 text-[10px]">{errorOmzet}</p>
+                  )}
                 </div>
                 <div className="mb-4">
                   <label className="block text-sm font-medium text-gray-700">
@@ -297,10 +370,13 @@ const AddLaporanOmzetForm = ({ isOpen, userData = [], onClosed }: Props) => {
                   <input
                     type="text"
                     value={modal}
-                    onChange={(e) => setModal(e.target.value)}
+                    onChange={(e) => handleChangeModal(e.target?.value)}
                     className="ps-2 mt-1 block w-80 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                     required
                   />
+                  {errorModal && (
+                    <p className="text-red-500 text-[10px]">{errorModal}</p>
+                  )}
                 </div>
               </div>
               <div className="flex flex-row gap-16">
@@ -327,6 +403,35 @@ const AddLaporanOmzetForm = ({ isOpen, userData = [], onClosed }: Props) => {
                     required
                   />
                 </div>
+              </div>
+              <div className="flex flex-row gap-16">
+                <div className="mb-4">
+                  <label className="block text-sm font-medium text-gray-700">
+                    Laporan Minggu ke-
+                  </label>
+                  <Select
+                    labelId="demo-multiple-name-label"
+                    id="demo-multiple-name"
+                    value={laporanMinggu}
+                    onChange={handleChangeLaporanMingguan}
+                    label="Name"
+                    className="w-80 h-10"
+                  >
+                    <MenuItem key="minggu1" value="minggu1">
+                      Minggu 1
+                    </MenuItem>
+                    <MenuItem key="minggu2" value="minggu2">
+                      Minggu 2
+                    </MenuItem>
+                    <MenuItem key="minggu3" value="minggu3">
+                      Minggu 3
+                    </MenuItem>
+                    <MenuItem key="minggu4" value="minggu4">
+                      Minggu 4
+                    </MenuItem>
+                  </Select>
+                </div>
+                <div className="mb-4"></div>
               </div>
               <div>
                 <div className="mb-4">

@@ -8,17 +8,22 @@ const { QueryTypes } = Sequelize;
 export const getListProdukSiswa = async (req, res) => {
   const responsePagination = new Object();
   try {
+    let filter = "";
     let page = req.query.page;
     let size = req.query.size;
     let search = req.query.search;
+    let userId = req.query.userId;
+    if(userId != null && userId != undefined){
+      filter += ` and tmu.id = ${userId} `;
+    }
     let searchColumn =
-      'tps.id, tps."userId", to_char(tps."tanggalProduk",'+ "'YYYY-MM-DD'" + '), tps."namaProduk", tps.keterangan, tps."createdAt", tps."updatedAt", tps."deletedAt", tps."isDeleted", tmu."firstName", tmu."lastName"';
+      'tps.id, tps."userId",tmu."fullName", tmu."noHp", to_char(tps."tanggalProduk",'+ "'YYYY-MM-DD'" + '), tps."namaProduk", tps.keterangan, tps."createdAt", tps."updatedAt", tps."deletedAt", tps."isDeleted", tmu."firstName", tmu."lastName"';
     let query =
-      'SELECT count(*) over () TOTALDATA, tps.id, tps."userId", to_char(tps."tanggalProduk",'+ "'YYYY-MM-DD'" + ')  as tanggalProduk, tps."namaProduk", tps.keterangan, tps."createdAt", tps."updatedAt", tps."deletedAt", tps."isDeleted", tmu."firstName", tmu."lastName" FROM public."TB_TR_PRODUK_SISWA" tps inner join public."TB_MD_USER" tmu on tps."userId" = tmu.id where tps."isDeleted" = false and tmu."isDeleted" = false ';
+      'SELECT count(*) over () TOTALDATA,tmu."fullName", tmu."noHp", tps.id, tps."userId", to_char(tps."tanggalProduk",'+ "'YYYY-MM-DD'" + ')  as tanggalProduk, tps."namaProduk", tps.keterangan, tps."createdAt", tps."updatedAt", tps."deletedAt", tps."isDeleted", tmu."firstName", tmu."lastName" FROM public."TB_TR_PRODUK_SISWA" tps inner join public."TB_MD_USER" tmu on tps."userId" = tmu.id where tps."isDeleted" = false and tmu."isDeleted" = false ';
     let paggination = PaginationHelper(page, size);
     let queryString = QueryHelper(
       query,
-      "",
+      filter,
       search,
       searchColumn,
       "",
@@ -31,7 +36,7 @@ export const getListProdukSiswa = async (req, res) => {
 
     let queryStringCount = QueryHelper(
       query,
-      "",
+      filter,
       search,
       searchColumn,
       "",

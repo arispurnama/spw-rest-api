@@ -5,7 +5,7 @@ import axios from "axios";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { useRouter } from "next/navigation";
-import DeleteConfirmationModal from "@/components/DeleteConfirmationModal"
+import DeleteConfirmationModal from "@/components/DeleteConfirmationModal";
 
 //library
 import Paper from "@mui/material/Paper";
@@ -26,7 +26,7 @@ const DataUser = () => {
   const [totalData, setTotalData] = useState(0);
   const [searchQuery, setSearchQuery] = useState("");
   const [showModal, setShowModal] = useState(false);
-  const [selectedUserId, setSelectedUserId] = useState('');
+  const [selectedUserId, setSelectedUserId] = useState("");
 
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
@@ -155,6 +155,8 @@ const DataUser = () => {
                     <TableRow>
                       <TableCell>First Name</TableCell>
                       <TableCell align="right">Last Name</TableCell>
+                      <TableCell align="right">Full Name</TableCell>
+                      <TableCell align="right">No. Hp</TableCell>
                       <TableCell align="right">Email</TableCell>
                       <TableCell align="right">Kelas</TableCell>
                       <TableCell align="right">Username</TableCell>
@@ -174,6 +176,8 @@ const DataUser = () => {
                             {row.firstName}
                           </TableCell>
                           <TableCell align="right">{row.lastName}</TableCell>
+                          <TableCell align="right">{row.fullName}</TableCell>
+                          <TableCell align="right">{row.noHp}</TableCell>
                           <TableCell align="right">{row.email}</TableCell>
                           <TableCell align="right">{row.kelas}</TableCell>
                           <TableCell align="right">{row.username}</TableCell>
@@ -188,7 +192,6 @@ const DataUser = () => {
                           </TableCell>
                         </TableRow>
                       ))}
-                    ;
                   </TableBody>
                 </Table>
               </TableContainer>
@@ -212,7 +215,7 @@ const DataUser = () => {
           Id={selectedUserId}
           url="user"
           page="datauser"
-          onClosed={() => setShowModal(false)} 
+          onClosed={() => setShowModal(false)}
         />
       </div>
     </main>

@@ -7,7 +7,7 @@ import axios from "axios";
 import { useRouter } from "next/navigation";
 import DeleteConfirmationModal from "@/components/DeleteConfirmationModal";
 import EditLaporanOmzetForm from "@/components/laporanomzet/EditLaporanOmzetForm";
-import downloadService from "@/service/downloadService.js"
+import downloadService from "@/service/downloadService.js";
 
 //library
 import Paper from "@mui/material/Paper";
@@ -34,6 +34,9 @@ const DataLaporanOmzet = () => {
   const [dataUser, setDataUser] = useState([]);
   const [dataEdit, setDataEdit] = useState();
   const [showModalEdit, setShowModalEdit] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [userIdParam, setUserIdParam] = useState("");
+  const [roleName, setRoleName] = useState("");
 
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
@@ -59,11 +62,11 @@ const DataLaporanOmzet = () => {
   }
   let user = null;
   try {
-    user = localStorage.access_token ? JSON.parse(localStorage.user) : null;
+    user = localStorage.user ? JSON.parse(localStorage.user) : null;
+    //console.log("user for header", user);
   } catch (e) {
     console.error("Error parsing user from localStorage:", e);
   }
-
   const getAllDataLaporanOmzet = async () => {
     try {
       axios
@@ -75,12 +78,11 @@ const DataLaporanOmzet = () => {
             page: page, // ganti dengan nilai yang sesuai
             size: rowsPerPage, // ganti dengan nilai yang sesuai
             search: searchQuery,
+            userId: user?.name === "Admin" ? null : user?.id,
           },
         })
         .then((response) => {
-          console.log("response get all user :", response);
-          if (response.data.erorr === "Invalid token") {
-          }
+          console.log("role name : ", user?.name);
           setDataLaporanOmzet(response.data.data);
           setTotalData(response.data.total);
         })
@@ -105,7 +107,7 @@ const DataLaporanOmzet = () => {
           params: {
             page: -1, // ganti dengan nilai yang sesuai
             size: -1, // ganti dengan nilai yang sesuai
-            //search: searchQuery,
+            userId: user?.name == "Admin" ? null : user?.id,
           },
         })
         .then((response) => {
@@ -122,7 +124,12 @@ const DataLaporanOmzet = () => {
       console.log("Error fetching products: ", error);
     }
   };
+
   useEffect(() => {
+    var x: any = localStorage.getItem("user");
+    const userLocalStorage: any = JSON.parse(x);
+    setRoleName(userLocalStorage?.name);
+    setIsAdmin(true);
     getAllDataLaporanOmzet();
     getUserAll();
   }, []);
@@ -140,9 +147,10 @@ const DataLaporanOmzet = () => {
     setDataEdit(data);
     setShowModalEdit(true);
   };
-  const handleDownloadFile = async (name:string) =>{
+  const handleDownloadFile = async (name: string) => {
     await downloadService(name);
-  }
+  };
+
   return (
     <main>
       <div>
@@ -182,9 +190,11 @@ const DataLaporanOmzet = () => {
                     <TableRow>
                       <TableCell>First Name</TableCell>
                       <TableCell align="right">Last Name</TableCell>
+                      <TableCell align="right">Full Name</TableCell>
                       <TableCell align="right">Omzet</TableCell>
                       <TableCell align="right">Modal</TableCell>
                       <TableCell align="right">Tanggal Laporan</TableCell>
+                      <TableCell align="right">Laporan Mingguan</TableCell>
                       <TableCell align="right">Keterangan</TableCell>
                       <TableCell align="right">Bukti Transaksi</TableCell>
                       <TableCell align="right">Action</TableCell>
@@ -202,15 +212,23 @@ const DataLaporanOmzet = () => {
                             {row.firstName}
                           </TableCell>
                           <TableCell align="right">{row.lastName}</TableCell>
+                          <TableCell align="right">{row.fullName}</TableCell>
                           <TableCell align="right">{row.jumlahOmzet}</TableCell>
                           <TableCell align="right">{row.JumlahModal}</TableCell>
                           <TableCell align="right">
                             {row.tanggallaporan}
                           </TableCell>
+                          <TableCell align="right">
+                            {row.laporanMingguan.replace("minggu", "Minggu ")}
+                          </TableCell>
                           <TableCell align="right">{row.keterangan}</TableCell>
-                          <TableCell>
+                          <TableCell align="center">
                             {row.buktiTransaksi ? (
-                              <button onClick={() => handleDownloadFile(row.buktiTransaksi)}>
+                              <button
+                                onClick={() =>
+                                  handleDownloadFile(row.buktiTransaksi)
+                                }
+                              >
                                 <svg
                                   className="w-6 h-6 text-gray-800 dark:text-white"
                                   aria-hidden="true"
@@ -234,14 +252,52 @@ const DataLaporanOmzet = () => {
                             )}
                           </TableCell>
                           <TableCell className="flex flex-row gap-4 justify-end">
-                            <button
-                              onClick={() => handleEditClick(row.id, row)}
-                            >
-                              <IconFileDocumentEditOutline />
-                            </button>
-                            <button onClick={() => handleDeleteClick(row.id)}>
-                              <IconTrashBinOutline />
-                            </button>
+                            {!row.isApproved ? (
+                              <>
+                                <button>
+                                  <svg
+                                    className="w-6 h-6 text-green-400 dark:text-white"
+                                    aria-hidden="true"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    width="22"
+                                    height="22"
+                                    fill="none"
+                                    viewBox="0 0 22 22"
+                                  >
+                                    <path
+                                      stroke="currentColor"
+                                      stroke-linecap="round"
+                                      stroke-linejoin="round"
+                                      stroke-width="2"
+                                      d="M15 4h3a1 1 0 0 1 1 1v15a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1h3m0 3h6m-6 7 2 2 4-4m-5-9v4h4V3h-4Z"
+                                    />
+                                  </svg>
+                                </button>
+                                <button
+                                  onClick={() => handleEditClick(row.id, row)}
+                                >
+                                  <IconFileDocumentEditOutline />
+                                </button>
+                                <button
+                                  onClick={() => handleDeleteClick(row.id)}
+                                >
+                                  <IconTrashBinOutline />
+                                </button>
+                              </>
+                            ) : (
+                              <>
+                                <button
+                                  onClick={() => handleEditClick(row.id, row)}
+                                >
+                                  <IconFileDocumentEditOutline />
+                                </button>
+                                <button
+                                  onClick={() => handleDeleteClick(row.id)}
+                                >
+                                  <IconTrashBinOutline />
+                                </button>
+                              </>
+                            )}
                           </TableCell>
                         </TableRow>
                       ))}

@@ -4,11 +4,16 @@ import { useState } from "react";
 import base from "@/service/baseService";
 import baseService from "@/service/baseService";
 import axios from "axios";
+import SnackBar from "@/components/SnackBar";
 
 const Login = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [loginError, setLoginError] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
+  const [errorType, setErrorType] = useState("");
+  const [showSnackBar, setSnackBar] = useState(false);
+  const [passwordError, setPasswordError] = useState("");
 
   const login = async () => {
     try {
@@ -28,14 +33,61 @@ const Login = () => {
             "user",
             JSON.stringify(response.data.response.data)
           );
+          setErrorType("success");
+          setErrorMessage(
+            "Tambah Data Galeri Berita " + response.data.response.errorMessage
+          );
+          setSnackBar(true);
+          setTimeout(() => {}, 1000);
           window.location.href = "/homepage";
+        })
+        .catch((e) => {
+          console.log("error :", e);
+          if (e.response.status === 401) {
+            setErrorType("error");
+            setErrorMessage("Authentication failed, username password salah!!");
+            setTimeout(() => {
+              setSnackBar(true);
+            }, 1000);
+          } else if (e.response.status === 500) {
+            setErrorType("error");
+            setErrorMessage("Login Gagal " + e.response.data.errorMessage);
+            setTimeout(() => {
+              setSnackBar(true);
+            }, 1000);
+          }
         });
     } catch (error) {
       console.error("Error fetching products: ", error);
       setLoginError("Email atau Kata sandi yang kamu masukan salah.");
     }
   };
+  // const validatePassword = (input: any) => {
+  //   const passwordRegex =
+  //     /^(?=.[a-z])(?=.[A-Z])(?=.\d)(?=.[!@#$%^&*()_+{}|:"<>?`\-=[\];',./]).{8,}$/;
 
+  //   if (!passwordRegex.test(input)) {
+  //     setPasswordError(
+  //       "Password harus minimal 8 karakter, kombinasi huruf kecil, huruf kapital, angka, dan simbol"
+  //     );
+  //   } else {
+  //     setPasswordError("");
+  //   }
+  // };
+  const validatePassword = (input: string) => {
+    const passwordRegex =
+      /^(?=.[a-z])(?=.[A-Z])(?=.\d)(?=.[!@#$%^&*()_+{}|:"<>?`\-=[\];',./]).{8,}$/;
+    setPasswordError(
+      !passwordRegex.test(input)
+        ? "Password harus minimal 8 karakter, kombinasi huruf kecil, huruf kapital, angka, dan simbol"
+        : ""
+    );
+  };
+  const handlePasswordChange = (event: any) => {
+    const { value } = event?.target;
+    setPassword(value);
+    validatePassword(value);
+  };
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
       <div className="bg-white p-8 rounded shadow-md max-w-sm w-full">
@@ -70,10 +122,15 @@ const Login = () => {
             className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-teal-500"
             value={password}
             onChange={(e: any) => {
-              setPassword(e.target.value);
+              handlePasswordChange(e);
               console.log(password);
             }}
           />
+          {passwordError ? (
+            <p className="text-[#D22826] text-xs font-medium">
+              {passwordError}
+            </p>
+          ) : null}
         </div>
         <button
           type="submit"
@@ -83,6 +140,13 @@ const Login = () => {
           Log In
         </button>
       </div>
+      <SnackBar
+        isOpen={showSnackBar}
+        message={errorMessage}
+        type={errorType}
+        duration={5000}
+        onClose={() => setSnackBar(false)}
+      />
     </div>
   );
 };

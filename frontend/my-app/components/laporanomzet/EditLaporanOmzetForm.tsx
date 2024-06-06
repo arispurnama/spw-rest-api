@@ -39,7 +39,10 @@ const EditLaporanOmzetForm = ({
     const [errorType, setErrorType] = useState("");
     const [showSnackBar, setSnackBar] = useState(false);
     const [userIdState, setUserIdState] = useState(laporanDataEdit?.userId);
-    const [buktiTransaksiCurrent, setBuktiTransaksiCurrent] = useState(laporanDataEdit?.buktiTransaksi);
+    const [buktiTransaksiCurrent, setBuktiTransaksiCurrent] = useState(
+      laporanDataEdit?.buktiTransaksi
+    );
+  const [laporanMinggu, setLaporanMinggu] = useState(laporanDataEdit?.laporanMingguan);
     //localstorage
     let token = null;
     try {
@@ -80,6 +83,7 @@ const EditLaporanOmzetForm = ({
                 keterangan: keterangan,
                 tanggalLaporan: tanggal,
                 buktiTransaksi: response.data.response.data,
+                laporanMingguan: laporanMinggu,
               };
               axios
                 .patch(`http://localhost:3030/laporan-omzet/${id}`, payload, {
@@ -154,7 +158,8 @@ const EditLaporanOmzetForm = ({
           jumlahOmzet: omzet,
           JumlahModal: modal,
           keterangan: keterangan,
-          tanggalLaporan: tanggal
+          tanggalLaporan: tanggal,
+          laporanMingguan: laporanMinggu,
         };
         axios
           .patch(`http://localhost:3030/laporan-omzet/${id}`, payload, {
@@ -211,8 +216,11 @@ const EditLaporanOmzetForm = ({
       setBuktiTransaksi(fileInput);
     };
 
+    const handleChangeLaporanMingguan = (event: SelectChangeEvent) => {
+      setLaporanMinggu(event.target.value as string);
+    };
     renderMenuItems = () => {
-      console.log('dfgdgdfh', tanggal)
+      console.log("dfgdgdfh", tanggal);
       const adminItems = (
         <>
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
@@ -293,6 +301,35 @@ const EditLaporanOmzetForm = ({
                     />
                   </div>
                 </div>
+                <div className="flex flex-row gap-16">
+                  <div className="mb-4">
+                    <label className="block text-sm font-medium text-gray-700">
+                      Laporan Minggu ke-
+                    </label>
+                    <Select
+                      labelId="demo-multiple-name-label"
+                      id="demo-multiple-name"
+                      value={laporanMinggu}
+                      onChange={handleChangeLaporanMingguan}
+                      label="Name"
+                      className="w-80 h-10"
+                    >
+                      <MenuItem key="minggu1" value="minggu1">
+                        Minggu 1
+                      </MenuItem>
+                      <MenuItem key="minggu2" value="minggu2">
+                        Minggu 2
+                      </MenuItem>
+                      <MenuItem key="minggu3" value="minggu3">
+                        Minggu 3
+                      </MenuItem>
+                      <MenuItem key="minggu4" value="minggu4">
+                        Minggu 4
+                      </MenuItem>
+                    </Select>
+                  </div>
+                  <div className="mb-4"></div>
+                </div>
                 <div>
                   <div className="mb-4">
                     <label className="block text-sm font-medium text-gray-700">
@@ -300,7 +337,10 @@ const EditLaporanOmzetForm = ({
                     </label>
                     <input
                       type="file"
-                      onChange={(e) => {handleChangeFile(e); setBuktiTransaksiCurrent(e.target.value)}}
+                      onChange={(e) => {
+                        handleChangeFile(e);
+                        setBuktiTransaksiCurrent(e.target.value);
+                      }}
                       className="ps-2 mt-1 block w-full px-20 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                       required
                     />
@@ -390,6 +430,35 @@ const EditLaporanOmzetForm = ({
                       required
                     />
                   </div>
+                </div>
+                <div className="flex flex-row gap-16">
+                  <div className="mb-4">
+                    <label className="block text-sm font-medium text-gray-700">
+                      Laporan Minggu ke-
+                    </label>
+                    <Select
+                      labelId="demo-multiple-name-label"
+                      id="demo-multiple-name"
+                      value={laporanMinggu}
+                      onChange={handleChangeLaporanMingguan}
+                      label="Name"
+                      className="w-80 h-10"
+                    >
+                      <MenuItem key="minggu1" value="minggu1">
+                        Minggu 1
+                      </MenuItem>
+                      <MenuItem key="minggu2" value="minggu2">
+                        Minggu 2
+                      </MenuItem>
+                      <MenuItem key="minggu3" value="minggu3">
+                        Minggu 3
+                      </MenuItem>
+                      <MenuItem key="minggu4" value="minggu4">
+                        Minggu 4
+                      </MenuItem>
+                    </Select>
+                  </div>
+                  <div className="mb-4"></div>
                 </div>
                 <div>
                   <div className="mb-4">

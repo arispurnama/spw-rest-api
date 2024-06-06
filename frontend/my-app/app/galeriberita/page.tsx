@@ -34,6 +34,8 @@ const DataGaleriBerita = () => {
   const [selectedUserId, setSelectedUserId] = useState("");
   const [dataEdit, setDataEdit] = useState();
   const [showModalEdit, setShowModalEdit] = useState(false);
+  const [userIdParam, setUserIdParam] = useState(null);
+  const [roleName, setRoleName] = useState("");
 
   const handleChangePage = (event: unknown, newPage: number) => {
     setPage(newPage);
@@ -54,7 +56,13 @@ const DataGaleriBerita = () => {
   } catch (e) {
     console.error("Error parsing token from localStorage:", e);
   }
-
+  let user = null;
+  try {
+    user = localStorage.user ? JSON.parse(localStorage.user) : null;
+    //console.log("user for header", user);
+  } catch (e) {
+    console.error("Error parsing user from localStorage:", e);
+  }
   const getAllDataGaleriBerita = async () => {
     try {
       axios
@@ -66,6 +74,7 @@ const DataGaleriBerita = () => {
             page: page, // ganti dengan nilai yang sesuai
             size: rowsPerPage, // ganti dengan nilai yang sesuai
             search: searchQuery,
+            userId: user?.name == "Admin" ? null : user?.id,
           },
         })
         .then((response) => {
@@ -97,6 +106,7 @@ const DataGaleriBerita = () => {
             page: -1, // ganti dengan nilai yang sesuai
             size: -1, // ganti dengan nilai yang sesuai
             //search: searchQuery,
+            userId: user?.name == "Admin" ? null : user?.id,
           },
         })
         .then((response) => {
@@ -114,6 +124,9 @@ const DataGaleriBerita = () => {
     }
   };
   useEffect(() => {
+    var x: any = localStorage.getItem("user");
+    const userLocalStorage: any = JSON.parse(x);
+    setRoleName(userLocalStorage?.name);
     getAllDataGaleriBerita();
     getUserAll();
   }, []);

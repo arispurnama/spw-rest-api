@@ -41,8 +41,8 @@ const SnackBar: React.FC<SnackBarProps> = ({
     >
       <Alert
         onClick={onClose}
-        sx={{ width: "100%" }}
-        className={`${bgColor}`}
+        sx={{ width: "100%" , color: 'white'}}
+        variant="outlined"
       >
         {message}!!!
       </Alert>
