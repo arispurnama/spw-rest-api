@@ -4,7 +4,7 @@ import GaleriBerita from "../model/GaleriBerita.js";
 import { PaginationHelper, QueryHelper } from "../Helper/QueryHalper.js";
 
 const { QueryTypes } = Sequelize;
-const uploadDir = "uploads/";
+const uploadDir = "D:\\uploads/";
 
 export const getListGaleriBerita = async (req, res) => {
   const responsePagination = new Object();
@@ -111,6 +111,8 @@ export const createGaleriBerita = async (req, res) => {
   const response = new Object();
   try {
     let payload = req.body;
+    let file = payload.fileName; 
+    payload.fileName = file.replace(" ", "_") 
     payload.createdAt = new Date().toDateString();
     payload.updatedAt = new Date().toDateString();
     payload.isDeleted = false;

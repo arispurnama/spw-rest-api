@@ -4,7 +4,7 @@ const maxSize = 5 * 1024 * 1024;
 import fs from "fs";
 import { v4 } from "uuid";
 let file_name = '';
-const uploadDir = "D:\\Tugas Akhir\\uploads";
+const uploadDir = "D:\\uploads";
 export const setFileName = (name) => {
   file_name = name;
 }

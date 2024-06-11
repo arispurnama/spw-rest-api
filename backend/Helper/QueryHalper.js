@@ -1,39 +1,55 @@
 import { UniqueConstraintError, where } from "sequelize";
 
-export const QueryHelper = function (query, filter, search, searchColumn, order, paggination, groupBy){
-    let queryString = "";
-    if(query != ""){
-        queryString += query;
-    }
-    if(filter != ""){
-        queryString += filter;
-    }
-    if(search != "" && search != undefined){
-        let querySearch = ` and concat(${searchColumn}) like '%${search}%' `;
-        queryString += querySearch;
-    }
-    if(order != ""){
-        queryString += ` ORDER BY ${order} `;
-    }
-    if(groupBy != ""){
-        queryString += groupBy;
-    }
-    if(paggination != ""){
-        queryString += paggination;
-    }
+export const QueryHelper = function (
+  query,
+  filter,
+  search,
+  searchColumn,
+  order,
+  paggination,
+  groupBy
+) {
+  let queryString = "";
+  if (query != "") {
+    queryString += query;
+  }
+  if (filter != "") {
+    queryString += filter;
+  }
+  if (search != "" && search != undefined) {
+    let querySearch = ` and concat(${searchColumn}) like '%${search}%' `;
+    queryString += querySearch;
+  }
+  if (order != "") {
+    queryString += ` ORDER BY ${order} `;
+  }
+  if (groupBy != "") {
+    queryString += groupBy;
+  }
+  if (paggination != "") {
+    queryString += paggination;
+  }
 
-    return queryString;
-}
+  return queryString;
+};
 
-export const PaginationHelper = function(page, size){
-    let paggination = "";
+export const PaginationHelper = function (page, size) {
+  let paggination = "";
 
-    console.log('page', page ,size)
-    if(page != undefined && size != undefined){
-        if(parseInt(page) > 0){ 
-            let skip = (page - 1) * size;
-            paggination = `OFFSET ${skip} ROWS FETCH NEXT ${size} ROWS ONLY`;
-        }
+  console.log("page", page, size);
+  if (page != undefined && size != undefined) {
+    if (parseInt(page) > 0) {
+      let skip = (page - 1) * size;
+      paggination = `OFFSET ${skip} ROWS FETCH NEXT ${size} ROWS ONLY`;
     }
-    return paggination;
-}
+  }
+  return paggination;
+};
+
+export const customNumberGenerator = function () {
+  const min = 1;
+  const max = 10000;
+  const randomNum = Math.floor(Math.random() * (max - min + 1)) + min;
+
+  return randomNum;
+};

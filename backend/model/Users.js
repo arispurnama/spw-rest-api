@@ -62,6 +62,10 @@ const Users = db.define('TB_MD_USER', {
     isDeleted: {
         type: DataTypes.BOOLEAN,
         allowNull: true,
+    }, 
+    otp:{
+        type: DataTypes.INTEGER,
+        allowNull:true
     },
 }, {
     freezeTableName: true

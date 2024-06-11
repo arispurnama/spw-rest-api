@@ -72,14 +72,13 @@ const AddUserForm = () => {
       console.error("Error Close adding user: ", error);
     }
   };
-  const validatePassword = (input: any) => {
+  const validatePassword = (value: string) => {
+    console.log("Input ", value);
     const passwordRegex =
-      /^(?=.[a-z])(?=.[A-Z])(?=.\d)(?=.[!@#$%^&*()_+{}|:"<>?`\-=[\];',./]).{8,}$/;
-
-    return passwordRegex.test(input);
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+{}|:"<>?`\-=[\];',./]).{8,}$/;
+    return passwordRegex.test(value);
   };
-  const handlePasswordChange = (event: any) => {
-    const { value } = event;
+  const handlePasswordChange = (value: any) => {
     setPassword(value);
     if (!validatePassword(value)) {
       setPasswordError(

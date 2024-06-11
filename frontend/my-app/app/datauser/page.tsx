@@ -19,14 +19,17 @@ import TableRow from "@mui/material/TableRow";
 import IconTrashBinOutline from "@/components/icons/IconTrashBinOutline";
 import IconFileDocumentEditOutline from "@/components/icons/IconFileDocumentEditOutline";
 import SnackBar from "@/components/SnackBar";
+import AddUserAdminForm from "@/components/userform/AddUserAdminForm";
 
 const DataUser = () => {
   const router = useRouter();
   const [dataUser, setDataUser] = useState([]);
+  const [dataRole, setDataRole] = useState([]);
   const [totalData, setTotalData] = useState(0);
   const [searchQuery, setSearchQuery] = useState("");
   const [showModal, setShowModal] = useState(false);
   const [selectedUserId, setSelectedUserId] = useState("");
+  const [showModalAdd, setShowModalAdd] = useState(false);
 
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
@@ -82,8 +85,28 @@ const DataUser = () => {
       console.log("Error fetching products: ", error);
     }
   };
+  const getRoleAll = async () => {
+    try {
+      axios
+        .get("http://localhost:3030/list-role", {})
+        .then((response) => {
+          console.log("response get all user :", response);
+          setDataRole(response.data.data);
+        })
+        .catch((e) => {
+          console.log("error :", e);
+          if (e.response.status === 401) {
+            console.error("Unauthorized access - perhaps you need to log in?");
+            router.push("/Auth");
+          }
+        });
+    } catch (error) {
+      console.log("Error fetching products: ", error);
+    }
+  };
   useEffect(() => {
     getUserAll();
+    getRoleAll()
   }, []);
 
   const deleteUser = async (userId: any) => {
@@ -141,7 +164,7 @@ const DataUser = () => {
                     console.log(searchQuery);
                   }}
                 />
-                <button className="px-6 py-2 bg-blue-400 rounded-lg">
+                <button className="px-6 py-2 bg-blue-400 rounded-lg"  onClick={() => setShowModalAdd(true)}>
                   + add
                 </button>
               </div>
@@ -216,6 +239,11 @@ const DataUser = () => {
           url="user"
           page="datauser"
           onClosed={() => setShowModal(false)}
+        />
+        <AddUserAdminForm
+          isOpen={showModalAdd}
+          roleData={dataRole}
+          onClosed={() => setShowModalAdd(false)}
         />
       </div>
     </main>

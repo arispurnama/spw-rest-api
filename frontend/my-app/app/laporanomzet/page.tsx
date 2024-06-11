@@ -22,6 +22,7 @@ import IconTrashBinOutline from "@/components/icons/IconTrashBinOutline";
 import IconFileDocumentEditOutline from "@/components/icons/IconFileDocumentEditOutline";
 import AddLaporanOmzetForm from "@/components/laporanomzet/AddLaporanOmzetForm";
 import { button } from "@nextui-org/react";
+import ApproveModal from "@/components/laporanomzet/ApproveModal";
 
 const DataLaporanOmzet = () => {
   const router = useRouter();
@@ -37,6 +38,10 @@ const DataLaporanOmzet = () => {
   const [isAdmin, setIsAdmin] = useState(false);
   const [userIdParam, setUserIdParam] = useState("");
   const [roleName, setRoleName] = useState("");
+
+  const [userIdApprove, setUserIdApprove] = useState("");
+  const [laporanId, setLaporanId] = useState("");
+  const [approveShow, setApproveShow] = useState(false);
 
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
@@ -147,6 +152,10 @@ const DataLaporanOmzet = () => {
     setDataEdit(data);
     setShowModalEdit(true);
   };
+  const handleApproveClick = (Id: string) => {
+    setLaporanId(Id);
+    setApproveShow(true);
+  };
   const handleDownloadFile = async (name: string) => {
     await downloadService(name);
   };
@@ -252,38 +261,55 @@ const DataLaporanOmzet = () => {
                             )}
                           </TableCell>
                           <TableCell className="flex flex-row gap-4 justify-end">
-                            {!row.isApproved ? (
-                              <>
-                                <button>
-                                  <svg
-                                    className="w-6 h-6 text-green-400 dark:text-white"
-                                    aria-hidden="true"
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    width="22"
-                                    height="22"
-                                    fill="none"
-                                    viewBox="0 0 22 22"
+                            {user?.name == "Admin" ? (
+                              !row.isApproved ? (
+                                <>
+                                  <button
+                                    onClick={() => handleApproveClick(row.id)}
                                   >
-                                    <path
-                                      stroke="currentColor"
-                                      stroke-linecap="round"
-                                      stroke-linejoin="round"
-                                      stroke-width="2"
-                                      d="M15 4h3a1 1 0 0 1 1 1v15a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1h3m0 3h6m-6 7 2 2 4-4m-5-9v4h4V3h-4Z"
-                                    />
-                                  </svg>
-                                </button>
-                                <button
-                                  onClick={() => handleEditClick(row.id, row)}
-                                >
-                                  <IconFileDocumentEditOutline />
-                                </button>
-                                <button
-                                  onClick={() => handleDeleteClick(row.id)}
-                                >
-                                  <IconTrashBinOutline />
-                                </button>
-                              </>
+                                    <svg
+                                      className="w-6 h-6 text-green-400 dark:text-white"
+                                      aria-hidden="true"
+                                      xmlns="http://www.w3.org/2000/svg"
+                                      width="22"
+                                      height="22"
+                                      fill="none"
+                                      viewBox="0 0 22 22"
+                                    >
+                                      <path
+                                        stroke="currentColor"
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        stroke-width="2"
+                                        d="M15 4h3a1 1 0 0 1 1 1v15a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1h3m0 3h6m-6 7 2 2 4-4m-5-9v4h4V3h-4Z"
+                                      />
+                                    </svg>
+                                  </button>
+                                  <button
+                                    onClick={() => handleEditClick(row.id, row)}
+                                  >
+                                    <IconFileDocumentEditOutline />
+                                  </button>
+                                  <button
+                                    onClick={() => handleDeleteClick(row.id)}
+                                  >
+                                    <IconTrashBinOutline />
+                                  </button>
+                                </>
+                              ) : (
+                                <>
+                                  <button
+                                    onClick={() => handleEditClick(row.id, row)}
+                                  >
+                                    <IconFileDocumentEditOutline />
+                                  </button>
+                                  <button
+                                    onClick={() => handleDeleteClick(row.id)}
+                                  >
+                                    <IconTrashBinOutline />
+                                  </button>
+                                </>
+                              )
                             ) : (
                               <>
                                 <button
@@ -326,6 +352,12 @@ const DataLaporanOmzet = () => {
           url="laporan-omzet"
           page="laporanomzet"
           onClosed={() => setShowModal(false)}
+        />
+        <ApproveModal
+          isOpen={approveShow}
+          Id={laporanId}
+          page="laporanomzet"
+          onClosed={() => setApproveShow(false)}
         />
         <AddLaporanOmzetForm
           isOpen={showModalAdd}

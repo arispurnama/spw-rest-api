@@ -10,9 +10,6 @@ export const getListRoles = async (req, res) => {
         const response = await db.query('SELECT "id", "name", "createdAt", "updatedAt" FROM "TB_MD_ROLE" AS "TB_MD_ROLE";',{
             type: QueryTypes.SELECT,
         })
-        responsePagination.page = 1;
-        responsePagination.size = 10;
-        responsePagination.total = 88;
         responsePagination.data = response;
         responsePagination.error = false;
         responsePagination.errorMessage = "Sukses";

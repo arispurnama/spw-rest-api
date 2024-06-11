@@ -2,6 +2,8 @@ import Sequelize, { DATE } from "sequelize";
 import db from "../config/Database.js";
 import LaporanOmzet from "../model/Laporan.js";
 import { PaginationHelper, QueryHelper } from "../Helper/QueryHalper.js";
+import Users from "../model/Users.js";
+import { sendEmail } from "../middleware/senEmail.js";
 
 const { QueryTypes } = Sequelize;
 
@@ -107,7 +109,6 @@ export const updateLaporanOmzet = async (req, res) => {
     res.status(500).json({ response });
   }
 };
-
 export const deleteLaporanOmzet = async (req, res) => {
   const response = new Object();
   try {
@@ -141,7 +142,6 @@ export const getLaporanOmzetById = async (req, res) => {
     console.log(error.message);
   }
 };
-
 export const getSequenceASCLaporan = async (req, res) => {
   const responsePagination = new Object();
   try {
@@ -211,7 +211,7 @@ export const getSummaryChartlaporan = async (req, res) => {
   try {
     let filter = "";
     let isAdmin = req.query.isAdmin;
-    console.log('is admin ', isAdmin)
+    console.log("is admin ", isAdmin);
     let userId = req.query.userId;
     if (isAdmin) {
       if (userId != null && userId != undefined) {
@@ -221,15 +221,25 @@ export const getSummaryChartlaporan = async (req, res) => {
         'GROUP BY tl."laporanMingguan", EXTRACT(MONTH FROM tl."tanggalLaporan")';
       let query =
         'SELECT SUM(tl."jumlahOmzet") AS totalOmzet, tl."laporanMingguan", EXTRACT(MONTH FROM tl."tanggalLaporan") AS laporanBulan FROM public."TB_TR_LAPORAN" tl INNER JOIN public."TB_MD_USER" tmu ON tl."userId" = tmu.id WHERE tl."isDeleted" = false AND tmu."isDeleted" = false ';
-  
+
       let queryString = QueryHelper(query, filter, "", "", "", "", groupBy);
       const response = await db.query(queryString, {
         type: QueryTypes.SELECT,
       });
       // Array of month names
       const monthNames = [
-        "Jan", "Feb", "Mar", "Apr", "May", "Jun",
-        "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+        "Jan",
+        "Feb",
+        "Mar",
+        "Apr",
+        "May",
+        "Jun",
+        "Jul",
+        "Aug",
+        "Sep",
+        "Oct",
+        "Nov",
+        "Dec",
       ];
 
       // Initialize an array with all 12 months
@@ -259,11 +269,21 @@ export const getSummaryChartlaporan = async (req, res) => {
       const response = await db.query(queryString, {
         type: QueryTypes.SELECT,
       });
-      
+
       // Array of month names
       const monthNames = [
-        "Jan", "Feb", "Mar", "Apr", "May", "Jun",
-        "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+        "Jan",
+        "Feb",
+        "Mar",
+        "Apr",
+        "May",
+        "Jun",
+        "Jul",
+        "Aug",
+        "Sep",
+        "Oct",
+        "Nov",
+        "Dec",
       ];
 
       // Initialize an array with all 12 months
@@ -295,4 +315,42 @@ const mergeData = (allMonths, data) => {
     allMonths[monthIndex][weekKey] = curr.totalomzet;
   });
   return allMonths;
+};
+
+export const approveLaporan = async (req, res) => {
+  const response = new Object();
+  try {
+    const dataLaporan = await LaporanOmzet.findOne({
+      where: {
+        id: req.params.id,
+      },
+    });
+    let userId = dataLaporan.userId;
+    const result = await Users.findOne({
+      where: {
+        id: userId,
+      },
+    });
+
+    let payload = {
+      isApproved : true,
+    };
+    await LaporanOmzet.update(payload, {
+      where: {
+        id: req.params.id,
+      },
+    });
+    let html = ``;
+    await sendEmail(result.email, "Notification Approve Report", "Your report has been approved!!!", html);
+    response.data = result;
+    response.error = false;
+    response.errorMessage = "Sukses";
+    res.status(201).json({ response });
+  } catch (error) {
+    
+    console.log('Approve error : ', error)
+    response.error = true;
+    response.errorMessage = error.message;
+    res.status(500).json({ response });
+  }
 };

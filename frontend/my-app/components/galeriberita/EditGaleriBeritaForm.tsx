@@ -217,7 +217,7 @@ const EditGaleriBeritatForm = ({
             <div className="flex items-center justify-center bg-gray-100">
               <div className="bg-white rounded-lg shadow-lg p-8 max-w-screen-md w-full">
                 <h2 className="text-2xl font-bold mb-4">Edit GALERI / BERITA</h2>
-                <div className="flex flex-row gap-24 pb-2">
+                <div className="md:flex md:flex-row md:gap-16 sm:flex sm:flex-col sm:gap-4 md:pb-2 ms:pb-2">
                   <div>
                     <label className="block text-sm font-medium text-gray-700">
                       Nama Siswa
@@ -239,7 +239,7 @@ const EditGaleriBeritatForm = ({
                   </div>
                   <div></div>
                 </div>
-                <div className="flex flex-row gap-16">
+                <div className="md:flex md:flex-row md:gap-16 sm:flex sm:flex-col sm:gap-4">
                   <div className="mb-4">
                     <label className="block text-sm font-medium text-gray-700">
                       Judul Berita
@@ -265,7 +265,7 @@ const EditGaleriBeritatForm = ({
                     />
                   </div>
                 </div>
-                <div className="flex flex-row gap-16">
+                <div className="md:flex md:flex-row md:gap-16 sm:flex sm:flex-col sm:gap-4">
                   <div className="mb-4">
                     <label className="block text-sm font-medium text-gray-700">
                       Tanggal
@@ -287,7 +287,7 @@ const EditGaleriBeritatForm = ({
                     <input
                       type="file"
                       onChange={(e) => handleChangeFile(e)}
-                      className="ps-2 mt-1 block w-full px-20 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                      className="ps-2 mt-1 block sm:w-96 md:w-[700px] py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                       required
                     />
                     <span>{fileNameCurrent}</span>
@@ -326,7 +326,7 @@ const EditGaleriBeritatForm = ({
             <div className="flex items-center justify-center bg-gray-100">
               <div className="bg-white rounded-lg shadow-lg p-8 max-w-screen-md w-full">
                 <h2 className="text-2xl font-bold mb-4">Buat Laporan</h2>
-                <div className="flex flex-row gap-16">
+                <div className="md:flex md:flex-row md:gap-16 sm:flex sm:flex-col sm:gap-4">
                   <div className="mb-4">
                     <label className="block text-sm font-medium text-gray-700">
                       Judul Berita
@@ -352,7 +352,7 @@ const EditGaleriBeritatForm = ({
                     />
                   </div>
                 </div>
-                <div className="flex flex-row gap-16">
+                <div className="md:flex md:flex-row md:gap-16 sm:flex sm:flex-col sm:gap-4">
                   <div className="mb-4">
                     <label className="block text-sm font-medium text-gray-700">
                       Tanggal
@@ -374,7 +374,7 @@ const EditGaleriBeritatForm = ({
                     <input
                       type="file"
                       onChange={(e) => handleChangeFile(e)}
-                      className="ps-2 mt-1 block w-full px-20 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                      className="ps-2 mt-1 block sm:w-80 md:w-[700px] px-20 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                       required
                     />
                     <span>{fileNameCurrent}</span>

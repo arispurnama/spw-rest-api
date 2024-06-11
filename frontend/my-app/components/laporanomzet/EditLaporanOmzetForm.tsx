@@ -227,7 +227,7 @@ const EditLaporanOmzetForm = ({
             <div className="flex items-center justify-center bg-gray-100">
               <div className="bg-white rounded-lg shadow-lg p-8 max-w-screen-md w-full">
                 <h2 className="text-2xl font-bold mb-4">Edit Laporan</h2>
-                <div className="flex flex-row gap-24 pb-2">
+                <div className="md:flex md:flex-row md:gap-16 sm:flex sm:flex-col sm:gap-4 md:pb-2 sm:pb-2">
                   <div>
                     <label className="block text-sm font-medium text-gray-700">
                       Nama Siswa
@@ -249,7 +249,7 @@ const EditLaporanOmzetForm = ({
                   </div>
                   <div></div>
                 </div>
-                <div className="flex flex-row gap-16">
+                <div className="md:flex md:flex-row md:gap-16 sm:flex sm:flex-col sm:gap-4">
                   <div className="mb-4">
                     <label className="block text-sm font-medium text-gray-700">
                       Omzet
@@ -275,7 +275,7 @@ const EditLaporanOmzetForm = ({
                     />
                   </div>
                 </div>
-                <div className="flex flex-row gap-16">
+                <div className="md:flex md:flex-row md:gap-16 sm:flex sm:flex-col sm:gap-4">
                   <div className="mb-4">
                     <label className="block text-sm font-medium text-gray-700">
                       Tanggal Pelaporan
@@ -301,7 +301,7 @@ const EditLaporanOmzetForm = ({
                     />
                   </div>
                 </div>
-                <div className="flex flex-row gap-16">
+                <div className="md:flex md:flex-row md:gap-16 sm:flex sm:flex-col sm:gap-4">
                   <div className="mb-4">
                     <label className="block text-sm font-medium text-gray-700">
                       Laporan Minggu ke-
@@ -330,7 +330,7 @@ const EditLaporanOmzetForm = ({
                   </div>
                   <div className="mb-4"></div>
                 </div>
-                <div>
+                <div className="md:flex md:flex-row md:gap-16 sm:flex sm:flex-col sm:gap-4">
                   <div className="mb-4">
                     <label className="block text-sm font-medium text-gray-700">
                       Bukti Transaki
@@ -341,7 +341,7 @@ const EditLaporanOmzetForm = ({
                         handleChangeFile(e);
                         setBuktiTransaksiCurrent(e.target.value);
                       }}
-                      className="ps-2 mt-1 block w-full px-20 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                      className="ps-2 mt-1 block md:w-[700px] sm:w-80 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                       required
                     />
                     <span>{buktiTransaksiCurrent}</span>
@@ -380,7 +380,7 @@ const EditLaporanOmzetForm = ({
             <div className="flex items-center justify-center bg-gray-100">
               <div className="bg-white rounded-lg shadow-lg p-8 max-w-screen-md w-full">
                 <h2 className="text-2xl font-bold mb-4">Buat Laporan</h2>
-                <div className="flex flex-row gap-16">
+                <div className="md:flex md:flex-row md:gap-16 sm:flex sm:flex-col sm:gap-4">
                   <div className="mb-4">
                     <label className="block text-sm font-medium text-gray-700">
                       Omzet
@@ -406,7 +406,7 @@ const EditLaporanOmzetForm = ({
                     />
                   </div>
                 </div>
-                <div className="flex flex-row gap-16">
+                <div className="md:flex md:flex-row md:gap-16 sm:flex sm:flex-col sm:gap-4">
                   <div className="mb-4">
                     <label className="block text-sm font-medium text-gray-700">
                       Tanggal Pelaporan
@@ -431,7 +431,7 @@ const EditLaporanOmzetForm = ({
                     />
                   </div>
                 </div>
-                <div className="flex flex-row gap-16">
+                <div className="md:flex md:flex-row md:gap-16 sm:flex sm:flex-col sm:gap-4">
                   <div className="mb-4">
                     <label className="block text-sm font-medium text-gray-700">
                       Laporan Minggu ke-
@@ -460,7 +460,7 @@ const EditLaporanOmzetForm = ({
                   </div>
                   <div className="mb-4"></div>
                 </div>
-                <div>
+                <div className="md:flex md:flex-row md:gap-16 sm:flex sm:flex-col sm:gap-4">
                   <div className="mb-4">
                     <label className="block text-sm font-medium text-gray-700">
                       Bukti Transaki
@@ -468,7 +468,7 @@ const EditLaporanOmzetForm = ({
                     <input
                       type="file"
                       onChange={(e) => handleChangeFile(e)}
-                      className="ps-2 mt-1 block w-80 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                      className="ps-2 mt-1 block md:w-80 sm:w-[700px] py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                       required
                     />
                   </div>

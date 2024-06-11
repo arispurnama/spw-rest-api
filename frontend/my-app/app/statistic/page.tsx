@@ -27,7 +27,7 @@ const chartSetting = {
       label: "Summary (Rp)",
     },
   ],
-  width: 1100,
+  width: 1200,
   height: 600,
   sx: {
     [`.${axisClasses.left} .${axisClasses.label}`]: {
@@ -153,14 +153,14 @@ const SummaryStatistik = () => {
       <div>
         <Header />
         <div>
-          <div className="flex flex-col gap-4 m-0">
+          <div className="md:flex md:flex-col md:gap-4 md:m-0 sm:flex sm:flex-col sm:gap-4 sm:m-0">
             <div>
               <h2 className="pl-10 pt-8 pb-0 m-0 font-bold text-2xl">
                 STATISTIC
               </h2>
             </div>
           </div>
-          <div className="flex flex-row justify-center">
+          <div className="flex flex-row justify-center pl-4 pr-2">
             <BarChart
               dataset={dataset}
               xAxis={[{ scaleType: "band", dataKey: "month" }]}

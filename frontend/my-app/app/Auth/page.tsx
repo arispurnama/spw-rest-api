@@ -5,6 +5,7 @@ import base from "@/service/baseService";
 import baseService from "@/service/baseService";
 import axios from "axios";
 import SnackBar from "@/components/SnackBar";
+import Link from "next/link";
 
 const Login = () => {
   const [username, setUsername] = useState("");
@@ -35,7 +36,7 @@ const Login = () => {
           );
           setErrorType("success");
           setErrorMessage(
-            "Tambah Data Galeri Berita " + response.data.response.errorMessage
+            "Login Berhasil " + response.data.response.errorMessage
           );
           setSnackBar(true);
           setTimeout(() => {}, 1000);
@@ -62,18 +63,6 @@ const Login = () => {
       setLoginError("Email atau Kata sandi yang kamu masukan salah.");
     }
   };
-  // const validatePassword = (input: any) => {
-  //   const passwordRegex =
-  //     /^(?=.[a-z])(?=.[A-Z])(?=.\d)(?=.[!@#$%^&*()_+{}|:"<>?`\-=[\];',./]).{8,}$/;
-
-  //   if (!passwordRegex.test(input)) {
-  //     setPasswordError(
-  //       "Password harus minimal 8 karakter, kombinasi huruf kecil, huruf kapital, angka, dan simbol"
-  //     );
-  //   } else {
-  //     setPasswordError("");
-  //   }
-  // };
   const validatePassword = (input: string) => {
     const passwordRegex =
       /^(?=.[a-z])(?=.[A-Z])(?=.\d)(?=.[!@#$%^&*()_+{}|:"<>?`\-=[\];',./]).{8,}$/;
@@ -86,10 +75,10 @@ const Login = () => {
   const handlePasswordChange = (event: any) => {
     const { value } = event?.target;
     setPassword(value);
-    validatePassword(value);
+    //validatePassword(value);
   };
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
+    <div className="min-h-screen flex items-center justify-center flex-col gap-2 bg-gray-100">
       <div className="bg-white p-8 rounded shadow-md max-w-sm w-full">
         <h2 className="text-2xl font-bold mb-6 text-center">Login</h2>
         <p className="mb-6 text-center text-gray-600">
@@ -139,6 +128,20 @@ const Login = () => {
         >
           Log In
         </button>
+
+        <div className="flex items-center justify-between pt-4">
+          <span className="border-t w-full"></span>
+          <span className="text-gray-500 mx-4">OR</span>
+          <span className="border-t w-full"></span>
+        </div>
+        <div className="text-center">
+          <Link
+            className="inline-block align-baseline font-bold text-sm text-blue-500 hover:text-blue-800"
+            href="/Auth/forgotpassword"
+          >
+            Forgot password?
+          </Link>
+        </div>
       </div>
       <SnackBar
         isOpen={showSnackBar}
@@ -147,6 +150,16 @@ const Login = () => {
         duration={5000}
         onClose={() => setSnackBar(false)}
       />
+      <div className="bg-white p-4 rounded shadow-md max-w-sm w-full">
+        <div className="text-center mt-4">
+          <Link
+            className="inline-block align-baseline font-bold text-sm text-blue-500 hover:text-blue-800"
+            href="/register"
+          >
+            Create new account
+          </Link>
+        </div>
+      </div>
     </div>
   );
 };
