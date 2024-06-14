@@ -4,7 +4,7 @@ const maxSize = 5 * 1024 * 1024;
 import fs from "fs";
 import { v4 } from "uuid";
 let file_name = '';
-const uploadDir = "D:\\uploads";
+const uploadDir = "D:\\Tugas Akhir\\Project\\FullStack-1\\frontend\\my-app\\public\\uploads";
 export const setFileName = (name) => {
   file_name = name;
 }
@@ -28,7 +28,14 @@ let storage = diskStorage({
   },
   filename: (req, file, cb) => {
     //console.log(v4() + file.originalname);
-    const newFileName = v4() + "-" + file.originalname; 
+    let files = file.originalname; 
+    let fileNameSPlit = file.originalname.split(' ');
+    let valueSplit ='';
+    fileNameSPlit.forEach(element => {
+      valueSplit += `-${element}`;
+    });
+
+    const newFileName = v4() + "-" + valueSplit; 
     setFileName(newFileName)
     cb(null, newFileName);
   },
@@ -41,3 +48,15 @@ let uploadFile = multer({
 
 let uploadFileMiddleware = promisify(uploadFile);
 export default uploadFileMiddleware;
+
+// Function to delete file in the directory
+export const deleteFile = (filename) => {
+  let filePath = `${uploadDir}\\${filename}`;
+  console.log('dele file ', filePath);
+  if (fs.existsSync(filePath)) {
+    fs.unlinkSync(filePath);
+    console.log(`Deleted file: ${filePath}`);
+  } else {
+    console.log(`File not found: ${filePath}`);
+  }
+};
