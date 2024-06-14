@@ -354,3 +354,39 @@ export const approveLaporan = async (req, res) => {
     res.status(500).json({ response });
   }
 };
+
+export const getSumModalAndOmzet = async (req, res) => {
+  const responsePagination = new Object();
+  try {
+    let filter = "";
+    let userId = req.param.userId;
+    if (userId != null && userId != undefined) {
+      filter += ` and tmu.id = ${userId} `;
+    }
+
+    let query =
+      'SELECT SUM(tl."jumlahOmzet") as jumlahOmzet, SUM(tl."JumlahModal") as JumlahModal FROM public."TB_TR_LAPORAN" tl inner join public."TB_MD_USER" tmu on tl."userId" = tmu.id where tl."isDeleted" = false and tmu."isDeleted" = false';
+    
+    let queryString = QueryHelper(
+      query,
+      filter,
+      "",
+      "",
+      "",
+      "",
+      ""
+    );
+    const response = await db.query(queryString, {
+      type: QueryTypes.SELECT,
+    });
+
+    responsePagination.data = response;
+    responsePagination.error = false;
+    responsePagination.errorMessage = "Sukses";
+    res.status(200).json(responsePagination);
+  } catch (error) {
+    responsePagination.error = true;
+    responsePagination.errorMessage = error.message;
+    console.log(error.message);
+  }
+};

@@ -143,7 +143,7 @@ const Header = () => {
           {dropdownOpen && (
             <ul className="absolute right-0 mt-2 w-48 bg-white text-black shadow-lg">
               <li className="px-4 py-2 hover:bg-gray-100">
-                <a href="#">Profile</a>
+                <Link href="/profilePage">Profile</Link>
               </li>
               <li className="px-4 py-2 hover:bg-gray-100">
                 <button onClick={() => logout()}>Logout</button>

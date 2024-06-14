@@ -20,6 +20,7 @@ import IconTrashBinOutline from "@/components/icons/IconTrashBinOutline";
 import IconFileDocumentEditOutline from "@/components/icons/IconFileDocumentEditOutline";
 import SnackBar from "@/components/SnackBar";
 import AddUserAdminForm from "@/components/userform/AddUserAdminForm";
+import EditUserAdminForm from "@/components/userform/EditUserAdminForm";
 
 const DataUser = () => {
   const router = useRouter();
@@ -30,6 +31,8 @@ const DataUser = () => {
   const [showModal, setShowModal] = useState(false);
   const [selectedUserId, setSelectedUserId] = useState("");
   const [showModalAdd, setShowModalAdd] = useState(false);
+  const [dataEdit, setDataEdit] = useState();
+  const [showModalEdit, setShowModalEdit] = useState(false);
 
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
@@ -109,6 +112,11 @@ const DataUser = () => {
     getRoleAll()
   }, []);
 
+  const handleEditClick = (userId: string, data: any) => {
+    setSelectedUserId(userId);
+    setDataEdit(data);
+    setShowModalEdit(true);
+  };
   const deleteUser = async (userId: any) => {
     try {
       axios
@@ -146,7 +154,7 @@ const DataUser = () => {
     <main>
       <div>
         <Header />
-        <div>
+        <div className="md:h-[800px] sm:h-[400px]">
           <div className="flex flex-col gap-1 m-0">
             <div>
               <h2 className="pl-10 pt-8 pb-0 m-0 font-bold text-2xl">
@@ -170,7 +178,7 @@ const DataUser = () => {
               </div>
             </div>
           </div>
-          <div className="pr-10 pl-10">
+          <div className="md:pr-10 md:pl-10 sm:pr-1 sm:pl-1">
             <Paper sx={{ width: "100%" }}>
               <TableContainer sx={{ maxHeight: 450 }}>
                 <Table stickyHeader aria-label="customized table">
@@ -206,7 +214,7 @@ const DataUser = () => {
                           <TableCell align="right">{row.username}</TableCell>
                           <TableCell align="right">{row.name}</TableCell>
                           <TableCell className="flex flex-row gap-4 justify-end">
-                            <button>
+                            <button onClick={() => handleEditClick(row.id, row)}>
                               <IconFileDocumentEditOutline />
                             </button>
                             <button onClick={() => handleDeleteClick(row.id)}>
@@ -245,6 +253,13 @@ const DataUser = () => {
           roleData={dataRole}
           onClosed={() => setShowModalAdd(false)}
         />
+        <EditUserAdminForm
+            isOpen={showModalEdit}
+            Id={selectedUserId}
+            roleData={dataRole}
+            dataEdit={dataEdit}
+            onClosed={() => setShowModalEdit(false)}
+          />
       </div>
     </main>
   );

@@ -184,7 +184,7 @@ const AddUserAdminForm = ({ isOpen, roleData = [], onClosed }: Props) => {
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div className="lex items-center justify-center bg-gray-100">
         <div className="bg-white rounded-lg shadow-lg p-8 max-w-screen-md w-full">
-          <h2 className="text-2xl font-bold mb-4">Add User</h2>
+          <h2 className="text-2xl font-bold mb-4">Add Data Siswa</h2>
           <div className="md:flex md:flex-row md:gap-16 sm:flex sm:flex-col sm:gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700">
@@ -326,7 +326,7 @@ const AddUserAdminForm = ({ isOpen, roleData = [], onClosed }: Props) => {
             onClick={() => handleSubmit()}
             className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
           >
-            Add User
+            Save
           </button>
           <button
             onClick={() => {

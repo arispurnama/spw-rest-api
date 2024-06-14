@@ -164,7 +164,7 @@ const DataLaporanOmzet = () => {
     <main>
       <div>
         <Header />
-        <div>
+        <div className="md:h-[800px] sm:h-[400px]">
           <div className="flex flex-col gap-4 m-0">
             <div>
               <h2 className="pl-10 pt-8 pb-0 m-0 font-bold text-2xl">
@@ -191,7 +191,7 @@ const DataLaporanOmzet = () => {
               </div>
             </div>
           </div>
-          <div className="pr-10 pl-10 min-[6500px] max-[900px]">
+          <div className="md:pr-10 md:pl-10 sm:pr-1 sm:pl-1 min-[6500px] max-[900px]">
             <Paper sx={{ width: "100%" }}>
               <TableContainer sx={{ maxHeight: 450 }}>
                 <Table stickyHeader aria-label="customized table">

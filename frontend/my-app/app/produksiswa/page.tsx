@@ -175,7 +175,7 @@ const DataProdukSiswa = () => {
               </div>
             </div>
           </div>
-          <div className="pr-10 pl-10">
+          <div className="md:pr-10 md:pl-10 sm:pr-1 sm:pl-1">
             <Paper sx={{ width: "100%" }}>
               <TableContainer sx={{ maxHeight: 450 }}>
                 <Table stickyHeader aria-label="customized table">

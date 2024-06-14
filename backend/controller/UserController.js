@@ -74,7 +74,7 @@ export const createUsers = async (req, res) => {
   try {
     let user = req.body;
     let filter = "";
-    console.log('userrrrr ', user)
+    console.log("userrrrr ", user);
     let query = `SELECT users."id", users."firstName", users."lastName", users."kelas", users."email", users."username", users."password", users."roleId", users."createdAt", users."updatedAt", users."deletedAt", users."isDeleted", roles.name FROM public."TB_MD_USER" as users INNER JOIN public."TB_MD_ROLE" as roles on users."roleId" = roles.id where users."isDeleted" = false and users."deletedAt" is null`;
 
     if (user.username != "") {
@@ -91,7 +91,7 @@ export const createUsers = async (req, res) => {
         return res.status(500).json({ response });
       }
     }
-    
+
     const password = user.password;
     let hashesPassword = await bcrypt.hash(password, 10);
 
@@ -159,15 +159,21 @@ export const deleteUsers = async (req, res) => {
   }
 };
 export const getUserById = async (req, res) => {
+  const response = new Object();
   try {
-    const response = await Users.findOne({
+    const result = await Users.findOne({
       where: {
         id: req.params.id,
       },
     });
-    res.status(200).json(response);
+    response.data = result;
+    response.error = false;
+    response.errorMessage = "Sukses";
+    res.status(201).json({ response });
   } catch (error) {
-    console.log(error.message);
+    response.error = true;
+    response.errorMessage = error.message;
+    res.status(500).json({ response });
   }
 };
 
@@ -298,15 +304,15 @@ export const CheckUsername = async (req, res) => {
         username: req.params.username,
       },
     });
-    console.log('data user : ', dataUser)
-    if(dataUser == null){
+    console.log("data user : ", dataUser);
+    if (dataUser == null) {
       response.error = true;
       response.errorMessage = "username tidak ditemukan!!!";
       res.status(500).json({ response });
     }
     const result = customNumberGenerator();
     let payload = {
-      otp : result,
+      otp: result,
     };
     await Users.update(payload, {
       where: {
@@ -317,7 +323,12 @@ export const CheckUsername = async (req, res) => {
 <p>We received a request to reset your Sijagoan password.</p>
 <p>OTP reset password ${result}</p>
 <h4>If you ignore this message, your password will not be changed.</h4>`;
-    sendEmail(dataUser.email, "Notification OTP Reset Password", "OTP Reset Password", html);
+    sendEmail(
+      dataUser.email,
+      "Notification OTP Reset Password",
+      "OTP Reset Password",
+      html
+    );
     response.error = false;
     response.errorMessage = "Sukses";
     res.status(201).json({ response });
@@ -334,13 +345,13 @@ export const ubahPassword = async (req, res) => {
         otp: req.params.otp,
       },
     });
-    console.log('data user : ', dataUser)
-    if(dataUser == null){
+    console.log("data user : ", dataUser);
+    if (dataUser == null) {
       response.error = true;
       response.errorMessage = "OTP salah!!!";
       res.status(500).json({ response });
     }
-    
+
     let payload = req.body;
     const password = payload.password;
     let hashesPassword = await bcrypt.hash(password, 10);
@@ -352,7 +363,7 @@ export const ubahPassword = async (req, res) => {
         id: dataUser.id,
       },
     });
-    
+
     response.error = false;
     response.errorMessage = "Sukses";
     res.status(201).json({ response });
