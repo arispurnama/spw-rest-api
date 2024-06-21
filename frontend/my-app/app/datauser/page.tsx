@@ -109,7 +109,7 @@ const DataUser = () => {
   };
   useEffect(() => {
     getUserAll();
-    getRoleAll()
+    getRoleAll();
   }, []);
 
   const handleEditClick = (userId: string, data: any) => {
@@ -166,13 +166,16 @@ const DataUser = () => {
                 <input
                   type="text"
                   placeholder="search"
-                  className="rounded-full min-w-[78]"
+                  className="rounded-[18px] px-20 ps-4"
                   onChange={(e: any) => {
                     handleSearchChange(e.target.value);
                     console.log(searchQuery);
                   }}
                 />
-                <button className="px-6 py-2 bg-blue-400 rounded-lg"  onClick={() => setShowModalAdd(true)}>
+                <button
+                  className="px-6 py-2 bg-blue-400 rounded-lg"
+                  onClick={() => setShowModalAdd(true)}
+                >
                   + add
                 </button>
               </div>
@@ -214,7 +217,9 @@ const DataUser = () => {
                           <TableCell align="right">{row.username}</TableCell>
                           <TableCell align="right">{row.name}</TableCell>
                           <TableCell className="flex flex-row gap-4 justify-end">
-                            <button onClick={() => handleEditClick(row.id, row)}>
+                            <button
+                              onClick={() => handleEditClick(row.id, row)}
+                            >
                               <IconFileDocumentEditOutline />
                             </button>
                             <button onClick={() => handleDeleteClick(row.id)}>
@@ -246,20 +251,29 @@ const DataUser = () => {
           Id={selectedUserId}
           url="user"
           page="datauser"
-          onClosed={() => setShowModal(false)}
+          onClosed={() => {
+            setShowModal(false);
+            getUserAll();
+          }}
         />
         <AddUserAdminForm
           isOpen={showModalAdd}
           roleData={dataRole}
-          onClosed={() => setShowModalAdd(false)}
+          onClosed={() => {
+            setShowModalAdd(false);
+            getUserAll();
+          }}
         />
         <EditUserAdminForm
-            isOpen={showModalEdit}
-            Id={selectedUserId}
-            roleData={dataRole}
-            dataEdit={dataEdit}
-            onClosed={() => setShowModalEdit(false)}
-          />
+          isOpen={showModalEdit}
+          Id={selectedUserId}
+          roleData={dataRole}
+          dataEdit={dataEdit}
+          onClosed={() => {
+            setShowModalEdit(false);
+            getUserAll();
+          }}
+        />
       </div>
     </main>
   );

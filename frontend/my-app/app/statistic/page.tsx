@@ -26,6 +26,7 @@ const chartSetting = {
   yAxis: [
     {
       label: "Summary (Rp)",
+      font: "bold",
     },
   ],
   width: 1200,
@@ -196,114 +197,131 @@ const SummaryStatistik = () => {
             </div>
           </div>
 
-          <div className="pl-28 pt-8 pb-0 m-0 font-bold text-xl">SUM OMZET</div>
-          <div className="flex flex-row justify-end pr-10">
-            <div className="pl-20 flex flex-row items-end">
-              <div>
-                <label className="block text-sm font-medium text-gray-700">
-                  Nama Siswa
-                </label>
-                <Select
-                  labelId="demo-multiple-name-label"
-                  id="demo-multiple-name"
-                  value={userIdState}
-                  onChange={handleChange}
-                  label="Name"
-                  className="w-80 h-10"
-                >
-                  {dataUser?.map((name: any) => (
-                    <MenuItem key={name.id} value={name.id}>
-                      {name.firstName}
-                    </MenuItem>
-                  ))}
-                </Select>
+          <div className="md:mr-9 md:ml-9 md:pb-9 sm:pb-3 sm:mr-0 sm:ml-0">
+            <div className="bg-white rounded-sm">
+              <div className="pl-28 pt-8 pb-0 m-0 font-bold text-xl">
+                SUMMARY SUM OMZET
               </div>
-            </div>
-          </div>
-          <div>
-            <div className="flex flex-row justify-center pl-4 pr-2">
-              <BarChart
-                dataset={dataset}
-                xAxis={[{ scaleType: "band", dataKey: "month" }]}
-                series={[
-                  { dataKey: "minggu1", label: "minggu 1", valueFormatter },
-                  { dataKey: "minggu2", label: "minggu 2", valueFormatter },
-                  { dataKey: "minggu3", label: "minggu 3", valueFormatter },
-                  { dataKey: "minggu4", label: "minggu 4", valueFormatter },
-                ]}
-                {...chartSetting}
-              />
+              <div className="flex flex-row justify-end pr-10">
+                <div className="pl-20 flex flex-row items-end">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700">
+                      Nama Siswa
+                    </label>
+                    <Select
+                      labelId="demo-multiple-name-label"
+                      id="demo-multiple-name"
+                      value={userIdState}
+                      onChange={handleChange}
+                      label="Name"
+                      className="w-80 h-10"
+                    >
+                      {dataUser?.map((name: any) => (
+                        <MenuItem key={name.id} value={name.id}>
+                          {name.firstName}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </div>
+                </div>
+              </div>
+              <div>
+                <div className="flex flex-row justify-center pl-4 pr-2">
+                  <BarChart
+                    dataset={dataset}
+                    xAxis={[{ scaleType: "band", dataKey: "month" }]}
+                    series={[
+                      { dataKey: "minggu1", label: "Minggu 1", valueFormatter },
+                      { dataKey: "minggu2", label: "Minggu 2", valueFormatter },
+                      { dataKey: "minggu3", label: "Minggu 3", valueFormatter },
+                      { dataKey: "minggu4", label: "Minggu 4", valueFormatter },
+                    ]}
+                    {...chartSetting}
+                  />
+                </div>
+              </div>
             </div>
           </div>
 
-          <div className="pr-10 pl-10 min-[6500px] max-[900px]">
-            <div className="flex flex-row justify-end pr-6 pt-0">
-              <div className="flex gap-4 p-3">
-                <input
-                  type="text"
-                  placeholder="search"
-                  className="rounded-full w-80 p-2"
-                  onChange={(e: any) => {
-                    handleSearchChange(e.target.value);
-                    console.log(searchQuery);
-                  }}
-                />
+          <div className="md:mr-9 md:ml-9 md:pb-9 sm:pb-3 sm:mr-0 sm:ml-0">
+            <div className="md:pr-10 md:pl-10 min-[6500px] max-[900px] sm:pr-1 sm:pl-1 bg-white">
+              <div className="pl-28 pt-8 pb-0 m-0 font-bold text-xl">
+                SUMMARY ALL LAPORAN
               </div>
+              <div className="flex flex-row justify-end pt-0">
+                <div className="flex gap-4 pb-3">
+                  <input
+                    type="text"
+                    placeholder="search"
+                    className="rounded-full w-80 p-2 border"
+                    onChange={(e: any) => {
+                      handleSearchChange(e.target.value);
+                      console.log(searchQuery);
+                    }}
+                  />
+                </div>
+              </div>
+              <Paper sx={{ width: "100%" }}>
+                <TableContainer sx={{ maxHeight: 450 }}>
+                  <Table stickyHeader aria-label="customized table">
+                    <TableHead>
+                      <TableRow>
+                        <TableCell>First Name</TableCell>
+                        <TableCell align="right">Last Name</TableCell>
+                        <TableCell align="right">Omzet</TableCell>
+                        <TableCell align="right">Modal</TableCell>
+                        <TableCell align="right">Tanggal Laporan</TableCell>
+                        <TableCell align="right">Keterangan</TableCell>
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {dataLaporanOmzet
+                        ?.slice(
+                          page * rowsPerPage,
+                          page * rowsPerPage + rowsPerPage
+                        )
+                        ?.map((row: any) => (
+                          <TableRow
+                            className={
+                              roleName == "Admin"
+                                ? ""
+                                : user?.id == row.userId
+                                ? "bg-blue-300"
+                                : ""
+                            }
+                          >
+                            <TableCell component="th" scope="row">
+                              {row.firstName}
+                            </TableCell>
+                            <TableCell align="right">{row.lastName}</TableCell>
+                            <TableCell align="right">
+                              {row.jumlahOmzet}
+                            </TableCell>
+                            <TableCell align="right">
+                              {row.JumlahModal}
+                            </TableCell>
+                            <TableCell align="right">
+                              {row.tanggallaporan}
+                            </TableCell>
+                            <TableCell align="right">
+                              {row.keterangan}
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                    </TableBody>
+                  </Table>
+                </TableContainer>
+                <TablePagination
+                  rowsPerPageOptions={[10, 25, 100]}
+                  component="div"
+                  count={dataLaporanOmzet.length}
+                  rowsPerPage={rowsPerPage}
+                  page={page}
+                  onPageChange={handleChangePage}
+                  onRowsPerPageChange={handleChangeRowsPerPage}
+                />
+              </Paper>
             </div>
-            <Paper sx={{ width: "100%" }}>
-              <TableContainer sx={{ maxHeight: 450 }}>
-                <Table stickyHeader aria-label="customized table">
-                  <TableHead>
-                    <TableRow>
-                      <TableCell>First Name</TableCell>
-                      <TableCell align="right">Last Name</TableCell>
-                      <TableCell align="right">Omzet</TableCell>
-                      <TableCell align="right">Modal</TableCell>
-                      <TableCell align="right">Tanggal Laporan</TableCell>
-                      <TableCell align="right">Keterangan</TableCell>
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {dataLaporanOmzet
-                      ?.slice(
-                        page * rowsPerPage,
-                        page * rowsPerPage + rowsPerPage
-                      )
-                      ?.map((row: any) => (
-                        <TableRow
-                          className={
-                            roleName == "Admin"
-                              ? ""
-                              : user?.id == row.userId
-                              ? "bg-blue-300"
-                              : ""
-                          }
-                        >
-                          <TableCell component="th" scope="row">
-                            {row.firstName}
-                          </TableCell>
-                          <TableCell align="right">{row.lastName}</TableCell>
-                          <TableCell align="right">{row.jumlahOmzet}</TableCell>
-                          <TableCell align="right">{row.JumlahModal}</TableCell>
-                          <TableCell align="right">
-                            {row.tanggallaporan}
-                          </TableCell>
-                          <TableCell align="right">{row.keterangan}</TableCell>
-                        </TableRow>
-                      ))}
-                  </TableBody>
-                </Table>
-              </TableContainer>
-              <TablePagination
-                rowsPerPageOptions={[10, 25, 100]}
-                component="div"
-                count={dataLaporanOmzet.length}
-                rowsPerPage={rowsPerPage}
-                page={page}
-                onPageChange={handleChangePage}
-                onRowsPerPageChange={handleChangeRowsPerPage}
-              />
-            </Paper>
           </div>
         </div>
 

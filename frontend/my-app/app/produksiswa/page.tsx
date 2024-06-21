@@ -160,7 +160,7 @@ const DataProdukSiswa = () => {
                 <input
                   type="text"
                   placeholder="search"
-                  className="rounded-full px-10"
+                  className="rounded-[18px] px-20 ps-4"
                   onChange={(e: any) => {
                     handleSearchChange(e.target.value);
                     console.log(searchQuery);
@@ -238,19 +238,28 @@ const DataProdukSiswa = () => {
             Id={selectedUserId}
             url="produk-siswa"
             page="produksiswa"
-            onClosed={() => setShowModal(false)}
+            onClosed={() => {
+              setShowModal(false);
+              getAllDataProdukSiswa();
+            }}
           />
           <AddProdukSiswaForm
             isOpen={showModalAdd}
             userData={dataUser}
-            onClosed={() => setShowModalAdd(false)}
+            onClosed={() => {
+              setShowModalAdd(false);
+              getAllDataProdukSiswa();
+            }}
           />
           <EditProdukSiswaForm
             isOpen={showModalEdit}
             id={selectedUserId}
             DataEdit={dataEdit}
             userData={dataUser}
-            onClosed={() => setShowModalEdit(false)}
+            onClosed={() => {
+              setShowModalEdit(false);
+              getAllDataProdukSiswa();
+            }}
           />
         </div>
 

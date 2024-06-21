@@ -31,10 +31,10 @@ const Header = () => {
       return (
         <>
           <div>
-            <button>About</button>
+            <button onClick={() => window.scrollTo(0, 150)}>About</button>
           </div>
           <div>
-            <button>Contact</button>
+            <button onClick={() => window.scrollTo(0, 800)}>Contact</button>
           </div>
           <div>
             <button
@@ -125,7 +125,7 @@ const Header = () => {
             className="focus:outline-none hover:cursor-pointer"
           >
             <svg
-              className="w-8 h-8 text-gray-800 dark:text-white"
+              className="w-8 h-8 text-white dark:text-white"
               aria-hidden="true"
               xmlns="http://www.w3.org/2000/svg"
               width="24"

@@ -192,18 +192,23 @@ const DataLaporanOmzet = () => {
                 <input
                   type="text"
                   placeholder="search"
-                  className="rounded-full px-10"
+                  className="rounded-[18px] px-20 ps-4"
                   onChange={(e: any) => {
                     handleSearchChange(e.target.value);
                     console.log(searchQuery);
                   }}
                 />
-                <button
-                  onClick={() => handleDownload()}
-                  className="px-6 py-2 bg-green-400 rounded-lg"
-                >
-                  Download Laporan
-                </button>
+                {user?.name === "Admin" ? (
+                  <button
+                    onClick={() => handleDownload()}
+                    className="px-6 py-2 bg-green-400 rounded-lg"
+                  >
+                    Download Laporan
+                  </button>
+                ) : (
+                  ""
+                )}
+
                 <button
                   onClick={() => setShowModalAdd(true)}
                   className="px-6 py-2 bg-blue-400 rounded-lg"
@@ -213,9 +218,9 @@ const DataLaporanOmzet = () => {
               </div>
             </div>
           </div>
-          <div className="md:pr-10 md:pl-10 sm:pr-1 sm:pl-1 min-[6500px] max-[900px]">
+          <div className="md:pr-10 md:pl-10 sm:pr-1 sm:pl-1 min-[6500px] max-[900px] rounded-md">
             <Paper sx={{ width: "100%" }}>
-              <TableContainer sx={{ maxHeight: 450 }}>
+              <TableContainer sx={{ maxHeight: 500 }}>
                 <Table stickyHeader aria-label="customized table">
                   <TableHead>
                     <TableRow>
@@ -373,25 +378,37 @@ const DataLaporanOmzet = () => {
           Id={selectedUserId}
           url="laporan-omzet"
           page="laporanomzet"
-          onClosed={() => setShowModal(false)}
+          onClosed={() => {
+            setShowModal(false);
+            getAllDataLaporanOmzet();
+          }}
         />
         <ApproveModal
           isOpen={approveShow}
           Id={laporanId}
           page="laporanomzet"
-          onClosed={() => setApproveShow(false)}
+          onClosed={() => {
+            setApproveShow(false);
+            getAllDataLaporanOmzet();
+          }}
         />
         <AddLaporanOmzetForm
           isOpen={showModalAdd}
           userData={dataUser}
-          onClosed={() => setShowModalAdd(false)}
+          onClosed={() => {
+            setShowModalAdd(false);
+            getAllDataLaporanOmzet();
+          }}
         />
         <EditLaporanOmzetForm
           isOpen={showModalEdit}
           id={selectedUserId}
           laporanDataEdit={dataEdit}
           userData={dataUser}
-          onClosed={() => setShowModalEdit(false)}
+          onClosed={() => {
+            setShowModalEdit(false);
+            getAllDataLaporanOmzet();
+          }}
         />
       </div>
     </main>

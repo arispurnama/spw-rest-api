@@ -10,6 +10,7 @@ import fs from "fs/promises";
 import Select, { SelectChangeEvent } from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
 import { blob } from "stream/consumers";
+import { Textarea } from "@nextui-org/react";
 
 type Props = {
   isOpen: boolean;
@@ -26,7 +27,8 @@ const AddGaleriBeritaForm = ({ isOpen, userData = [], onClosed }: Props) => {
   const router = useRouter();
   const [errorType, setErrorType] = useState("");
   const [showSnackBar, setSnackBar] = useState(false);
-  const [userIdState, setUserIdState] = React.useState("");
+  const [userIdState, setUserIdState] = useState("");
+  const [errorFieldEmpty, setErrorFieldEmpty] = useState("");
 
   if (!isOpen) return null;
 
@@ -47,96 +49,101 @@ const AddGaleriBeritaForm = ({ isOpen, userData = [], onClosed }: Props) => {
   const handlerSubmit = async () => {
     try {
       const userId = user?.name != "Admin" ? user?.id : userIdState;
-      
-      //post file
-      let payloadFormData = new FormData();
-      if (fileName) {
-        payloadFormData.append("file", fileName);
-      }
-      console.log("id bukti transaksi : ", payloadFormData);
-      axios
-        .post("http://localhost:3030/upload", payloadFormData, {
-          headers: {
-            "Content-Type": "multipart/form-data",
-            Authorization: `Bearer ${token}`, // Add your token or any other header here
-          },
-        })
-        .then((response) => {
-          console.log("response upload : ", response.data.response.data);
-          //post laporan
-          const payload = {
-            userId: userId,
-            fileName: response.data.response.data,
-            keterangan: keterangan,
-            tanggalProduk: tanggal,
-            namaProduk: namaProduk,
-          };
-          axios
-            .post("http://localhost:3030/produk-siswa", payload, {
-              headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${token}`, // Add your token or any other header here
-              },
-            })
-            .then((response) => {
-              setErrorType("success");
-              setErrorMessage(
-                "Tambah Data Produk Siswa  " + response.data.response.errorMessage
+      if (fileName != "" && namaProduk != "" && tanggal != "") {
+        //post file
+        let payloadFormData = new FormData();
+        if (fileName) {
+          payloadFormData.append("file", fileName);
+        }
+        console.log("id bukti transaksi : ", payloadFormData);
+        axios
+          .post("http://localhost:3030/upload", payloadFormData, {
+            headers: {
+              "Content-Type": "multipart/form-data",
+              Authorization: `Bearer ${token}`, // Add your token or any other header here
+            },
+          })
+          .then((response) => {
+            console.log("response upload : ", response.data.response.data);
+            //post laporan
+            const payload = {
+              userId: userId,
+              fileName: response.data.response.data,
+              keterangan: keterangan,
+              tanggalProduk: tanggal,
+              namaProduk: namaProduk,
+            };
+            axios
+              .post("http://localhost:3030/produk-siswa", payload, {
+                headers: {
+                  "Content-Type": "application/json",
+                  Authorization: `Bearer ${token}`, // Add your token or any other header here
+                },
+              })
+              .then((response) => {
+                setErrorType("success");
+                setErrorMessage(
+                  "Tambah Data Produk Siswa  " +
+                    response.data.response.errorMessage
+                );
+                setSnackBar(true);
+                setTimeout(() => {
+                  onClosed();
+                  //window.location.reload();
+                }, 1000);
+              })
+              .catch((e) => {
+                console.log("error :", e);
+                if (e.response.status === 401) {
+                  console.error(
+                    "Unauthorized access - perhaps you need to log in?"
+                  );
+                  setErrorType("error");
+                  setErrorMessage(
+                    "Unauthorized access - perhaps you need to log in?"
+                  );
+                  setTimeout(() => {
+                    setSnackBar(true);
+                    router.push("/Auth");
+                  }, 1000);
+                } else if (e.response.status === 500) {
+                  setErrorType("error");
+                  setErrorMessage(
+                    "Data Gagal diTambah " + e.response.data.errorMessage
+                  );
+                  setTimeout(() => {
+                    setSnackBar(true);
+                  }, 1000);
+                }
+              });
+          })
+          .catch((e) => {
+            console.log("error :", e);
+            if (e.response.status === 401) {
+              console.error(
+                "Unauthorized access - perhaps you need to log in?"
               );
-              setSnackBar(true);
+              setErrorType("error");
+              setErrorMessage(
+                "Unauthorized access - perhaps you need to log in?"
+              );
               setTimeout(() => {
-                onClosed();
-                window.location.reload();
+                setSnackBar(true);
+                router.push("/Auth");
               }, 1000);
-            })
-            .catch((e) => {
-              console.log("error :", e);
-              if (e.response.status === 401) {
-                console.error(
-                  "Unauthorized access - perhaps you need to log in?"
-                );
-                setErrorType("error");
-                setErrorMessage(
-                  "Unauthorized access - perhaps you need to log in?"
-                );
-                setTimeout(() => {
-                  setSnackBar(true);
-                  router.push("/Auth");
-                }, 1000);
-              } else if (e.response.status === 500) {
-                setErrorType("error");
-                setErrorMessage(
-                  "Data Gagal diTambah " + e.response.data.errorMessage
-                );
-                setTimeout(() => {
-                  setSnackBar(true);
-                }, 1000);
-              }
-            });
-        })
-        .catch((e) => {
-          console.log("error :", e);
-          if (e.response.status === 401) {
-            console.error("Unauthorized access - perhaps you need to log in?");
-            setErrorType("error");
-            setErrorMessage(
-              "Unauthorized access - perhaps you need to log in?"
-            );
-            setTimeout(() => {
-              setSnackBar(true);
-              router.push("/Auth");
-            }, 1000);
-          } else if (e.response.status === 500) {
-            setErrorType("error");
-            setErrorMessage(
-              "Data Gagal diTambah " + e.response.data.errorMessage
-            );
-            setTimeout(() => {
-              setSnackBar(true);
-            }, 1000);
-          }
-        });
-
+            } else if (e.response.status === 500) {
+              setErrorType("error");
+              setErrorMessage(
+                "Data Gagal diTambah " + e.response.data.errorMessage
+              );
+              setTimeout(() => {
+                setSnackBar(true);
+              }, 1000);
+            }
+          });
+      } else {
+        setErrorFieldEmpty("data cannot be empty");
+      }
     } catch (error) {
       console.error("Error fetching laporan: ", error);
     }
@@ -190,13 +197,17 @@ const AddGaleriBeritaForm = ({ isOpen, userData = [], onClosed }: Props) => {
                     className="ps-2 mt-1 block w-80 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                     required
                   />
+                  {errorFieldEmpty && (
+                    <p className="text-red-500 text-[10px]">
+                      {errorFieldEmpty}
+                    </p>
+                  )}
                 </div>
                 <div className="mb-4">
                   <label className="block text-sm font-medium text-gray-700">
                     Keterangan
                   </label>
-                  <input
-                    type="text"
+                  <textarea
                     value={keterangan}
                     onChange={(e) => setKeterangan(e.target.value)}
                     className="ps-2 mt-1 block w-80 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
@@ -216,8 +227,12 @@ const AddGaleriBeritaForm = ({ isOpen, userData = [], onClosed }: Props) => {
                     className="ps-2 pr-2 mt-1 block w-80 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                     required
                   />
+                  {errorFieldEmpty && (
+                    <p className="text-red-500 text-[10px]">
+                      {errorFieldEmpty}
+                    </p>
+                  )}
                 </div>
-                
               </div>
               <div>
                 <div className="mb-4">
@@ -230,6 +245,11 @@ const AddGaleriBeritaForm = ({ isOpen, userData = [], onClosed }: Props) => {
                     className="ps-2 mt-1 block md:w-[700px] sm:w-96 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                     required
                   />
+                  {errorFieldEmpty && (
+                    <p className="text-red-500 text-[10px]">
+                      {errorFieldEmpty}
+                    </p>
+                  )}
                 </div>
               </div>
               <div className="flex flex-row justify-end gap-4">
@@ -261,7 +281,7 @@ const AddGaleriBeritaForm = ({ isOpen, userData = [], onClosed }: Props) => {
     );
     const userItem = (
       <>
-         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="flex items-center justify-center bg-gray-100">
             <div className="bg-white rounded-lg shadow-lg p-8 max-w-screen-md w-full">
               <h2 className="text-2xl font-bold mb-4">Add Produk Siswa</h2>
@@ -277,13 +297,17 @@ const AddGaleriBeritaForm = ({ isOpen, userData = [], onClosed }: Props) => {
                     className="ps-2 mt-1 block w-80 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                     required
                   />
+                  {errorFieldEmpty && (
+                    <p className="text-red-500 text-[10px]">
+                      {errorFieldEmpty}
+                    </p>
+                  )}
                 </div>
                 <div className="mb-4">
                   <label className="block text-sm font-medium text-gray-700">
                     Keterangan
                   </label>
-                  <input
-                    type="text"
+                  <textarea
                     value={keterangan}
                     onChange={(e) => setKeterangan(e.target.value)}
                     className="ps-2 mt-1 block w-80 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
@@ -303,8 +327,12 @@ const AddGaleriBeritaForm = ({ isOpen, userData = [], onClosed }: Props) => {
                     className="ps-2 pr-2 mt-1 block w-80 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                     required
                   />
+                  {errorFieldEmpty && (
+                    <p className="text-red-500 text-[10px]">
+                      {errorFieldEmpty}
+                    </p>
+                  )}
                 </div>
-                
               </div>
               <div>
                 <div className="mb-4">
@@ -317,6 +345,11 @@ const AddGaleriBeritaForm = ({ isOpen, userData = [], onClosed }: Props) => {
                     className="ps-2 mt-1 block md:w-[700px] sm:w-96 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                     required
                   />
+                  {errorFieldEmpty && (
+                    <p className="text-red-500 text-[10px]">
+                      {errorFieldEmpty}
+                    </p>
+                  )}
                 </div>
               </div>
               <div className="flex flex-row justify-end gap-4">

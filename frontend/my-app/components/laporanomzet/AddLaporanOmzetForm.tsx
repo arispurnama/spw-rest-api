@@ -97,7 +97,6 @@ const AddLaporanOmzetForm = ({ isOpen, userData = [], onClosed }: Props) => {
                 setSnackBar(true);
                 setTimeout(() => {
                   onClosed();
-
                   //window.location.href("/laporanomzet").reload();
                 }, 1000);
               })

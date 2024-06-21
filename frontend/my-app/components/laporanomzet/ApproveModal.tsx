@@ -42,7 +42,7 @@ const ApproveModal = ({isOpen, Id, page, onClosed}:Props) => {
           setSnackBar(true);
           setTimeout(() =>{
             onClosed();
-            window.location.reload();
+            //window.location.reload();
           }, 1000)
         })
         .catch((e) => {

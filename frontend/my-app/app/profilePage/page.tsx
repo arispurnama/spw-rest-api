@@ -130,8 +130,8 @@ const ProfilePage = () => {
           </div>
         </div>
       </div>
-      <div className="m-3 pr-2 pl-2">
-        <div className="flex flex-row justify-end items-center">
+      <div className="m-3 pr-2 pl-2 bg-white rounded-md">
+        <div className="flex flex-row justify-end pt-2 items-center">
           <Link href={"/profilePage/gantipassword"} className="flex flex-row justify-center bg-red-400 rounded-md w-40 h-9 text-center items-center">
             Ganti Password
           </Link>

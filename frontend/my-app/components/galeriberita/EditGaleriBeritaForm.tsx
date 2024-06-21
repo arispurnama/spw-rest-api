@@ -7,6 +7,7 @@ import SnackBar from "../SnackBar";
 //library
 import Select, { SelectChangeEvent } from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
+import { Textarea } from "@nextui-org/react";
 
 type Props = {
   isOpen: boolean;
@@ -39,6 +40,7 @@ const EditGaleriBeritatForm = ({
     const [errorType, setErrorType] = useState("");
     const [showSnackBar, setSnackBar] = useState(false);
     const [userIdState, setUserIdState] = useState(DataEdit?.userId);
+    const [errorFieldEmpty, setErrorFieldEmpty] = useState("");
     //localstorage
     let token = null;
     try {
@@ -71,57 +73,61 @@ const EditGaleriBeritatForm = ({
             })
             .then((response) => {
               console.log("response upload : ", response.data.response.data);
-              //post laporan
-              const payload = {
-                userId: userId,
-                fileName: response.data.response.data,
-                keterangan: keterangan,
-                tanggal: tanggal,
-                judulBerita: judulBerita,
-              };
-              axios
-                .patch(`http://localhost:3030/galeri-berita/${id}`, payload, {
-                  headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${token}`, // Add your token or any other header here
-                  },
-                })
-                .then((response) => {
-                  setErrorType("success");
-                  setErrorMessage(
-                    "Edit Data Galeri Berita " +
-                      response.data.response.errorMessage
-                  );
-                  setSnackBar(true);
-                  setTimeout(() => {
-                    onClosed();
-                    window.location.reload();
-                  }, 1000);
-                })
-                .catch((e) => {
-                  console.log("error :", e);
-                  if (e.response.status === 401) {
-                    console.error(
-                      "Unauthorized access - perhaps you need to log in?"
-                    );
-                    setErrorType("error");
+              if (tanggal != "" && judulBerita != "") {
+                //post laporan
+                const payload = {
+                  userId: userId,
+                  fileName: response.data.response.data,
+                  keterangan: keterangan,
+                  tanggal: tanggal,
+                  judulBerita: judulBerita,
+                };
+                axios
+                  .patch(`http://localhost:3030/galeri-berita/${id}`, payload, {
+                    headers: {
+                      "Content-Type": "application/json",
+                      Authorization: `Bearer ${token}`, // Add your token or any other header here
+                    },
+                  })
+                  .then((response) => {
+                    setErrorType("success");
                     setErrorMessage(
-                      "Unauthorized access - perhaps you need to log in?"
+                      "Edit Data Galeri Berita " +
+                        response.data.response.errorMessage
                     );
+                    setSnackBar(true);
                     setTimeout(() => {
-                      setSnackBar(true);
-                      router.push("/Auth");
+                      onClosed();
+                      window.location.reload();
                     }, 1000);
-                  } else if (e.response.status === 500) {
-                    setErrorType("error");
-                    setErrorMessage(
-                      "Data Gagal di Edit" + e.response.data.errorMessage
-                    );
-                    setTimeout(() => {
-                      setSnackBar(true);
-                    }, 1000);
-                  }
-                });
+                  })
+                  .catch((e) => {
+                    console.log("error :", e);
+                    if (e.response.status === 401) {
+                      console.error(
+                        "Unauthorized access - perhaps you need to log in?"
+                      );
+                      setErrorType("error");
+                      setErrorMessage(
+                        "Unauthorized access - perhaps you need to log in?"
+                      );
+                      setTimeout(() => {
+                        setSnackBar(true);
+                        router.push("/Auth");
+                      }, 1000);
+                    } else if (e.response.status === 500) {
+                      setErrorType("error");
+                      setErrorMessage(
+                        "Data Gagal di Edit" + e.response.data.errorMessage
+                      );
+                      setTimeout(() => {
+                        setSnackBar(true);
+                      }, 1000);
+                    }
+                  });
+              } else {
+                setErrorFieldEmpty("data cannot be empty");
+              }
             })
             .catch((e) => {
               console.log("error :", e);
@@ -147,55 +153,60 @@ const EditGaleriBeritatForm = ({
                 }, 1000);
               }
             });
-        } //post laporan
-        const payload = {
-          userId: userId,
-          keterangan: keterangan,
-          tanggal: tanggal,
-          judulBerita: judulBerita,
-        };
-        axios
-          .patch(`http://localhost:3030/galeri-berita/${id}`, payload, {
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`, // Add your token or any other header here
-            },
-          })
-          .then((response) => {
-            setErrorType("success");
-            setErrorMessage(
-              "Edit Data Galeri Berita " + response.data.response.errorMessage
-            );
-            setSnackBar(true);
-            setTimeout(() => {
-              onClosed();
-              window.location.reload();
-            }, 1000);
-          })
-          .catch((e) => {
-            console.log("error :", e);
-            if (e.response.status === 401) {
-              console.error(
-                "Unauthorized access - perhaps you need to log in?"
-              );
-              setErrorType("error");
+        }
+        if (tanggal != "" && judulBerita != "") {
+          //post laporan
+          const payload = {
+            userId: userId,
+            keterangan: keterangan,
+            tanggal: tanggal,
+            judulBerita: judulBerita,
+          };
+          axios
+            .patch(`http://localhost:3030/galeri-berita/${id}`, payload, {
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`, // Add your token or any other header here
+              },
+            })
+            .then((response) => {
+              setErrorType("success");
               setErrorMessage(
-                "Unauthorized access - perhaps you need to log in?"
+                "Edit Data Galeri Berita " + response.data.response.errorMessage
               );
+              setSnackBar(true);
               setTimeout(() => {
-                setSnackBar(true);
-                router.push("/Auth");
+                onClosed();
+                //window.location.reload();
               }, 1000);
-            } else if (e.response.status === 500) {
-              setErrorType("error");
-              setErrorMessage(
-                "Data Gagal di Edit " + e.response.data.errorMessage
-              );
-              setTimeout(() => {
-                setSnackBar(true);
-              }, 1000);
-            }
-          });
+            })
+            .catch((e) => {
+              console.log("error :", e);
+              if (e.response.status === 401) {
+                console.error(
+                  "Unauthorized access - perhaps you need to log in?"
+                );
+                setErrorType("error");
+                setErrorMessage(
+                  "Unauthorized access - perhaps you need to log in?"
+                );
+                setTimeout(() => {
+                  setSnackBar(true);
+                  router.push("/Auth");
+                }, 1000);
+              } else if (e.response.status === 500) {
+                setErrorType("error");
+                setErrorMessage(
+                  "Data Gagal di Edit " + e.response.data.errorMessage
+                );
+                setTimeout(() => {
+                  setSnackBar(true);
+                }, 1000);
+              }
+            });
+        } else {
+          setErrorFieldEmpty("data cannot be empty");
+        }
       } catch (error) {
         console.error("Error fetching laporan: ", error);
       }
@@ -216,7 +227,9 @@ const EditGaleriBeritatForm = ({
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
             <div className="flex items-center justify-center bg-gray-100">
               <div className="bg-white rounded-lg shadow-lg p-8 max-w-screen-md w-full">
-                <h2 className="text-2xl font-bold mb-4">Edit GALERI / BERITA</h2>
+                <h2 className="text-2xl font-bold mb-4">
+                  Edit GALERI / BERITA
+                </h2>
                 <div className="md:flex md:flex-row md:gap-16 sm:flex sm:flex-col sm:gap-4 md:pb-2 ms:pb-2">
                   <div>
                     <label className="block text-sm font-medium text-gray-700">
@@ -250,14 +263,18 @@ const EditGaleriBeritatForm = ({
                       onChange={(e) => setJudulBerita(e.target.value)}
                       className="ps-2 mt-1 block w-80 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                       required
-                    />
+                    />{" "}
+                    {errorFieldEmpty && (
+                      <p className="text-red-500 text-[10px]">
+                        {errorFieldEmpty}
+                      </p>
+                    )}
                   </div>
                   <div className="mb-4">
                     <label className="block text-sm font-medium text-gray-700">
                       Keterangan
                     </label>
-                    <input
-                      type="text"
+                    <Textarea
                       value={keterangan}
                       onChange={(e) => setKeterangan(e.target.value)}
                       className="ps-2 mt-1 block w-80 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
@@ -276,7 +293,12 @@ const EditGaleriBeritatForm = ({
                       onChange={(e: any) => setTanggal(e.target.value)}
                       className="ps-2 pr-2 mt-1 block w-80 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                       required
-                    />
+                    />{" "}
+                    {errorFieldEmpty && (
+                      <p className="text-red-500 text-[10px]">
+                        {errorFieldEmpty}
+                      </p>
+                    )}
                   </div>
                 </div>
                 <div>
@@ -337,14 +359,18 @@ const EditGaleriBeritatForm = ({
                       onChange={(e) => setJudulBerita(e.target.value)}
                       className="ps-2 mt-1 block w-80 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                       required
-                    />
+                    />{" "}
+                    {errorFieldEmpty && (
+                      <p className="text-red-500 text-[10px]">
+                        {errorFieldEmpty}
+                      </p>
+                    )}
                   </div>
                   <div className="mb-4">
                     <label className="block text-sm font-medium text-gray-700">
                       Keterangan
                     </label>
-                    <input
-                      type="text"
+                    <Textarea
                       value={keterangan}
                       onChange={(e) => setKeterangan(e.target.value)}
                       className="ps-2 mt-1 block w-80 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
@@ -363,7 +389,12 @@ const EditGaleriBeritatForm = ({
                       onChange={(e: any) => setTanggal(e.target.value)}
                       className="ps-2 pr-2 mt-1 block w-80 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                       required
-                    />
+                    />{" "}
+                    {errorFieldEmpty && (
+                      <p className="text-red-500 text-[10px]">
+                        {errorFieldEmpty}
+                      </p>
+                    )}
                   </div>
                 </div>
                 <div>

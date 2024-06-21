@@ -42,7 +42,10 @@ const EditLaporanOmzetForm = ({
     const [buktiTransaksiCurrent, setBuktiTransaksiCurrent] = useState(
       laporanDataEdit?.buktiTransaksi
     );
-  const [laporanMinggu, setLaporanMinggu] = useState(laporanDataEdit?.laporanMingguan);
+    const [laporanMinggu, setLaporanMinggu] = useState(
+      laporanDataEdit?.laporanMingguan
+    );
+    const [errorFieldEmpty, setErrorFieldEmpty] = useState("");
     //localstorage
     let token = null;
     try {
@@ -75,58 +78,68 @@ const EditLaporanOmzetForm = ({
             })
             .then((response) => {
               console.log("response upload : ", response.data.response.data);
+
               //post laporan
-              const payload = {
-                userId: userId,
-                jumlahOmzet: omzet,
-                JumlahModal: modal,
-                keterangan: keterangan,
-                tanggalLaporan: tanggal,
-                buktiTransaksi: response.data.response.data,
-                laporanMingguan: laporanMinggu,
-              };
-              axios
-                .patch(`http://localhost:3030/laporan-omzet/${id}`, payload, {
-                  headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${token}`, // Add your token or any other header here
-                  },
-                })
-                .then((response) => {
-                  setErrorType("success");
-                  setErrorMessage(
-                    "Edit Data Laporan " + response.data.response.errorMessage
-                  );
-                  setSnackBar(true);
-                  setTimeout(() => {
-                    onClosed();
-                    window.location.reload();
-                  }, 1000);
-                })
-                .catch((e) => {
-                  console.log("error :", e);
-                  if (e.response.status === 401) {
-                    console.error(
-                      "Unauthorized access - perhaps you need to log in?"
-                    );
-                    setErrorType("error");
+              if (
+                omzet != "" &&
+                modal != "" &&
+                tanggal != "" &&
+                laporanMinggu != ""
+              ) {
+                const payload = {
+                  userId: userId,
+                  jumlahOmzet: omzet,
+                  JumlahModal: modal,
+                  keterangan: keterangan,
+                  tanggalLaporan: tanggal,
+                  buktiTransaksi: response.data.response.data,
+                  laporanMingguan: laporanMinggu,
+                };
+                axios
+                  .patch(`http://localhost:3030/laporan-omzet/${id}`, payload, {
+                    headers: {
+                      "Content-Type": "application/json",
+                      Authorization: `Bearer ${token}`, // Add your token or any other header here
+                    },
+                  })
+                  .then((response) => {
+                    setErrorType("success");
                     setErrorMessage(
-                      "Unauthorized access - perhaps you need to log in?"
+                      "Edit Data Laporan " + response.data.response.errorMessage
                     );
+                    setSnackBar(true);
                     setTimeout(() => {
-                      setSnackBar(true);
-                      router.push("/Auth");
+                      onClosed();
+                      window.location.reload();
                     }, 1000);
-                  } else if (e.response.status === 500) {
-                    setErrorType("error");
-                    setErrorMessage(
-                      "Data Gagal di Edit" + e.response.data.errorMessage
-                    );
-                    setTimeout(() => {
-                      setSnackBar(true);
-                    }, 1000);
-                  }
-                });
+                  })
+                  .catch((e) => {
+                    console.log("error :", e);
+                    if (e.response.status === 401) {
+                      console.error(
+                        "Unauthorized access - perhaps you need to log in?"
+                      );
+                      setErrorType("error");
+                      setErrorMessage(
+                        "Unauthorized access - perhaps you need to log in?"
+                      );
+                      setTimeout(() => {
+                        setSnackBar(true);
+                        router.push("/Auth");
+                      }, 1000);
+                    } else if (e.response.status === 500) {
+                      setErrorType("error");
+                      setErrorMessage(
+                        "Data Gagal di Edit" + e.response.data.errorMessage
+                      );
+                      setTimeout(() => {
+                        setSnackBar(true);
+                      }, 1000);
+                    }
+                  });
+              } else {
+                setErrorFieldEmpty("data cannot be empty");
+              }
             })
             .catch((e) => {
               console.log("error :", e);
@@ -152,57 +165,67 @@ const EditLaporanOmzetForm = ({
                 }, 1000);
               }
             });
-        } //post laporan
-        const payload = {
-          userId: userId,
-          jumlahOmzet: omzet,
-          JumlahModal: modal,
-          keterangan: keterangan,
-          tanggalLaporan: tanggal,
-          laporanMingguan: laporanMinggu,
-        };
-        axios
-          .patch(`http://localhost:3030/laporan-omzet/${id}`, payload, {
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`, // Add your token or any other header here
-            },
-          })
-          .then((response) => {
-            setErrorType("success");
-            setErrorMessage(
-              "Edit Data Laporan " + response.data.response.errorMessage
-            );
-            setSnackBar(true);
-            setTimeout(() => {
-              onClosed();
-              window.location.reload();
-            }, 1000);
-          })
-          .catch((e) => {
-            console.log("error :", e);
-            if (e.response.status === 401) {
-              console.error(
-                "Unauthorized access - perhaps you need to log in?"
-              );
-              setErrorType("error");
+        }
+        //post laporan
+        if (
+          omzet != "" &&
+          modal != "" &&
+          tanggal != "" &&
+          laporanMinggu != ""
+        ) {
+          const payload = {
+            userId: userId,
+            jumlahOmzet: omzet,
+            JumlahModal: modal,
+            keterangan: keterangan,
+            tanggalLaporan: tanggal,
+            laporanMingguan: laporanMinggu,
+          };
+          axios
+            .patch(`http://localhost:3030/laporan-omzet/${id}`, payload, {
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`, // Add your token or any other header here
+              },
+            })
+            .then((response) => {
+              setErrorType("success");
               setErrorMessage(
-                "Unauthorized access - perhaps you need to log in?"
+                "Edit Data Laporan " + response.data.response.errorMessage
               );
+              setSnackBar(true);
               setTimeout(() => {
-                setSnackBar(true);
-                router.push("/Auth");
+                onClosed();
+                //window.location.reload();
               }, 1000);
-            } else if (e.response.status === 500) {
-              setErrorType("error");
-              setErrorMessage(
-                "Data Gagal di Edit " + e.response.data.errorMessage
-              );
-              setTimeout(() => {
-                setSnackBar(true);
-              }, 1000);
-            }
-          });
+            })
+            .catch((e) => {
+              console.log("error :", e);
+              if (e.response.status === 401) {
+                console.error(
+                  "Unauthorized access - perhaps you need to log in?"
+                );
+                setErrorType("error");
+                setErrorMessage(
+                  "Unauthorized access - perhaps you need to log in?"
+                );
+                setTimeout(() => {
+                  setSnackBar(true);
+                  router.push("/Auth");
+                }, 1000);
+              } else if (e.response.status === 500) {
+                setErrorType("error");
+                setErrorMessage(
+                  "Data Gagal di Edit " + e.response.data.errorMessage
+                );
+                setTimeout(() => {
+                  setSnackBar(true);
+                }, 1000);
+              }
+            });
+        } else {
+          setErrorFieldEmpty("data cannot be empty");
+        }
       } catch (error) {
         console.error("Error fetching laporan: ", error);
       }
@@ -261,6 +284,11 @@ const EditLaporanOmzetForm = ({
                       className="ps-2 mt-1 block w-80 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                       required
                     />
+                    {errorFieldEmpty && (
+                      <p className="text-red-500 text-[10px]">
+                        {errorFieldEmpty}
+                      </p>
+                    )}
                   </div>
                   <div className="mb-4">
                     <label className="block text-sm font-medium text-gray-700">
@@ -273,6 +301,11 @@ const EditLaporanOmzetForm = ({
                       className="ps-2 mt-1 block w-80 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                       required
                     />
+                    {errorFieldEmpty && (
+                      <p className="text-red-500 text-[10px]">
+                        {errorFieldEmpty}
+                      </p>
+                    )}
                   </div>
                 </div>
                 <div className="md:flex md:flex-row md:gap-16 sm:flex sm:flex-col sm:gap-4">
@@ -288,6 +321,11 @@ const EditLaporanOmzetForm = ({
                       required
                       pattern="\d{2}/\d{2}/\d{4}"
                     />
+                    {errorFieldEmpty && (
+                      <p className="text-red-500 text-[10px]">
+                        {errorFieldEmpty}
+                      </p>
+                    )}
                   </div>
                   <div className="mb-4">
                     <label className="block text-sm font-medium text-gray-700">
@@ -327,6 +365,11 @@ const EditLaporanOmzetForm = ({
                         Minggu 4
                       </MenuItem>
                     </Select>
+                    {errorFieldEmpty && (
+                      <p className="text-red-500 text-[10px]">
+                        {errorFieldEmpty}
+                      </p>
+                    )}
                   </div>
                   <div className="mb-4"></div>
                 </div>
@@ -392,6 +435,11 @@ const EditLaporanOmzetForm = ({
                       className="ps-2 mt-1 block w-80 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                       required
                     />
+                    {errorFieldEmpty && (
+                      <p className="text-red-500 text-[10px]">
+                        {errorFieldEmpty}
+                      </p>
+                    )}
                   </div>
                   <div className="mb-4">
                     <label className="block text-sm font-medium text-gray-700">
@@ -404,6 +452,11 @@ const EditLaporanOmzetForm = ({
                       className="ps-2 mt-1 block w-80 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                       required
                     />
+                    {errorFieldEmpty && (
+                      <p className="text-red-500 text-[10px]">
+                        {errorFieldEmpty}
+                      </p>
+                    )}
                   </div>
                 </div>
                 <div className="md:flex md:flex-row md:gap-16 sm:flex sm:flex-col sm:gap-4">
@@ -418,6 +471,11 @@ const EditLaporanOmzetForm = ({
                       className="mt-1 block w-80 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                       required
                     />
+                    {errorFieldEmpty && (
+                      <p className="text-red-500 text-[10px]">
+                        {errorFieldEmpty}
+                      </p>
+                    )}
                   </div>
                   <div className="mb-4">
                     <label className="block text-sm font-medium text-gray-700">
@@ -457,6 +515,11 @@ const EditLaporanOmzetForm = ({
                         Minggu 4
                       </MenuItem>
                     </Select>
+                    {errorFieldEmpty && (
+                      <p className="text-red-500 text-[10px]">
+                        {errorFieldEmpty}
+                      </p>
+                    )}
                   </div>
                   <div className="mb-4"></div>
                 </div>

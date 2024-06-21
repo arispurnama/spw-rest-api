@@ -7,6 +7,7 @@ import SnackBar from "../SnackBar";
 //library
 import Select, { SelectChangeEvent } from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
+import { Textarea } from "@nextui-org/react";
 
 type Props = {
   isOpen: boolean;
@@ -39,6 +40,8 @@ const EditProdukSiswaForm = ({
     const [errorType, setErrorType] = useState("");
     const [showSnackBar, setSnackBar] = useState(false);
     const [userIdState, setUserIdState] = useState(DataEdit?.userId);
+    const [errorFieldEmpty, setErrorFieldEmpty] = useState("");
+
     //localstorage
     let token = null;
     try {
@@ -71,57 +74,61 @@ const EditProdukSiswaForm = ({
             })
             .then((response) => {
               console.log("response upload : ", response.data.response.data);
-              //post laporan
-              const payload = {
-                userId: userId,
-                fileName: response.data.response.data,
-                keterangan: keterangan,
-                tanggalProduk: tanggal,
-                namaProduk: namaProduk,
-              };
-              axios
-                .patch(`http://localhost:3030/produk-siswa/${id}`, payload, {
-                  headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${token}`, // Add your token or any other header here
-                  },
-                })
-                .then((response) => {
-                  setErrorType("success");
-                  setErrorMessage(
-                    "Edit Data Produk Siswa " +
-                      response.data.response.errorMessage
-                  );
-                  setSnackBar(true);
-                  setTimeout(() => {
-                    onClosed();
-                    window.location.reload();
-                  }, 1000);
-                })
-                .catch((e) => {
-                  console.log("error :", e);
-                  if (e.response.status === 401) {
-                    console.error(
-                      "Unauthorized access - perhaps you need to log in?"
-                    );
-                    setErrorType("error");
+              if (namaProduk != "" && tanggal != "") {
+                //post laporan
+                const payload = {
+                  userId: userId,
+                  fileName: response.data.response.data,
+                  keterangan: keterangan,
+                  tanggalProduk: tanggal,
+                  namaProduk: namaProduk,
+                };
+                axios
+                  .patch(`http://localhost:3030/produk-siswa/${id}`, payload, {
+                    headers: {
+                      "Content-Type": "application/json",
+                      Authorization: `Bearer ${token}`, // Add your token or any other header here
+                    },
+                  })
+                  .then((response) => {
+                    setErrorType("success");
                     setErrorMessage(
-                      "Unauthorized access - perhaps you need to log in?"
+                      "Edit Data Produk Siswa " +
+                        response.data.response.errorMessage
                     );
+                    setSnackBar(true);
                     setTimeout(() => {
-                      setSnackBar(true);
-                      router.push("/Auth");
+                      onClosed();
+                      //window.location.reload();
                     }, 1000);
-                  } else if (e.response.status === 500) {
-                    setErrorType("error");
-                    setErrorMessage(
-                      "Data Gagal di Edit" + e.response.data.errorMessage
-                    );
-                    setTimeout(() => {
-                      setSnackBar(true);
-                    }, 1000);
-                  }
-                });
+                  })
+                  .catch((e) => {
+                    console.log("error :", e);
+                    if (e.response.status === 401) {
+                      console.error(
+                        "Unauthorized access - perhaps you need to log in?"
+                      );
+                      setErrorType("error");
+                      setErrorMessage(
+                        "Unauthorized access - perhaps you need to log in?"
+                      );
+                      setTimeout(() => {
+                        setSnackBar(true);
+                        router.push("/Auth");
+                      }, 1000);
+                    } else if (e.response.status === 500) {
+                      setErrorType("error");
+                      setErrorMessage(
+                        "Data Gagal di Edit" + e.response.data.errorMessage
+                      );
+                      setTimeout(() => {
+                        setSnackBar(true);
+                      }, 1000);
+                    }
+                  });
+              } else {
+                setErrorFieldEmpty("data cannot be empty");
+              }
             })
             .catch((e) => {
               console.log("error :", e);
@@ -147,55 +154,60 @@ const EditProdukSiswaForm = ({
                 }, 1000);
               }
             });
-        } //post laporan
-        const payload = {
-          userId: userId,
-          keterangan: keterangan,
-          tanggalProduk: tanggal,
-          namaProduk: namaProduk,
-        };
-        axios
-          .patch(`http://localhost:3030/produk-siswa/${id}`, payload, {
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`, // Add your token or any other header here
-            },
-          })
-          .then((response) => {
-            setErrorType("success");
-            setErrorMessage(
-              "Edit Data Produk Siswa " + response.data.response.errorMessage
-            );
-            setSnackBar(true);
-            setTimeout(() => {
-              onClosed();
-              window.location.reload();
-            }, 1000);
-          })
-          .catch((e) => {
-            console.log("error :", e);
-            if (e.response.status === 401) {
-              console.error(
-                "Unauthorized access - perhaps you need to log in?"
-              );
-              setErrorType("error");
+        }
+        if (namaProduk != "" && tanggal != "") {
+          //post laporan
+          const payload = {
+            userId: userId,
+            keterangan: keterangan,
+            tanggalProduk: tanggal,
+            namaProduk: namaProduk,
+          };
+          axios
+            .patch(`http://localhost:3030/produk-siswa/${id}`, payload, {
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`, // Add your token or any other header here
+              },
+            })
+            .then((response) => {
+              setErrorType("success");
               setErrorMessage(
-                "Unauthorized access - perhaps you need to log in?"
+                "Edit Data Produk Siswa " + response.data.response.errorMessage
               );
+              setSnackBar(true);
               setTimeout(() => {
-                setSnackBar(true);
-                router.push("/Auth");
+                onClosed();
+                window.location.reload();
               }, 1000);
-            } else if (e.response.status === 500) {
-              setErrorType("error");
-              setErrorMessage(
-                "Data Gagal di Edit " + e.response.data.errorMessage
-              );
-              setTimeout(() => {
-                setSnackBar(true);
-              }, 1000);
-            }
-          });
+            })
+            .catch((e) => {
+              console.log("error :", e);
+              if (e.response.status === 401) {
+                console.error(
+                  "Unauthorized access - perhaps you need to log in?"
+                );
+                setErrorType("error");
+                setErrorMessage(
+                  "Unauthorized access - perhaps you need to log in?"
+                );
+                setTimeout(() => {
+                  setSnackBar(true);
+                  router.push("/Auth");
+                }, 1000);
+              } else if (e.response.status === 500) {
+                setErrorType("error");
+                setErrorMessage(
+                  "Data Gagal di Edit " + e.response.data.errorMessage
+                );
+                setTimeout(() => {
+                  setSnackBar(true);
+                }, 1000);
+              }
+            });
+        } else {
+          setErrorFieldEmpty("data cannot be empty");
+        }
       } catch (error) {
         console.error("Error fetching laporan: ", error);
       }
@@ -235,7 +247,12 @@ const EditProdukSiswaForm = ({
                           {name.firstName}
                         </MenuItem>
                       ))}
-                    </Select>
+                    </Select>{" "}
+                    {errorFieldEmpty && (
+                      <p className="text-red-500 text-[10px]">
+                        {errorFieldEmpty}
+                      </p>
+                    )}
                   </div>
                   <div></div>
                 </div>
@@ -250,14 +267,18 @@ const EditProdukSiswaForm = ({
                       onChange={(e) => setNamaProduk(e.target.value)}
                       className="ps-2 mt-1 block w-80 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                       required
-                    />
+                    />{" "}
+                    {errorFieldEmpty && (
+                      <p className="text-red-500 text-[10px]">
+                        {errorFieldEmpty}
+                      </p>
+                    )}
                   </div>
                   <div className="mb-4">
                     <label className="block text-sm font-medium text-gray-700">
                       Keterangan
                     </label>
-                    <input
-                      type="text"
+                    <textarea
                       value={keterangan}
                       onChange={(e) => setKeterangan(e.target.value)}
                       className="ps-2 mt-1 block w-80 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
@@ -276,7 +297,12 @@ const EditProdukSiswaForm = ({
                       onChange={(e: any) => setTanggal(e.target.value)}
                       className="ps-2 pr-2 mt-1 block w-80 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                       required
-                    />
+                    />{" "}
+                    {errorFieldEmpty && (
+                      <p className="text-red-500 text-[10px]">
+                        {errorFieldEmpty}
+                      </p>
+                    )}
                   </div>
                 </div>
                 <div>
@@ -337,14 +363,18 @@ const EditProdukSiswaForm = ({
                       onChange={(e) => setNamaProduk(e.target.value)}
                       className="ps-2 mt-1 block w-80 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                       required
-                    />
+                    />{" "}
+                    {errorFieldEmpty && (
+                      <p className="text-red-500 text-[10px]">
+                        {errorFieldEmpty}
+                      </p>
+                    )}
                   </div>
                   <div className="mb-4">
                     <label className="block text-sm font-medium text-gray-700">
                       Keterangan
                     </label>
-                    <input
-                      type="text"
+                    <textarea
                       value={keterangan}
                       onChange={(e) => setKeterangan(e.target.value)}
                       className="ps-2 mt-1 block w-80 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
@@ -363,7 +393,12 @@ const EditProdukSiswaForm = ({
                       onChange={(e: any) => setTanggal(e.target.value)}
                       className="ps-2 pr-2 mt-1 block w-80 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                       required
-                    />
+                    />{" "}
+                    {errorFieldEmpty && (
+                      <p className="text-red-500 text-[10px]">
+                        {errorFieldEmpty}
+                      </p>
+                    )}
                   </div>
                 </div>
                 <div>

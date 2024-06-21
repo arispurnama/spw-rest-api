@@ -31,6 +31,7 @@ const AddUserAdminForm = ({ isOpen, roleData = [], onClosed }: Props) => {
   const [passwordError, setPasswordError] = useState("");
   const [emailError, setEmailError] = useState("");
   const [classError, setClassError] = useState("");
+  const [errorFieldEmpty, setErrorFieldEmpty] = useState("");
 
   if (!isOpen) return null;
   let token = null;
@@ -43,47 +44,61 @@ const AddUserAdminForm = ({ isOpen, roleData = [], onClosed }: Props) => {
   }
   const handleSubmit = async () => {
     try {
-      const response = await axios
-        .post(
-          "http://localhost:3030/user",
-          {
-            roleId,
-            firstName,
-            lastName,
-            email,
-            kelas,
-            password,
-            username,
-            noHp,
-          },
-          {
-            headers: {
-              Authorization: `Bearer ${token}`, // Add your token or any other header here
+      if (
+        roleId != "" &&
+        firstName != "" &&
+        lastName != "" &&
+        email != "" &&
+        kelas != "" &&
+        password != "" &&
+        username != "" &&
+        noHp != ""
+      ) {
+        const response = await axios
+          .post(
+            "http://localhost:3030/user",
+            {
+              roleId,
+              firstName,
+              lastName,
+              email,
+              kelas,
+              password,
+              username,
+              noHp,
             },
-          }
-        )
-        .then((response) => {
-          console.log(response);
-          setErrorType("success");
-          setErrorMessage(
-            "Add User Berhasil " + response.data.response.errorMessage
-          );
-          setTimeout(() => {
-            setSnackBar(true);
-            window.location.href = "/datauser";
-          }, 1000);
-          clearForm();
-        })
-        .catch((e) => {
-          console.log("error :", e);
-          setErrorType("error");
-          setErrorMessage(
-            "Add User Gagal " + e.response.data.response.errorMessage
-          );
-          setTimeout(() => {
-            setSnackBar(true);  
-          }, 1000);
-        });
+            {
+              headers: {
+                Authorization: `Bearer ${token}`, // Add your token or any other header here
+              },
+            }
+          )
+          .then((response) => {
+            console.log(response);
+            setErrorType("success");
+            setErrorMessage(
+              "Add User Berhasil " + response.data.response.errorMessage
+            );
+            setTimeout(() => {
+              setSnackBar(true);
+              onClosed();
+              //window.location.href = "/datauser";
+            }, 1000);
+            clearForm();
+          })
+          .catch((e) => {
+            console.log("error :", e);
+            setErrorType("error");
+            setErrorMessage(
+              "Add User Gagal " + e.response.data.response.errorMessage
+            );
+            setTimeout(() => {
+              setSnackBar(true);
+            }, 1000);
+          });
+      } else {
+        setErrorFieldEmpty("data cannot be empty");
+      }
     } catch (error) {
       console.error("Error adding user: ", error);
       setErrorMessage("Failed to add user.");
@@ -204,6 +219,9 @@ const AddUserAdminForm = ({ isOpen, roleData = [], onClosed }: Props) => {
                   </MenuItem>
                 ))}
               </Select>
+              {errorFieldEmpty && (
+                <p className="text-red-500 text-[10px]">{errorFieldEmpty}</p>
+              )}
             </div>
           </div>
           <div className="md:flex md:flex-row md:gap-16 sm:flex sm:flex-col sm:gap-2">
@@ -218,7 +236,10 @@ const AddUserAdminForm = ({ isOpen, roleData = [], onClosed }: Props) => {
                 className="ps-2 mt-1 block w-80 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                 required
                 placeholder="First Name"
-              />
+              />{" "}
+              {errorFieldEmpty && (
+                <p className="text-red-500 text-[10px]">{errorFieldEmpty}</p>
+              )}
             </div>
             <div className="mb-4">
               <label className="block text-sm font-medium text-gray-700">
@@ -231,7 +252,10 @@ const AddUserAdminForm = ({ isOpen, roleData = [], onClosed }: Props) => {
                 className="ps-2 mt-1 block w-80 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                 required
                 placeholder="Last Name"
-              />
+              />{" "}
+              {errorFieldEmpty && (
+                <p className="text-red-500 text-[10px]">{errorFieldEmpty}</p>
+              )}
             </div>
           </div>
           <div className="md:flex md:flex-row md:gap-16 sm:flex sm:flex-col sm:gap-2">
@@ -249,6 +273,9 @@ const AddUserAdminForm = ({ isOpen, roleData = [], onClosed }: Props) => {
               />
               {emailError && (
                 <p className="text-red-500 text-[10px]">{emailError}</p>
+              )}{" "}
+              {errorFieldEmpty && (
+                <p className="text-red-500 text-[10px]">{errorFieldEmpty}</p>
               )}
             </div>
             <div className="mb-4">
@@ -265,6 +292,9 @@ const AddUserAdminForm = ({ isOpen, roleData = [], onClosed }: Props) => {
               />
               {classError && (
                 <p className="text-red-500 text-[10px]">{classError}</p>
+              )}{" "}
+              {errorFieldEmpty && (
+                <p className="text-red-500 text-[10px]">{errorFieldEmpty}</p>
               )}
             </div>
           </div>
@@ -286,6 +316,9 @@ const AddUserAdminForm = ({ isOpen, roleData = [], onClosed }: Props) => {
               />
               {noHpErrorMessage && (
                 <div className="text-red-500 mt-2">{noHpErrorMessage}</div>
+              )}{" "}
+              {errorFieldEmpty && (
+                <p className="text-red-500 text-[10px]">{errorFieldEmpty}</p>
               )}
             </div>
           </div>
@@ -301,7 +334,10 @@ const AddUserAdminForm = ({ isOpen, roleData = [], onClosed }: Props) => {
                 className="ps-2 mt-1 block w-80 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                 required
                 placeholder="Username"
-              />
+              />{" "}
+              {errorFieldEmpty && (
+                <p className="text-red-500 text-[10px]">{errorFieldEmpty}</p>
+              )}
             </div>
             <div className="mb-4">
               <label className="block text-sm font-medium text-gray-700">
@@ -317,6 +353,9 @@ const AddUserAdminForm = ({ isOpen, roleData = [], onClosed }: Props) => {
               />
               {passwordError && (
                 <p className="text-red-500 text-[10px]">{passwordError}</p>
+              )}{" "}
+              {errorFieldEmpty && (
+                <p className="text-red-500 text-[10px]">{errorFieldEmpty}</p>
               )}
             </div>
           </div>

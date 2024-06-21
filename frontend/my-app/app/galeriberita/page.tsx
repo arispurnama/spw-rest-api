@@ -160,7 +160,7 @@ const DataGaleriBerita = () => {
                 <input
                   type="text"
                   placeholder="search"
-                  className="rounded-full px-10"
+                  className="rounded-[18px] px-20 ps-4"
                   onChange={(e: any) => {
                     handleSearchChange(e.target.value);
                     console.log(searchQuery);
@@ -232,19 +232,28 @@ const DataGaleriBerita = () => {
           Id={selectedUserId}
           url="galeri-berita"
           page="galeriberita"
-          onClosed={() => setShowModal(false)}
+          onClosed={() => {
+            setShowModal(false);
+            getAllDataGaleriBerita();
+          }}
         />
         <AddGaleriBeritaForm
           isOpen={showModalAdd}
           userData={dataUser}
-          onClosed={() => setShowModalAdd(false)}
+          onClosed={() => {
+            setShowModalAdd(false);
+            getAllDataGaleriBerita();
+          }}
         />
         <EditLaporanOmzetForm
           isOpen={showModalEdit}
           id={selectedUserId}
           DataEdit={dataEdit}
           userData={dataUser}
-          onClosed={() => setShowModalEdit(false)}
+          onClosed={() => {
+            setShowModalEdit(false);
+            getAllDataGaleriBerita();
+          }}
         />
         <div className="pt-14">
           <Footer />

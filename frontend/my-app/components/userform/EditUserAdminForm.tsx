@@ -41,6 +41,7 @@ const EditUserAdminForm = ({
     const [passwordError, setPasswordError] = useState("");
     const [emailError, setEmailError] = useState("");
     const [classError, setClassError] = useState("");
+    const [errorFieldEmpty, setErrorFieldEmpty] = useState("");
     let token = null;
     try {
       token = localStorage.access_token
@@ -51,44 +52,57 @@ const EditUserAdminForm = ({
     }
     const handleSubmit = async () => {
       try {
-        const response = await axios
-          .patch(
-            `http://localhost:3030/user/${Id}`,
-            {
-              roleId,
-              firstName,
-              lastName,
-              email,
-              kelas,
-              username,
-              noHp,
-            },
-            {
-              headers: {
-                Authorization: `Bearer ${token}`, // Add your token or any other header here
+        if (
+          roleId != "" &&
+          firstName != "" &&
+          lastName != "" &&
+          email != "" &&
+          kelas != "" &&
+          username != "" &&
+          noHp != ""
+        ) {
+          const response = await axios
+            .patch(
+              `http://localhost:3030/user/${Id}`,
+              {
+                roleId,
+                firstName,
+                lastName,
+                email,
+                kelas,
+                username,
+                noHp,
               },
-            }
-          )
-          .then((response) => {
-            console.log(response);
-            setErrorType("success");
-            setErrorMessage("Edit User Berhasil ");
-            setTimeout(() => {
-              setSnackBar(true);
-              window.location.href = "/datauser";
-            }, 1000);
-            clearForm();
-          })
-          .catch((e) => {
-            console.log("error :", e);
-            setErrorType("error");
-            setErrorMessage(
-              "Add User Gagal " + e.response.data.response.errorMessage
-            );
-            setTimeout(() => {
-              setSnackBar(true);
-            }, 1000);
-          });
+              {
+                headers: {
+                  Authorization: `Bearer ${token}`, // Add your token or any other header here
+                },
+              }
+            )
+            .then((response) => {
+              console.log(response);
+              setErrorType("success");
+              setErrorMessage("Edit User Berhasil ");
+              setTimeout(() => {
+                setSnackBar(true);
+                onClosed();
+                //window.location.href = "/datauser";
+              }, 1000);
+              clearForm();
+            })
+            .catch((e) => {
+              console.log("error :", e);
+              setErrorType("error");
+              setErrorMessage(
+                "Add User Gagal " + e.response.data.response.errorMessage
+              );
+              setTimeout(() => {
+                setSnackBar(true);
+              }, 1000);
+            });
+        } else {
+          setErrorFieldEmpty("data cannot be empty");
+        }
       } catch (error) {
         console.error("Error adding user: ", error);
         setErrorMessage("Failed to add user.");
@@ -210,6 +224,9 @@ const EditUserAdminForm = ({
                     </MenuItem>
                   ))}
                 </Select>
+                {errorFieldEmpty && (
+                  <p className="text-red-500 text-[10px]">{errorFieldEmpty}</p>
+                )}
               </div>
             </div>
             <div className="md:flex md:flex-row md:gap-16 sm:flex sm:flex-col sm:gap-2">
@@ -225,6 +242,9 @@ const EditUserAdminForm = ({
                   required
                   placeholder="First Name"
                 />
+                {errorFieldEmpty && (
+                  <p className="text-red-500 text-[10px]">{errorFieldEmpty}</p>
+                )}
               </div>
               <div className="mb-4">
                 <label className="block text-sm font-medium text-gray-700">
@@ -238,6 +258,9 @@ const EditUserAdminForm = ({
                   required
                   placeholder="Last Name"
                 />
+                {errorFieldEmpty && (
+                  <p className="text-red-500 text-[10px]">{errorFieldEmpty}</p>
+                )}
               </div>
             </div>
             <div className="md:flex md:flex-row md:gap-16 sm:flex sm:flex-col sm:gap-2">
@@ -256,6 +279,9 @@ const EditUserAdminForm = ({
                 {emailError && (
                   <p className="text-red-500 text-[10px]">{emailError}</p>
                 )}
+                {errorFieldEmpty && (
+                  <p className="text-red-500 text-[10px]">{errorFieldEmpty}</p>
+                )}
               </div>
               <div className="mb-4">
                 <label className="block text-sm font-medium text-gray-700">
@@ -271,6 +297,9 @@ const EditUserAdminForm = ({
                 />
                 {classError && (
                   <p className="text-red-500 text-[10px]">{classError}</p>
+                )}
+                {errorFieldEmpty && (
+                  <p className="text-red-500 text-[10px]">{errorFieldEmpty}</p>
                 )}
               </div>
             </div>
@@ -293,6 +322,9 @@ const EditUserAdminForm = ({
                 {noHpErrorMessage && (
                   <div className="text-red-500 mt-2">{noHpErrorMessage}</div>
                 )}
+                {errorFieldEmpty && (
+                  <p className="text-red-500 text-[10px]">{errorFieldEmpty}</p>
+                )}
               </div>
               <div className="mb-4">
                 <label className="block text-sm font-medium text-gray-700">
@@ -306,6 +338,9 @@ const EditUserAdminForm = ({
                   required
                   placeholder="Username"
                 />
+                {errorFieldEmpty && (
+                  <p className="text-red-500 text-[10px]">{errorFieldEmpty}</p>
+                )}
               </div>
             </div>
 
