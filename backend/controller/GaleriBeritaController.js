@@ -76,6 +76,8 @@ export const getSummary = async (req, res) => {
   try {
     let filter = "";
     let search = req.query.search;
+    let page = req.query.page;
+    let size = req.query.size;
     let searchColumn =
       'gb.id, "userId", to_char(gb.tanggal, ' +
       "'YYYY-MM-DD'" +
@@ -84,14 +86,14 @@ export const getSummary = async (req, res) => {
       'SELECT count(*) over () TOTALDATA, gb.id, "userId", to_char(gb.tanggal, ' +
       "'YYYY-MM-DD'" +
       ')  as tanggal, gb."fileName", gb.keterangan, gb."judulBerita", gb."createdAt", gb."updatedAt", gb."deletedAt", gb."isDeleted", tmu.id as userId, tmu."firstName", tmu."lastName",tmu."fullName", tmu."noHp" FROM public."TB_TR_GALERI_BERITA" as gb inner join public."TB_MD_USER" tmu on gb."userId" = tmu.id where gb."isDeleted" = false and tmu."isDeleted" = false ';
-
+    let paggination = PaginationHelper(page, size);
     let queryString = QueryHelper(
       query,
       filter,
       search,
       searchColumn,
       "",
-      "",
+      paggination,
       ""
     );
     const response = await db.query(queryString, {

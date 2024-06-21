@@ -4,8 +4,68 @@ import LaporanOmzet from "../model/Laporan.js";
 import { PaginationHelper, QueryHelper } from "../Helper/QueryHalper.js";
 import Users from "../model/Users.js";
 import { sendEmail } from "../middleware/senEmail.js";
+import excelJS from "exceljs";
 
 const { QueryTypes } = Sequelize;
+
+export const exportLaporan = async (req, res) => {
+  const workbook = new excelJS.Workbook(); // Create a new workbook
+  const worksheet = workbook.addWorksheet("data"); // New Worksheet
+  const path = "D:\\Tugas Akhir\\Project\\FullStack-1\\file\\"; // Path to download excel
+  // Column for data in excel. key must match data key
+  worksheet.columns = [
+    { header: "S no.", key: "s_no", width: 10 },
+    { header: "First Name", key: "firstName", width: 10 },
+    { header: "Last Name", key: "lastName", width: 10 },
+    { header: "Full Name", key: "fullName", width: 10 },
+    { header: "Class", key: "kelas", width: 10 },
+    { header: "No. Handphone", key: "noHp", width: 10 },
+    { header: "Modal", key: "JumlahModal", width: 10 },
+    { header: "Omzet", key: "jumlahOmzet", width: 10 },
+    { header: "Laporan Mingguan", key: "laporanMingguan", width: 10 },
+    { header: "Keterangan", key: "keterangan", width: 10 },
+  ];
+  //
+  let query =
+    'SELECT count(*) over () TOTALDATA, tmu."fullName", tmu."noHp",tl.id, tl."userId",tl."laporanMingguan", to_char(tl."tanggalLaporan", ' +
+    "'YYYY-MM-DD'" +
+    ')  as tanggalLaporan, tl."jumlahOmzet", tl."JumlahModal", tl."buktiTransaksi", tl.keterangan, tl."isApproved", tl."createdAt", tl."updatedAt", tl."deletedAt", tl."isDeleted", tmu."firstName", tmu."lastName" FROM public."TB_TR_LAPORAN" tl inner join public."TB_MD_USER" tmu on tl."userId" = tmu.id where tl."isDeleted" = false and tmu."isDeleted" = false ';
+  let queryString = QueryHelper(query, "", "", "", "", "", "");
+  const response = await db.query(queryString, {
+    type: QueryTypes.SELECT,
+  });
+  console.log("responsee  : ", response);
+  // Looping through User data
+  let counter = 1;
+  response.forEach((user) => {
+    user.s_no = counter;
+    worksheet.addRow(user); // Add data in worksheet
+    counter++;
+  });
+  // Making first line in excel bold
+  worksheet.getRow(1).eachCell((cell) => {
+    cell.font = { bold: true };
+  });
+  try {
+    // Write to buffer
+    const buffer = await workbook.xlsx.writeBuffer();
+
+    // Set headers for file download
+    res.setHeader(
+      "Content-Type",
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    );
+    res.setHeader("Content-Disposition", 'attachment; filename="data.xlsx"');
+
+    // Send buffer
+    res.send(buffer);
+  } catch (err) {
+    res.send({
+      status: "error",
+      message: "Something went wrong",
+    });
+  }
+};
 
 export const getListLaporanOmzet = async (req, res) => {
   const responsePagination = new Object();
@@ -333,7 +393,7 @@ export const approveLaporan = async (req, res) => {
     });
 
     let payload = {
-      isApproved : true,
+      isApproved: true,
     };
     await LaporanOmzet.update(payload, {
       where: {
@@ -341,14 +401,18 @@ export const approveLaporan = async (req, res) => {
       },
     });
     let html = ``;
-    await sendEmail(result.email, "Notification Approve Report", "Your report has been approved!!!", html);
+    await sendEmail(
+      result.email,
+      "Notification Approve Report",
+      "Your report has been approved!!!",
+      html
+    );
     response.data = result;
     response.error = false;
     response.errorMessage = "Sukses";
     res.status(201).json({ response });
   } catch (error) {
-    
-    console.log('Approve error : ', error)
+    console.log("Approve error : ", error);
     response.error = true;
     response.errorMessage = error.message;
     res.status(500).json({ response });
@@ -359,23 +423,16 @@ export const getSumModalAndOmzet = async (req, res) => {
   const responsePagination = new Object();
   try {
     let filter = "";
-    let userId = req.param.userId;
+    let userId = req.params.userId;
+    console.log("user   : ", userId)
     if (userId != null && userId != undefined) {
       filter += ` and tmu.id = ${userId} `;
     }
 
     let query =
       'SELECT SUM(tl."jumlahOmzet") as jumlahOmzet, SUM(tl."JumlahModal") as JumlahModal FROM public."TB_TR_LAPORAN" tl inner join public."TB_MD_USER" tmu on tl."userId" = tmu.id where tl."isDeleted" = false and tmu."isDeleted" = false';
-    
-    let queryString = QueryHelper(
-      query,
-      filter,
-      "",
-      "",
-      "",
-      "",
-      ""
-    );
+
+    let queryString = QueryHelper(query, filter, "", "", "", "", "");
     const response = await db.query(queryString, {
       type: QueryTypes.SELECT,
     });

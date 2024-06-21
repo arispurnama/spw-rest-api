@@ -130,6 +130,22 @@ const DataLaporanOmzet = () => {
     }
   };
 
+  const handleDownload = async () => {
+    try {
+      const response = await axios.get("http://localhost:3030/export-laporan", {
+        responseType: "blob", // Important for handling binary data
+      });
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", "data.xlsx"); // Specify the file name
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch (error) {
+      console.error("Error downloading the file:", error);
+    }
+  };
   useEffect(() => {
     var x: any = localStorage.getItem("user");
     const userLocalStorage: any = JSON.parse(x);
@@ -164,7 +180,7 @@ const DataLaporanOmzet = () => {
     <main>
       <div>
         <Header />
-        <div className="md:h-[800px] sm:h-[400px]">
+        <div className="h-screen">
           <div className="flex flex-col gap-4 m-0">
             <div>
               <h2 className="pl-10 pt-8 pb-0 m-0 font-bold text-2xl">
@@ -182,6 +198,12 @@ const DataLaporanOmzet = () => {
                     console.log(searchQuery);
                   }}
                 />
+                <button
+                  onClick={() => handleDownload()}
+                  className="px-6 py-2 bg-green-400 rounded-lg"
+                >
+                  Download Laporan
+                </button>
                 <button
                   onClick={() => setShowModalAdd(true)}
                   className="px-6 py-2 bg-blue-400 rounded-lg"

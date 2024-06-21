@@ -337,7 +337,7 @@ export const CheckUsername = async (req, res) => {
   }
 };
 
-export const ubahPassword = async (req, res) => {
+export const forgotPassword = async (req, res) => {
   const response = new Object();
   try {
     const dataUser = await Users.findOne({
@@ -358,6 +358,47 @@ export const ubahPassword = async (req, res) => {
 
     payload.password = hashesPassword;
     payload.otp = null;
+    await Users.update(payload, {
+      where: {
+        id: dataUser.id,
+      },
+    });
+
+    response.error = false;
+    response.errorMessage = "Sukses";
+    res.status(201).json({ response });
+  } catch (error) {
+    console.log(error.message);
+  }
+};
+
+export const gantiPassword = async (req, res) => {
+  const response = new Object();
+  try {
+    const {password, newPassword} = req.body;
+    const dataUser = await Users.findOne({
+      where: {
+        id: req.params.id,
+      },
+    });
+    console.log("data user : ", dataUser);
+    if (dataUser == null) {
+      response.error = true;
+      response.errorMessage = "gagal!!!";
+      res.status(500).json({ response });
+    }
+    const passwordMatch = bcrypt.compareSync(password, dataUser.password);
+    if (!passwordMatch) {
+      response.error = true;
+      response.errorMessage = "the old password is not the same";
+      return res.status(500).json({ response });
+    }
+
+    let hashesPassword = await bcrypt.hash(newPassword, 10);
+    let payload ={
+      password: hashesPassword
+    }
+
     await Users.update(payload, {
       where: {
         id: dataUser.id,

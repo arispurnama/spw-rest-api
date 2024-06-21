@@ -1,5 +1,5 @@
 import express from "express"
-import {getListUsers, createUsers, updateUsers, deleteUsers, Registers, Login, CheckUsername, ubahPassword, getUserById} from "../controller/UserController.js"
+import {getListUsers, createUsers, updateUsers, deleteUsers, Registers, Login, CheckUsername, getUserById, forgotPassword, gantiPassword} from "../controller/UserController.js"
 import { verifyToken } from "../middleware/auth.js";
 
 const route = express.Router();
@@ -12,6 +12,7 @@ route.get('/user/:id', verifyToken, getUserById);
 route.post('/register', Registers);
 route.post('/login', Login);
 route.post('/CheckUsername/:username', CheckUsername);
-route.post('/ubahPassword/:otp', ubahPassword);
+route.post('/ubahPassword/:otp', forgotPassword);
+route.post('/gantiPassword/:id', verifyToken, gantiPassword);
 
 export default route;

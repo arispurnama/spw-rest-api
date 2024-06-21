@@ -31,6 +31,7 @@ const AddLaporanOmzetForm = ({ isOpen, userData = [], onClosed }: Props) => {
   const [laporanMinggu, setLaporanMinggu] = useState("");
   const [errorOmzet, setErrorOmzet] = useState("");
   const [errorModal, setErrorModal] = useState("");
+  const [errorFieldEmpty, setErrorFieldEmpty] = useState("");
 
   if (!isOpen) return null;
 
@@ -54,94 +55,104 @@ const AddLaporanOmzetForm = ({ isOpen, userData = [], onClosed }: Props) => {
 
       //post file
       let payloadFormData = new FormData();
-      if (buktiTransaksi) {
+      if (
+        buktiTransaksi != null &&
+        omzet != "" &&
+        modal != "" &&
+        tanggal != "" &&
+        laporanMinggu != ""
+      ) {
         payloadFormData.append("file", buktiTransaksi);
-      }
-      console.log("id bukti transaksi : ", payloadFormData);
-      axios
-        .post("http://localhost:3030/upload", payloadFormData, {
-          headers: {
-            "Content-Type": "multipart/form-data",
-            Authorization: `Bearer ${token}`, // Add your token or any other header here
-          },
-        })
-        .then((response) => {
-          console.log("response upload : ", response.data.response.data);
-          //post laporan
-          const payload = {
-            userId: userId,
-            jumlahOmzet: omzet,
-            JumlahModal: modal,
-            keterangan: keterangan,
-            tanggalLaporan: tanggal,
-            buktiTransaksi: response.data.response.data,
-            laporanMingguan: laporanMinggu,
-          };
-          axios
-            .post("http://localhost:3030/laporan-omzet", payload, {
-              headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${token}`, // Add your token or any other header here
-              },
-            })
-            .then((response) => {
-              setErrorType("success");
-              setErrorMessage(
-                "Tambah Data Laporan " + response.data.response.errorMessage
+        axios
+          .post("http://localhost:3030/upload", payloadFormData, {
+            headers: {
+              "Content-Type": "multipart/form-data",
+              Authorization: `Bearer ${token}`, // Add your token or any other header here
+            },
+          })
+          .then((response) => {
+            console.log("response upload : ", response.data.response.data);
+            //post laporan
+            const payload = {
+              userId: userId,
+              jumlahOmzet: omzet,
+              JumlahModal: modal,
+              keterangan: keterangan,
+              tanggalLaporan: tanggal,
+              buktiTransaksi: response.data.response.data,
+              laporanMingguan: laporanMinggu,
+            };
+            axios
+              .post("http://localhost:3030/laporan-omzet", payload, {
+                headers: {
+                  "Content-Type": "application/json",
+                  Authorization: `Bearer ${token}`, // Add your token or any other header here
+                },
+              })
+              .then((response) => {
+                setErrorType("success");
+                setErrorMessage(
+                  "Tambah Data Laporan " + response.data.response.errorMessage
+                );
+                setSnackBar(true);
+                setTimeout(() => {
+                  onClosed();
+
+                  //window.location.href("/laporanomzet").reload();
+                }, 1000);
+              })
+              .catch((e) => {
+                console.log("error :", e);
+                if (e.response.status === 401) {
+                  console.error(
+                    "Unauthorized access - perhaps you need to log in?"
+                  );
+                  setErrorType("error");
+                  setErrorMessage(
+                    "Unauthorized access - perhaps you need to log in?"
+                  );
+                  setTimeout(() => {
+                    setSnackBar(true);
+                    router.push("/Auth");
+                  }, 1000);
+                } else if (e.response.status === 500) {
+                  setErrorType("error");
+                  setErrorMessage(
+                    "Data Gagal diTambah " + e.response.data.errorMessage
+                  );
+                  setTimeout(() => {
+                    setSnackBar(true);
+                  }, 1000);
+                }
+              });
+          })
+          .catch((e) => {
+            console.log("error :", e);
+            if (e.response.status === 401) {
+              console.error(
+                "Unauthorized access - perhaps you need to log in?"
               );
-              setSnackBar(true);
+              setErrorType("error");
+              setErrorMessage(
+                "Unauthorized access - perhaps you need to log in?"
+              );
               setTimeout(() => {
-                onClosed();
-                window.location.reload();
+                setSnackBar(true);
+                router.push("/Auth");
               }, 1000);
-            })
-            .catch((e) => {
-              console.log("error :", e);
-              if (e.response.status === 401) {
-                console.error(
-                  "Unauthorized access - perhaps you need to log in?"
-                );
-                setErrorType("error");
-                setErrorMessage(
-                  "Unauthorized access - perhaps you need to log in?"
-                );
-                setTimeout(() => {
-                  setSnackBar(true);
-                  router.push("/Auth");
-                }, 1000);
-              } else if (e.response.status === 500) {
-                setErrorType("error");
-                setErrorMessage(
-                  "Data Gagal diTambah " + e.response.data.errorMessage
-                );
-                setTimeout(() => {
-                  setSnackBar(true);
-                }, 1000);
-              }
-            });
-        })
-        .catch((e) => {
-          console.log("error :", e);
-          if (e.response.status === 401) {
-            console.error("Unauthorized access - perhaps you need to log in?");
-            setErrorType("error");
-            setErrorMessage(
-              "Unauthorized access - perhaps you need to log in?"
-            );
-            setTimeout(() => {
-              setSnackBar(true);
-              router.push("/Auth");
-            }, 1000);
-          } else if (e.response.status === 500) {
-            setErrorType("error");
-            setErrorMessage(
-              "Data Gagal diTambah " + e.response.data.errorMessage
-            );
-            setTimeout(() => {
-              setSnackBar(true);
-            }, 1000);
-          }
-        });
+            } else if (e.response.status === 500) {
+              setErrorType("error");
+              setErrorMessage(
+                "Data Gagal diTambah " + e.response.data.errorMessage
+              );
+              setTimeout(() => {
+                setSnackBar(true);
+              }, 1000);
+            }
+          });
+      } else {
+        setErrorFieldEmpty("data cannot be empty");
+      }
     } catch (error) {
       console.error("Error fetching laporan: ", error);
     }
@@ -214,6 +225,11 @@ const AddLaporanOmzetForm = ({ isOpen, userData = [], onClosed }: Props) => {
                       </MenuItem>
                     ))}
                   </Select>
+                  {errorFieldEmpty && (
+                    <p className="text-red-500 text-[10px]">
+                      {errorFieldEmpty}
+                    </p>
+                  )}
                 </div>
               </div>
               <div className="md:flex md:flex-row md:gap-16 sm:flex sm:flex-col sm:gap-4">
@@ -231,6 +247,12 @@ const AddLaporanOmzetForm = ({ isOpen, userData = [], onClosed }: Props) => {
                   {errorOmzet && (
                     <p className="text-red-500 text-[10px]">{errorOmzet}</p>
                   )}
+
+                  {errorFieldEmpty && (
+                    <p className="text-red-500 text-[10px]">
+                      {errorFieldEmpty}
+                    </p>
+                  )}
                 </div>
                 <div className="mb-4">
                   <label className="block text-sm font-medium text-gray-700">
@@ -242,8 +264,14 @@ const AddLaporanOmzetForm = ({ isOpen, userData = [], onClosed }: Props) => {
                     onChange={(e) => handleChangeModal(e.target?.value)}
                     className="ps-2 mt-1 block w-80 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                     required
-                  /> {errorModal && (
+                  />{" "}
+                  {errorModal && (
                     <p className="text-red-500 text-[10px]">{errorModal}</p>
+                  )}
+                  {errorFieldEmpty && (
+                    <p className="text-red-500 text-[10px]">
+                      {errorFieldEmpty}
+                    </p>
                   )}
                 </div>
               </div>
@@ -259,6 +287,12 @@ const AddLaporanOmzetForm = ({ isOpen, userData = [], onClosed }: Props) => {
                     className="ps-2 pr-2 mt-1 block w-80 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                     required
                   />
+
+                  {errorFieldEmpty && (
+                    <p className="text-red-500 text-[10px]">
+                      {errorFieldEmpty}
+                    </p>
+                  )}
                 </div>
                 <div className="mb-4">
                   <label className="block text-sm font-medium text-gray-700">
@@ -298,6 +332,12 @@ const AddLaporanOmzetForm = ({ isOpen, userData = [], onClosed }: Props) => {
                       Minggu 4
                     </MenuItem>
                   </Select>
+
+                  {errorFieldEmpty && (
+                    <p className="text-red-500 text-[10px]">
+                      {errorFieldEmpty}
+                    </p>
+                  )}
                 </div>
                 <div className="mb-4"></div>
               </div>
@@ -312,6 +352,12 @@ const AddLaporanOmzetForm = ({ isOpen, userData = [], onClosed }: Props) => {
                     className="ps-2 mt-1 block sm:w-80 md:w-[700px] py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                     required
                   />
+
+                  {errorFieldEmpty && (
+                    <p className="text-red-500 text-[10px]">
+                      {errorFieldEmpty}
+                    </p>
+                  )}
                 </div>
               </div>
               <div className="flex flex-row justify-end gap-4">
@@ -362,6 +408,11 @@ const AddLaporanOmzetForm = ({ isOpen, userData = [], onClosed }: Props) => {
                   {errorOmzet && (
                     <p className="text-red-500 text-[10px]">{errorOmzet}</p>
                   )}
+                  {errorFieldEmpty && (
+                    <p className="text-red-500 text-[10px]">
+                      {errorFieldEmpty}
+                    </p>
+                  )}
                 </div>
                 <div className="mb-4">
                   <label className="block text-sm font-medium text-gray-700">
@@ -377,6 +428,11 @@ const AddLaporanOmzetForm = ({ isOpen, userData = [], onClosed }: Props) => {
                   {errorModal && (
                     <p className="text-red-500 text-[10px]">{errorModal}</p>
                   )}
+                  {errorFieldEmpty && (
+                    <p className="text-red-500 text-[10px]">
+                      {errorFieldEmpty}
+                    </p>
+                  )}
                 </div>
               </div>
               <div className="md:flex md:flex-row md:gap-16 sm:flex sm:flex-col sm:gap-4">
@@ -391,6 +447,12 @@ const AddLaporanOmzetForm = ({ isOpen, userData = [], onClosed }: Props) => {
                     className="mt-1 block w-80 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                     required
                   />
+
+                  {errorFieldEmpty && (
+                    <p className="text-red-500 text-[10px]">
+                      {errorFieldEmpty}
+                    </p>
+                  )}
                 </div>
                 <div className="mb-4">
                   <label className="block text-sm font-medium text-gray-700">
@@ -430,6 +492,12 @@ const AddLaporanOmzetForm = ({ isOpen, userData = [], onClosed }: Props) => {
                       Minggu 4
                     </MenuItem>
                   </Select>
+
+                  {errorFieldEmpty && (
+                    <p className="text-red-500 text-[10px]">
+                      {errorFieldEmpty}
+                    </p>
+                  )}
                 </div>
                 <div className="mb-4"></div>
               </div>
@@ -444,6 +512,12 @@ const AddLaporanOmzetForm = ({ isOpen, userData = [], onClosed }: Props) => {
                     className="ps-2 mt-1 block sm:w-80 md:w-[700px] py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                     required
                   />
+
+                  {errorFieldEmpty && (
+                    <p className="text-red-500 text-[10px]">
+                      {errorFieldEmpty}
+                    </p>
+                  )}
                 </div>
               </div>
 

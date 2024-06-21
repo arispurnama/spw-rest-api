@@ -1,8 +1,6 @@
 "use client";
 import React from "react";
 import { useState } from "react";
-import base from "@/service/baseService";
-import baseService from "@/service/baseService";
 import axios from "axios";
 import SnackBar from "@/components/SnackBar";
 import Link from "next/link";
@@ -157,6 +155,14 @@ const Login = () => {
             href="/register"
           >
             Create new account
+          </Link>
+        </div>
+        <div className="text-center mt-4">
+          <Link
+            className="inline-block align-baseline font-bold text-sm text-blue-500 hover:text-blue-800"
+            href="/"
+          >
+            Back
           </Link>
         </div>
       </div>

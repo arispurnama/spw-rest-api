@@ -148,7 +148,7 @@ const DataGaleriBerita = () => {
     <main>
       <div>
         <Header />
-        <div className="md:h-[800px] sm:h-[400px]">
+        <div className="h-screen">
           <div className="flex flex-col gap-4 m-0">
             <div>
               <h2 className="pl-10 pt-8 pb-0 m-0 font-bold text-2xl">

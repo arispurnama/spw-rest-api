@@ -77,7 +77,7 @@ const Header = () => {
           </button>
         </div>
         <div className="px-7 py-2 hover:bg-white hover:rounded-full hover:px-7 hover:py-2 hover:text-black">
-          <button onClick={() => router.push("/datauser")}>Data User</button>
+          <button onClick={() => router.push("/datauser")}>Data Siswa</button>
         </div>
       </>
     );
@@ -164,7 +164,7 @@ const Header = () => {
   return (
     <header className="min-h-28 bg-teal-900 text-white z-50 w-full top-0 sticky flex flex-row">
       <div className="container flex justify-between py-4 px-6">
-        <div>
+        <div className="hover:cursor-pointer">
           <div className="flex flex-row gap-4 items-center">
             <div
               className="p-0 max-w-20 max-h-5"

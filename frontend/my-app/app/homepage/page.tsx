@@ -10,7 +10,14 @@ import { useRouter } from "next/navigation";
 import Gambar from "@/public/images/gambar-bg-1.jpg";
 import Footer from "@/components/Footer";
 import { stringify } from "querystring";
-import { Pagination, TablePagination } from "@mui/material";
+import {
+  Box,
+  ImageList,
+  ImageListItem,
+  ImageListItemBar,
+  Pagination,
+  TablePagination,
+} from "@mui/material";
 
 export default function homepage() {
   const router = useRouter();
@@ -19,6 +26,22 @@ export default function homepage() {
 
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
+  const handleChangePage = (
+    event: React.MouseEvent<HTMLButtonElement> | null,
+    newPage: number
+  ) => {
+    setPage(newPage);
+    getAllDataGaleriBerita();
+  };
+
+  const handleChangeRowsPerPage = (
+    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+    getAllDataGaleriBerita();
+  };
+
   let token = null;
   try {
     token = localStorage.access_token
@@ -40,6 +63,10 @@ export default function homepage() {
         .get("http://localhost:3030/summary-dashboard", {
           headers: {
             Authorization: `Bearer ${token}`,
+          },
+          params: {
+            page: -1, // ganti dengan nilai yang sesuai
+            size: -1, // ganti dengan nilai yang sesuai
           },
         })
         .then((response) => {
@@ -73,50 +100,35 @@ export default function homepage() {
     console.log("split", result);
     return result;
   };
-  const handleChangePage = (event: unknown, newPage: number) => {
-    setPage(newPage);
-  };
 
-  const handleChangeRowsPerPage = (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    setRowsPerPage(+event.target.value);
-    setPage(0);
-  };
   return (
     <main>
       <Header />
-      <div className="md:h-[900px] sm:h-[500px] p-4 bg-gray-100">
-        <div className="flex flex-row justify-evenly flex-wrap">
-          {DataGaleriBerita?.slice(
-            page * rowsPerPage,
-            page * rowsPerPage + rowsPerPage
-          )?.map((row: any) => (
-            <div className="w-80 rounded-md " key={row.id}>
-              <Image
-                className="rounded-md border-"
-                src={`/uploads/${row.img}`}
-                alt={row.title}
-                width={900} // Replace with the actual width of your image
-                height={600} // Replace with the actual height of your image
-              />
-              <h2 className="font-bold text-2xl">{row.title}</h2>
-              <p className="text-xs">{row.author}</p>
-            </div>
-          ))}
-        </div>
+      <div className="h-screen p-4 bg-gray-100">
+        <Box sx={{ width: 1500, height: 700, overflowY: "scroll" }}>
+          <ImageList variant="masonry" cols={3} gap={8}>
+            {DataGaleriBerita?.map((item: any) => (
+              <ImageListItem key={item.img}>
+                <img
+                  srcSet={`/uploads/${item.img}?w=248&fit=crop&auto=format&dpr=2 2x`}
+                  src={`/uploads/${item.img}?w=248&fit=crop&auto=format`}
+                  alt={item.title}
+                  loading="lazy"
+                />
+                <ImageListItemBar position="below" title={item.author} />
+              </ImageListItem>
+            ))}
+          </ImageList>
+        </Box>
       </div>
-      <div>
-        <TablePagination
-          rowsPerPageOptions={[10, 25, 100]}
-          component="div"
-          count={DataGaleriBerita.length}
-          rowsPerPage={rowsPerPage}
-          page={page}
-          onPageChange={handleChangePage}
-          onRowsPerPageChange={handleChangeRowsPerPage}
-        />
-      </div>
+      <TablePagination
+        component="div"
+        count={DataGaleriBerita.length}
+        page={page}
+        onPageChange={handleChangePage}
+        rowsPerPage={rowsPerPage}
+        onRowsPerPageChange={handleChangeRowsPerPage}
+      />
       <div>
         <Footer />
       </div>

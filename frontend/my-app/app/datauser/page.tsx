@@ -154,11 +154,11 @@ const DataUser = () => {
     <main>
       <div>
         <Header />
-        <div className="md:h-[800px] sm:h-[400px]">
+        <div className="h-screen">
           <div className="flex flex-col gap-1 m-0">
             <div>
               <h2 className="pl-10 pt-8 pb-0 m-0 font-bold text-2xl">
-                DATA USER
+                DATA SISWA
               </h2>
             </div>
             <div className="flex flex-row justify-end pr-10 pt-0">
@@ -238,7 +238,7 @@ const DataUser = () => {
             </Paper>
           </div>
         </div>
-        <div>
+        <div className="pt-14">
           <Footer />
         </div>
         <DeleteConfirmationModal

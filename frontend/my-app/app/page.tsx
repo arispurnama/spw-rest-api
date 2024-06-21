@@ -9,29 +9,43 @@ import Gambar from "@/public/images/sekolah.jpeg";
 import Footer from "@/components/Footer";
 export default function Home() {
   const router = useRouter();
-
+  let user = null;
+  try {
+    user = localStorage.user ? JSON.parse(localStorage.user) : null;
+    //console.log("user for header", user);
+  } catch (e) {
+    console.error("Error parsing user from localStorage:", e);
+  }
   return (
-    <main>
-      <div>
-        <Header />
-        <div className="relative md:h-screen sm:h-[600px] flex flex-col justify-around bg-teal-100">
-          <Image
-            src={Gambar}
-            alt="Picture of the author"
-            className="blur-sm md:h-screen sm:h-[600px]"
-          />
-          <h6 className="absolute text-white font-bold z-10 left-2 top-5 sm:left-2 sm:top-5 sm:text-2xl md:left-10 md:top-[30%] md:text-4xl">
-            SEKOLAH PENCETAK WIRAUSAHA
-          </h6>
-          <div className="absolute text-white font-bold z-10 left-2 top-10 sm:left-2 sm:top-10 sm:max-w-[70%] md:left-10 md:top-[35%] md:max-w-[60%]">
-            Selamat Datang di Aplikasi SI JAGOAN ( Siswaku Jago Berjualan )
-            Program Sekolah Pencetak Wirausaha ( SPW ) SMKN SPP Tasikmalaya
+    <>
+      {user?.id ? (
+        setTimeout(() => {
+          router.push("/homepage");
+        }, 200)
+      ) : (
+        <main>
+          <div>
+            <Header />
+            <div className="relative md:h-screen sm:h-[600px] flex flex-col justify-around bg-teal-100">
+              <Image
+                src={Gambar}
+                alt="Picture of the author"
+                className="blur-sm md:h-screen sm:h-[600px]"
+              />
+              <h6 className="absolute text-white font-bold z-10 left-2 top-5 sm:left-2 sm:top-5 sm:text-2xl md:left-10 md:top-[30%] md:text-4xl">
+                SEKOLAH PENCETAK WIRAUSAHA
+              </h6>
+              <div className="absolute text-white font-bold z-10 left-2 top-10 sm:left-2 sm:top-10 sm:max-w-[70%] md:left-10 md:top-[35%] md:max-w-[60%]">
+                Selamat Datang di Aplikasi SI JAGOAN ( Siswaku Jago Berjualan )
+                Program Sekolah Pencetak Wirausaha ( SPW ) SMKN SPP Tasikmalaya
+              </div>
+            </div>
           </div>
-        </div>
-      </div>
-      <div>
-        <Footer />
-      </div>
-    </main>
+          <div>
+            <Footer />
+          </div>
+        </main>
+      )}
+    </>
   );
 }

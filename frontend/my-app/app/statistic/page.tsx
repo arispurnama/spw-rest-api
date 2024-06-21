@@ -20,6 +20,7 @@ import TablePagination from "@mui/material/TablePagination";
 import TableRow from "@mui/material/TableRow";
 import { BarChart } from "@mui/x-charts/BarChart";
 import { axisClasses } from "@mui/x-charts/ChartsAxis";
+import { MenuItem, Select, SelectChangeEvent } from "@mui/material";
 
 const chartSetting = {
   yAxis: [
@@ -43,8 +44,10 @@ const SummaryStatistik = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [dataset, setDataSet] = useState([]);
   const [isAdmin, setIsAdmin] = useState(false);
-  const [userIdParam, setUserIdParam] = useState('');
+  const [userIdParam, setUserIdParam] = useState("");
   const [roleName, setRoleName] = useState("");
+  const [dataUser, setDataUser] = useState([]);
+  const [userIdState, setUserIdState] = useState("");
 
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
@@ -114,8 +117,9 @@ const SummaryStatistik = () => {
             Authorization: `Bearer ${token}`,
           },
           params: {
-            isAdmin: user?.name === "Admin" ? true : false,
-            userId: user?.name === "Admin" ? null : user?.id,
+            isAdmin: isAdmin,
+            //user?.name === "Admin" ? true : false, user?.name === "Admin" ? null :
+            userId: userIdState === "" ? user?.id : userIdState,
           },
         })
         .then((response) => {
@@ -133,21 +137,52 @@ const SummaryStatistik = () => {
       console.log("Error fetching products: ", error);
     }
   };
-
+  const getUserAll = async () => {
+    try {
+      axios
+        .get("http://localhost:3030/list-user", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          params: {
+            page: -1, // ganti dengan nilai yang sesuai
+            size: -1, // ganti dengan nilai yang sesuai
+            //search: searchQuery,
+            //userId: user?.name == "Admin" ? null : user?.id,
+          },
+        })
+        .then((response) => {
+          setDataUser(response.data.data);
+        })
+        .catch((e) => {
+          console.log("error :", e);
+          if (e.response.status === 401) {
+            console.error("Unauthorized access - perhaps you need to log in?");
+            router.push("/Auth");
+          }
+        });
+    } catch (error) {
+      console.log("Error fetching products: ", error);
+    }
+  };
   useEffect(() => {
     var x: any = localStorage.getItem("user");
     let userLocalStorage: any = JSON.parse(x);
     setRoleName(userLocalStorage?.name);
-    setIsAdmin(true);
     getAllDataLaporanOmzet();
     getChart();
+    getUserAll();
   }, []);
 
   const handleSearchChange = (event: any) => {
     setSearchQuery(event);
     getAllDataLaporanOmzet();
   };
-
+  const handleChange = (event: SelectChangeEvent) => {
+    setUserIdState(event.target.value as string);
+    setIsAdmin(true as boolean);
+    getChart();
+  };
   return (
     <main>
       <div>
@@ -160,26 +195,54 @@ const SummaryStatistik = () => {
               </h2>
             </div>
           </div>
-          <div className="flex flex-row justify-center pl-4 pr-2">
-            <BarChart
-              dataset={dataset}
-              xAxis={[{ scaleType: "band", dataKey: "month" }]}
-              series={[
-                { dataKey: "minggu1", label: "minggu 1", valueFormatter },
-                { dataKey: "minggu2", label: "minggu 2", valueFormatter },
-                { dataKey: "minggu3", label: "minggu 3", valueFormatter },
-                { dataKey: "minggu4", label: "minggu 4", valueFormatter },
-              ]}
-              {...chartSetting}
-            />
+
+          <div className="pl-28 pt-8 pb-0 m-0 font-bold text-xl">SUM OMZET</div>
+          <div className="flex flex-row justify-end pr-10">
+            <div className="pl-20 flex flex-row items-end">
+              <div>
+                <label className="block text-sm font-medium text-gray-700">
+                  Nama Siswa
+                </label>
+                <Select
+                  labelId="demo-multiple-name-label"
+                  id="demo-multiple-name"
+                  value={userIdState}
+                  onChange={handleChange}
+                  label="Name"
+                  className="w-80 h-10"
+                >
+                  {dataUser?.map((name: any) => (
+                    <MenuItem key={name.id} value={name.id}>
+                      {name.firstName}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </div>
+            </div>
           </div>
+          <div>
+            <div className="flex flex-row justify-center pl-4 pr-2">
+              <BarChart
+                dataset={dataset}
+                xAxis={[{ scaleType: "band", dataKey: "month" }]}
+                series={[
+                  { dataKey: "minggu1", label: "minggu 1", valueFormatter },
+                  { dataKey: "minggu2", label: "minggu 2", valueFormatter },
+                  { dataKey: "minggu3", label: "minggu 3", valueFormatter },
+                  { dataKey: "minggu4", label: "minggu 4", valueFormatter },
+                ]}
+                {...chartSetting}
+              />
+            </div>
+          </div>
+
           <div className="pr-10 pl-10 min-[6500px] max-[900px]">
-            <div className="flex flex-row justify-end pr-9 pt-0">
+            <div className="flex flex-row justify-end pr-6 pt-0">
               <div className="flex gap-4 p-3">
                 <input
                   type="text"
                   placeholder="search"
-                  className="rounded-full px-10"
+                  className="rounded-full w-80 p-2"
                   onChange={(e: any) => {
                     handleSearchChange(e.target.value);
                     console.log(searchQuery);

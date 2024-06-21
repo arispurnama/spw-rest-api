@@ -1,6 +1,6 @@
 import uploadFileMiddleware, { getFileName, setFileName } from "../middleware/upload.js";
 import { v4 } from "uuid";
-const uploadDir = "D:\\Tugas Akhir\\uploads\\";
+const uploadDir = "D:\\Tugas Akhir\\Project\\FullStack-1\\frontend\\my-app\\public\\uploads\\";
 const response = new Object();
 import fs from "fs";
 

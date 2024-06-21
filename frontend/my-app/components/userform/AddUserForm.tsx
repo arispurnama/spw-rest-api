@@ -20,33 +20,46 @@ const AddUserForm = () => {
   const [passwordError, setPasswordError] = useState("");
   const [emailError, setEmailError] = useState("");
   const [classError, setClassError] = useState("");
+  const [errorFieldEmpty, setErrorFieldEmpty] = useState("");
 
   const handleSubmit = async () => {
     try {
-      const response = await axios
-        .post("http://localhost:3030/register", {
-          firstName,
-          lastName,
-          email,
-          kelas,
-          password,
-          username,
-          noHp,
-        })
-        .then((response) => {
-          console.log(response);
-          setSuccessMessage("User added successfully!");
-          setErrorMessage("");
-          clearForm();
-          window.location.href = "/Auth";
-        })
-        .catch((e) => {
-          console.log("error :", e);
-          if (e.response.data.response.error === true) {
-            console.error(e.response.data.response.errorMessage);
-            router.push("/register");
-          }
-        });
+      if (
+        firstName != "" &&
+        lastName != "" &&
+        email != "" &&
+        kelas != "" &&
+        password != "" &&
+        username != "" &&
+        noHp != ""
+      ) {
+        const response = await axios
+          .post("http://localhost:3030/register", {
+            firstName,
+            lastName,
+            email,
+            kelas,
+            password,
+            username,
+            noHp,
+          })
+          .then((response) => {
+            console.log(response);
+            setSuccessMessage("User added successfully!");
+            setErrorMessage("");
+            clearForm();
+            window.location.href = "/Auth";
+          })
+          .catch((e) => {
+            console.log("error :", e);
+            if (e.response.data.response.error === true) {
+              console.error(e.response.data.response.errorMessage);
+              router.push("/register");
+            }
+          });
+      } else {
+        setErrorFieldEmpty("data cannot be empty");
+      }
     } catch (error) {
       console.error("Error adding user: ", error);
       setErrorMessage("Failed to add user.");
@@ -155,6 +168,9 @@ const AddUserForm = () => {
               required
               placeholder="First Name"
             />
+            {errorFieldEmpty && (
+              <p className="text-red-500 text-[10px]">{errorFieldEmpty}</p>
+            )}
           </div>
           <div className="mb-4">
             <label className="block text-sm font-medium text-gray-700">
@@ -168,6 +184,9 @@ const AddUserForm = () => {
               required
               placeholder="Last Name"
             />
+            {errorFieldEmpty && (
+              <p className="text-red-500 text-[10px]">{errorFieldEmpty}</p>
+            )}
           </div>
         </div>
         <div className="md:flex md:flex-row md:gap-16 sm:flex sm:flex-col sm:gap-2">
@@ -186,6 +205,9 @@ const AddUserForm = () => {
             {emailError && (
               <p className="text-red-500 text-[10px]">{emailError}</p>
             )}
+            {errorFieldEmpty && (
+              <p className="text-red-500 text-[10px]">{errorFieldEmpty}</p>
+            )}
           </div>
           <div className="mb-4">
             <label className="block text-sm font-medium text-gray-700">
@@ -201,6 +223,9 @@ const AddUserForm = () => {
             />
             {classError && (
               <p className="text-red-500 text-[10px]">{classError}</p>
+            )}
+            {errorFieldEmpty && (
+              <p className="text-red-500 text-[10px]">{errorFieldEmpty}</p>
             )}
           </div>
         </div>
@@ -221,6 +246,9 @@ const AddUserForm = () => {
             {noHpErrorMessage && (
               <div className="text-red-500 mt-2">{noHpErrorMessage}</div>
             )}
+            {errorFieldEmpty && (
+              <p className="text-red-500 text-[10px]">{errorFieldEmpty}</p>
+            )}
           </div>
         </div>
         <div className="md:flex md:flex-row md:gap-16 sm:flex sm:flex-col sm:gap-2">
@@ -236,6 +264,9 @@ const AddUserForm = () => {
               required
               placeholder="Username"
             />
+            {errorFieldEmpty && (
+              <p className="text-red-500 text-[10px]">{errorFieldEmpty}</p>
+            )}
           </div>
           <div className="mb-4">
             <label className="block text-sm font-medium text-gray-700">
@@ -251,6 +282,9 @@ const AddUserForm = () => {
             />
             {passwordError && (
               <p className="text-red-500 text-[10px]">{passwordError}</p>
+            )}
+            {errorFieldEmpty && (
+              <p className="text-red-500 text-[10px]">{errorFieldEmpty}</p>
             )}
           </div>
         </div>
