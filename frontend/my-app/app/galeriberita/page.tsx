@@ -203,10 +203,12 @@ const DataGaleriBerita = () => {
                         <TableCell align="right">{row.keterangan}</TableCell>
                         <TableCell align="right">{row.tanggal}</TableCell>
                         <TableCell className="flex flex-row gap-4 justify-end">
-                          <button onClick={() => handleEditClick(row.id, row)}>
+                          <button onClick={() => handleEditClick(row.id, row)} 
+                              title="Edit Galeri Berita">
                             <IconFileDocumentEditOutline />
                           </button>
-                          <button onClick={() => handleDeleteClick(row.id)}>
+                          <button onClick={() => handleDeleteClick(row.id)} 
+                              title="Delete Galeri Berita">
                             <IconTrashBinOutline />
                           </button>
                         </TableCell>

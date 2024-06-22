@@ -293,6 +293,7 @@ const DataLaporanOmzet = () => {
                                 <>
                                   <button
                                     onClick={() => handleApproveClick(row.id)}
+                                    title="Approve Laporan Omzet"
                                   >
                                     <svg
                                       className="w-6 h-6 text-green-400 dark:text-white"
@@ -314,11 +315,13 @@ const DataLaporanOmzet = () => {
                                   </button>
                                   <button
                                     onClick={() => handleEditClick(row.id, row)}
+                                    title="Edit Laporan Omzet"
                                   >
                                     <IconFileDocumentEditOutline />
                                   </button>
                                   <button
                                     onClick={() => handleDeleteClick(row.id)}
+                                    title="Delete Laporan Omzet"
                                   >
                                     <IconTrashBinOutline />
                                   </button>

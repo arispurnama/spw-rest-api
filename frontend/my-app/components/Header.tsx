@@ -122,7 +122,7 @@ const Header = () => {
         <div className="relative">
           <div
             onClick={() => setDropdownOpen(!dropdownOpen)}
-            className="focus:outline-none hover:cursor-pointer"
+            className="focus:outline-none hover:cursor-pointer flex flex-col items-center"
           >
             <svg
               className="w-8 h-8 text-white dark:text-white"
@@ -139,6 +139,7 @@ const Header = () => {
                 clipRule="evenodd"
               />
             </svg>
+            <p className="text-xs">{user?.firstName} {user?.lastName} - {user?.name}</p>
           </div>
           {dropdownOpen && (
             <ul className="absolute right-0 mt-2 w-48 bg-white text-black shadow-lg">

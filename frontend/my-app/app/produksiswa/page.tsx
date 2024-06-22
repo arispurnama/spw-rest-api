@@ -210,10 +210,12 @@ const DataProdukSiswa = () => {
                           <TableCell className="flex flex-row gap-4 justify-end">
                             <button
                               onClick={() => handleEditClick(row.id, row)}
+                              title="Edit Produk Siswa"
                             >
                               <IconFileDocumentEditOutline />
                             </button>
-                            <button onClick={() => handleDeleteClick(row.id)}>
+                            <button onClick={() => handleDeleteClick(row.id)}
+                              title="Delete Produk Siswa">
                               <IconTrashBinOutline />
                             </button>
                           </TableCell>
