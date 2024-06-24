@@ -129,7 +129,7 @@ const DataGaleriBerita = () => {
     setRoleName(userLocalStorage?.name);
     getAllDataGaleriBerita();
     getUserAll();
-  }, []);
+  }, [searchQuery]);
 
   const handleSearchChange = (event: any) => {
     setSearchQuery(event);

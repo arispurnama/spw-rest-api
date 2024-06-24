@@ -146,7 +146,7 @@ const AddUserForm = () => {
     }
   };
   const handleEmailChange = (event: any) => {
-    const { value } = event;
+    const value  = event;
     setEmail(value);
     validateEmail(value);
   };

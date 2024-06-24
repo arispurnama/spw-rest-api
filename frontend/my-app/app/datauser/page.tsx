@@ -110,7 +110,7 @@ const DataUser = () => {
   useEffect(() => {
     getUserAll();
     getRoleAll();
-  }, []);
+  }, [searchQuery]);
 
   const handleEditClick = (userId: string, data: any) => {
     setSelectedUserId(userId);

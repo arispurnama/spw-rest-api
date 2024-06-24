@@ -129,7 +129,7 @@ const DataProdukSiswa = () => {
     setRoleName(userLocalStorage?.name);
     getAllDataProdukSiswa();
     getUserAll();
-  }, []);
+  }, [searchQuery]);
 
   const handleSearchChange = (event: any) => {
     setSearchQuery(event);

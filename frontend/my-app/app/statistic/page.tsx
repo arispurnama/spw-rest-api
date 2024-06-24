@@ -21,6 +21,7 @@ import TableRow from "@mui/material/TableRow";
 import { BarChart } from "@mui/x-charts/BarChart";
 import { axisClasses } from "@mui/x-charts/ChartsAxis";
 import { MenuItem, Select, SelectChangeEvent } from "@mui/material";
+import { stringify } from "querystring";
 
 const chartSetting = {
   yAxis: [
@@ -49,7 +50,7 @@ const SummaryStatistik = () => {
   const [roleName, setRoleName] = useState("");
   const [dataUser, setDataUser] = useState([]);
   const [userIdState, setUserIdState] = useState("");
-
+  const [yearState, setYearState] = useState();
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
 
@@ -109,7 +110,6 @@ const SummaryStatistik = () => {
       console.log("Error fetching products: ", error);
     }
   };
-
   const getChart = async () => {
     try {
       axios
@@ -119,8 +119,8 @@ const SummaryStatistik = () => {
           },
           params: {
             isAdmin: isAdmin,
-            //user?.name === "Admin" ? true : false, user?.name === "Admin" ? null :
             userId: userIdState === "" ? user?.id : userIdState,
+            year: yearState === 0 ? currentYear : yearState,
           },
         })
         .then((response) => {
@@ -166,6 +166,8 @@ const SummaryStatistik = () => {
       console.log("Error fetching products: ", error);
     }
   };
+  const currentYear = new Date().getFullYear();
+  const listYears = Array.from({ length: 5 }, (_, i) => currentYear - i);
   useEffect(() => {
     var x: any = localStorage.getItem("user");
     let userLocalStorage: any = JSON.parse(x);
@@ -173,14 +175,24 @@ const SummaryStatistik = () => {
     getAllDataLaporanOmzet();
     getChart();
     getUserAll();
-  }, []);
-
+  }, [userIdState, yearState, searchQuery]);
+  // useEffect(() => {
+  //   getChart();
+  // }, [userIdState, yearState]);
+  // useEffect(() => {
+  //   getAllDataLaporanOmzet();
+  // }, [searchQuery]);
   const handleSearchChange = (event: any) => {
     setSearchQuery(event);
     getAllDataLaporanOmzet();
   };
   const handleChange = (event: SelectChangeEvent) => {
     setUserIdState(event.target.value as string);
+    setIsAdmin(true as boolean);
+    getChart();
+  };
+  const handleChangeYear = (event:any) => {
+    setYearState(event.target.value);
     setIsAdmin(true as boolean);
     getChart();
   };
@@ -200,10 +212,10 @@ const SummaryStatistik = () => {
           <div className="md:mr-9 md:ml-9 md:pb-9 sm:pb-3 sm:mr-0 sm:ml-0">
             <div className="bg-white rounded-sm">
               <div className="pl-28 pt-8 pb-0 m-0 font-bold text-xl">
-                SUMMARY SUM OMZET
+                SUMMARY SUM OMZET {currentYear}
               </div>
               <div className="flex flex-row justify-end pr-10">
-                <div className="pl-20 flex flex-row items-end">
+                <div className="pl-20 flex flex-row items-end gap-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700">
                       Nama Siswa
@@ -219,6 +231,25 @@ const SummaryStatistik = () => {
                       {dataUser?.map((name: any) => (
                         <MenuItem key={name.id} value={name.id}>
                           {name.firstName}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700">
+                      Years
+                    </label>
+                    <Select
+                      labelId="demo-multiple-name-label"
+                      id="demo-multiple-name"
+                      value={yearState}
+                      onChange={handleChangeYear}
+                      label="year"
+                      className="w-80 h-10"
+                    >
+                      {listYears?.map((year: any) => (
+                        <MenuItem key={year} value={year}>
+                          {year}
                         </MenuItem>
                       ))}
                     </Select>

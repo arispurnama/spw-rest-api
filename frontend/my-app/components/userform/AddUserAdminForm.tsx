@@ -186,7 +186,7 @@ const AddUserAdminForm = ({ isOpen, roleData = [], onClosed }: Props) => {
     }
   };
   const handleEmailChange = (event: any) => {
-    const { value } = event;
+    const value  = event;
     setEmail(event);
     validateEmail(event);
   };

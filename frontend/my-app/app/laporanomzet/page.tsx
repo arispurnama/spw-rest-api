@@ -153,7 +153,7 @@ const DataLaporanOmzet = () => {
     setIsAdmin(true);
     getAllDataLaporanOmzet();
     getUserAll();
-  }, []);
+  }, [searchQuery]);
 
   const handleSearchChange = (event: any) => {
     setSearchQuery(event);

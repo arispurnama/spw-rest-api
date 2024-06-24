@@ -191,7 +191,7 @@ const EditUserAdminForm = ({
       }
     };
     const handleEmailChange = (event: any) => {
-      const { value } = event;
+      const value = event;
       setEmail(event);
       validateEmail(event);
     };

@@ -23,9 +23,10 @@ export default function homepage() {
   const router = useRouter();
   const [DataGaleriBerita, setDataGaleriBerita] = useState([]);
   const [roleName, setRoleName] = useState("");
-
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
+  const [searchQuery, setSearchQuery] = useState("");
+
   const handleChangePage = (
     event: React.MouseEvent<HTMLButtonElement> | null,
     newPage: number
@@ -41,7 +42,10 @@ export default function homepage() {
     setPage(0);
     getAllDataGaleriBerita();
   };
-
+  const handleSearchChange = (event: any) => {
+    setSearchQuery(event);
+    getAllDataGaleriBerita();
+  };
   let token = null;
   try {
     token = localStorage.access_token
@@ -67,6 +71,7 @@ export default function homepage() {
           params: {
             page: -1, // ganti dengan nilai yang sesuai
             size: -1, // ganti dengan nilai yang sesuai
+            search: searchQuery,
           },
         })
         .then((response) => {
@@ -90,7 +95,7 @@ export default function homepage() {
     const userLocalStorage: any = JSON.parse(x);
     setRoleName(userLocalStorage?.name);
     getAllDataGaleriBerita();
-  }, []);
+  }, [searchQuery]);
   const url = (value: string) => {
     const decoded = value.split(" ");
     let result = "";
@@ -104,8 +109,24 @@ export default function homepage() {
   return (
     <main>
       <Header />
-      <div className="h-screen p-4 bg-gray-100">
-        <Box sx={{ width: 1500, height: 700, overflowY: "scroll" }}>
+      <div className="h-screen p-4 bg-gray-200">
+      <div className="pt-3">
+        <h1 className="text-2xl">Dashboard</h1>
+      </div>
+        <div className="flex flex-row justify-end pb-4">
+          <div>
+            <input
+              type="text"
+              placeholder="Search"
+              className="rounded-md ps-4 w-96 h-8 block border-black"
+              onChange={(e: any) => {
+                handleSearchChange(e.target.value);
+                console.log(searchQuery);
+              }}
+            />
+          </div>
+        </div>
+        <Box sx={{ width: 1500, height: 650, overflowY: "scroll" }}>
           <ImageList variant="masonry" cols={3} gap={8}>
             {DataGaleriBerita?.map((item: any) => (
               <ImageListItem key={item.img}>
@@ -121,14 +142,14 @@ export default function homepage() {
           </ImageList>
         </Box>
       </div>
-      <TablePagination
+      {/* <TablePagination
         component="div"
         count={DataGaleriBerita.length}
         page={page}
         onPageChange={handleChangePage}
         rowsPerPage={rowsPerPage}
         onRowsPerPageChange={handleChangeRowsPerPage}
-      />
+      /> */}
       <div>
         <Footer />
       </div>

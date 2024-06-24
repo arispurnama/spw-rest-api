@@ -271,11 +271,14 @@ export const getSummaryChartlaporan = async (req, res) => {
   try {
     let filter = "";
     let isAdmin = req.query.isAdmin;
-    console.log("is admin ", isAdmin);
     let userId = req.query.userId;
+    let year = req.query.year;
     if (isAdmin) {
       if (userId != null && userId != undefined) {
         filter += ` and tmu.id = ${userId} `;
+      }
+      if(year!= null && year != undefined){
+        filter += ` AND Date_part('year', tl."tanggalLaporan") = ${parseInt(year)} `;  
       }
       let groupBy =
         'GROUP BY tl."laporanMingguan", EXTRACT(MONTH FROM tl."tanggalLaporan")';
@@ -319,6 +322,9 @@ export const getSummaryChartlaporan = async (req, res) => {
     } else {
       if (userId != null && userId != undefined) {
         filter += ` and tmu.id = ${userId} `;
+      }
+      if(year!= null && year != undefined){
+        filter += ` AND Date_part('year', tl."tanggalLaporan") = ${parseInt(year)} `;  
       }
       let groupBy =
         'GROUP BY tl."userId", tl."laporanMingguan", EXTRACT(MONTH FROM tl."tanggalLaporan")';
