@@ -34,7 +34,7 @@ const chartSetting = {
   height: 600,
   sx: {
     [`.${axisClasses.left} .${axisClasses.label}`]: {
-      transform: "translate(-20px, 0)",
+      transform: "translate(-50px, 0)",
     },
   },
 };
@@ -53,6 +53,11 @@ const SummaryStatistik = () => {
   const [yearState, setYearState] = useState();
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
+  const [userIdLaporan, setUserIdLaporan] = useState("");
+  const [sumDescriptionOmzet, setSumDescriptionOmzet] = useState("");
+  const [sumDescriptionModal, setSumDescriptionModal] = useState("");
 
   const handleChangePage = (event: unknown, newPage: number) => {
     setPage(newPage);
@@ -91,6 +96,9 @@ const SummaryStatistik = () => {
             page: page, // ganti dengan nilai yang sesuai
             size: rowsPerPage, // ganti dengan nilai yang sesuai
             search: searchQuery,
+            startDate: startDate,
+            endDate: endDate,
+            userId: userIdLaporan,
           },
         })
         .then((response) => {
@@ -98,6 +106,8 @@ const SummaryStatistik = () => {
           if (response.data.erorr === "Invalid token") {
           }
           setDataLaporanOmzet(response.data.data);
+          setSumDescriptionOmzet(response.data.SumDescription.omzet);
+          setSumDescriptionModal(response.data.SumDescription.modal);
         })
         .catch((e) => {
           console.log("error :", e);
@@ -175,7 +185,7 @@ const SummaryStatistik = () => {
     getAllDataLaporanOmzet();
     getChart();
     getUserAll();
-  }, [userIdState, yearState, searchQuery]);
+  }, [userIdState, yearState, searchQuery, userIdLaporan, startDate, endDate]);
   // useEffect(() => {
   //   getChart();
   // }, [userIdState, yearState]);
@@ -191,7 +201,11 @@ const SummaryStatistik = () => {
     setIsAdmin(true as boolean);
     getChart();
   };
-  const handleChangeYear = (event:any) => {
+  const handleChangeSummaryUserId = (event: SelectChangeEvent) => {
+    setUserIdLaporan(event.target.value as string);
+    getAllDataLaporanOmzet();
+  };
+  const handleChangeYear = (event: any) => {
     setYearState(event.target.value);
     setIsAdmin(true as boolean);
     getChart();
@@ -276,10 +290,55 @@ const SummaryStatistik = () => {
 
           <div className="md:mr-9 md:ml-9 md:pb-9 sm:pb-3 sm:mr-0 sm:ml-0">
             <div className="md:pr-10 md:pl-10 min-[6500px] max-[900px] sm:pr-1 sm:pl-1 bg-white">
-              <div className="pl-28 pt-8 pb-0 m-0 font-bold text-xl">
+              <div className="pl-28 pt-8 pb-4 font-bold text-xl">
                 SUMMARY ALL LAPORAN
               </div>
-              <div className="flex flex-row justify-end pt-0">
+              <div className="flex flex-row justify-between items-center">
+                <div className="mb-4">
+                  <label className="block text-sm font-medium text-gray-700">
+                    Start Date
+                  </label>
+                  <input
+                    type="date"
+                    value={startDate}
+                    onChange={(e: any) => setStartDate(e.target.value)}
+                    className="ps-2 pr-2 mt-1 block w-80 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                    required
+                  />
+                </div>
+                <div className="mb-4">
+                  <label className="block text-sm font-medium text-gray-700">
+                    End Date
+                  </label>
+                  <input
+                    type="date"
+                    value={endDate}
+                    onChange={(e: any) => setEndDate(e.target.value)}
+                    className="ps-2 pr-2 mt-1 block w-80 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                    required
+                  />
+                </div>
+                <div className="mb-4">
+                  <label className="block text-sm font-medium text-gray-700">
+                    Nama Siswa
+                  </label>
+                  <Select
+                    labelId="demo-multiple-name-label"
+                    id="demo-multiple-name"
+                    value={userIdLaporan}
+                    onChange={handleChangeSummaryUserId}
+                    label="Name"
+                    className="w-80 h-10"
+                  >
+                    {dataUser?.map((name: any) => (
+                      <MenuItem key={name.id} value={name.id}>
+                        {name.firstName}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </div>
+              </div>
+              <div className="flex flex-row justify-end">
                 <div className="flex gap-4 pb-3">
                   <input
                     type="text"
@@ -352,6 +411,10 @@ const SummaryStatistik = () => {
                   onRowsPerPageChange={handleChangeRowsPerPage}
                 />
               </Paper>
+              <div className="text-xl text-black flex flex-col">
+                <p>Total Omzet : Rp. {sumDescriptionOmzet}</p>
+                <p>Total Modal : Rp. {sumDescriptionModal}</p>
+              </div>
             </div>
           </div>
         </div>

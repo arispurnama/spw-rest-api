@@ -68,6 +68,7 @@ export const createProdukSiswa = async (req, res) => {
   const response = new Object();
   try {
     let payload = req.body;
+    payload.tanggalProduk = new Date().toDateString(); 
     payload.createdAt = new Date().toDateString();
     payload.updatedAt = new Date().toDateString();
     payload.isDeleted = false;

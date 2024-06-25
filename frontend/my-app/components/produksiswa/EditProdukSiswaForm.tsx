@@ -74,13 +74,12 @@ const EditProdukSiswaForm = ({
             })
             .then((response) => {
               console.log("response upload : ", response.data.response.data);
-              if (namaProduk != "" && tanggal != "") {
+              if (namaProduk != "") {
                 //post laporan
                 const payload = {
                   userId: userId,
                   fileName: response.data.response.data,
                   keterangan: keterangan,
-                  tanggalProduk: tanggal,
                   namaProduk: namaProduk,
                 };
                 axios
@@ -155,12 +154,11 @@ const EditProdukSiswaForm = ({
               }
             });
         }
-        if (namaProduk != "" && tanggal != "") {
+        if (namaProduk != "") {
           //post laporan
           const payload = {
             userId: userId,
             keterangan: keterangan,
-            tanggalProduk: tanggal,
             namaProduk: namaProduk,
           };
           axios
@@ -287,7 +285,7 @@ const EditProdukSiswaForm = ({
                   </div>
                 </div>
                 <div className="flex flex-row gap-16">
-                  <div className="mb-4">
+                  {/* <div className="mb-4">
                     <label className="block text-sm font-medium text-gray-700">
                       Tanggal
                     </label>
@@ -303,7 +301,7 @@ const EditProdukSiswaForm = ({
                         {errorFieldEmpty}
                       </p>
                     )}
-                  </div>
+                  </div> */}
                 </div>
                 <div>
                   <div className="mb-4">
@@ -383,7 +381,7 @@ const EditProdukSiswaForm = ({
                   </div>
                 </div>
                 <div className="flex flex-row gap-16">
-                  <div className="mb-4">
+                  {/* <div className="mb-4">
                     <label className="block text-sm font-medium text-gray-700">
                       Tanggal
                     </label>
@@ -399,12 +397,12 @@ const EditProdukSiswaForm = ({
                         {errorFieldEmpty}
                       </p>
                     )}
-                  </div>
+                  </div> */}
                 </div>
                 <div>
                   <div className="mb-4">
                     <label className="block text-sm font-medium text-gray-700">
-                      File
+                      Photo Produk
                     </label>
                     <input
                       type="file"

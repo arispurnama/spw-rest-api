@@ -19,9 +19,14 @@ const { QueryTypes } = Sequelize;
 export const getListUsers = async (req, res) => {
   const responsePagination = new Object();
   try {
+    let filter = "";
     let page = req.query.page;
     let size = req.query.size;
     let search = req.query.search;
+    let isAdmin = req.query.isAdmin;
+    if(isAdmin != null && isAdmin != undefined){
+      filter +=  ` and roles.name = '${isAdmin}' `
+    }
     let searchColumn =
       'users."id", users."fullName", users."noHp", users."firstName", users."lastName", users."kelas", users."email", users."username", users."password", users."roleId", users."createdAt", users."updatedAt", users."deletedAt", users."isDeleted", roles.name';
     let query =
@@ -29,7 +34,7 @@ export const getListUsers = async (req, res) => {
     let paggination = PaginationHelper(page, size);
     let queryString = QueryHelper(
       query,
-      "",
+      filter,
       search,
       searchColumn,
       "",
@@ -42,7 +47,7 @@ export const getListUsers = async (req, res) => {
 
     let queryStringCount = QueryHelper(
       query,
-      "",
+      filter,
       search,
       searchColumn,
       "",
@@ -56,6 +61,7 @@ export const getListUsers = async (req, res) => {
     if (total.length > 0) {
       totalData = total[0].totaldata;
     }
+    
     responsePagination.page = page;
     responsePagination.size = parseInt(size);
     responsePagination.total = parseInt(totalData);
@@ -74,7 +80,6 @@ export const createUsers = async (req, res) => {
   try {
     let user = req.body;
     let filter = "";
-    console.log("userrrrr ", user);
     let query = `SELECT users."id", users."firstName", users."lastName", users."kelas", users."email", users."username", users."password", users."roleId", users."createdAt", users."updatedAt", users."deletedAt", users."isDeleted", roles.name FROM public."TB_MD_USER" as users INNER JOIN public."TB_MD_ROLE" as roles on users."roleId" = roles.id where users."isDeleted" = false and users."deletedAt" is null`;
 
     if (user.username != "") {
@@ -91,11 +96,20 @@ export const createUsers = async (req, res) => {
         return res.status(500).json({ response });
       }
     }
-
+    const dataRole = await Role.findOne({
+      where: {
+        name: "Admin",
+      },
+    });
+    console.log(dataRole);
+    if (!dataRole) {
+      console.log(dataRole);
+    }
     const password = user.password;
     let hashesPassword = await bcrypt.hash(password, 10);
 
     user.password = hashesPassword;
+    user.roleId = dataRole.dataValues.id;
     user.isDeleted = false;
     user.createdAt = new Date().toDateString();
     user.updatedAt = new Date().toDateString();
@@ -114,18 +128,42 @@ export const createUsers = async (req, res) => {
 };
 export const updateUsers = async (req, res) => {
   try {
+    let payload = req.body;
+
     const userData = await Users.findOne({
       where: {
         id: req.params.id,
       },
     });
-
-    await Users.update(req.body, {
-      where: {
-        id: req.params.id,
-      },
-    });
-    res.status(200).json({ msg: "Roles Updated" });
+    let password = payload.password;
+    const passwordMatch = bcrypt.compareSync(password, userData.dataValues.password);
+    
+    if (!passwordMatch) {
+      let hashesPassword = await bcrypt.hash(password, 10);
+      payload = hashesPassword;
+      await Users.update(payload, {
+        where: {
+          id: req.params.id,
+        },
+      });
+      res.status(200).json({ msg: "Users Updated" });
+    }else{
+      const updateUser = {
+        firstName: req.body.firstName,
+        lastName: req.body.lastName,
+        email: req.body.email,
+        kelas: req.body.email,
+        username: req.body.username,
+        noHp : req.body.noHp
+      } 
+      await Users.update(updateUser, {
+        where: {
+          id: req.params.id,
+        },
+      });
+      res.status(200).json({ msg: "Users Updated" });
+    }
+    
   } catch (error) {
     console.log(error.message);
   }

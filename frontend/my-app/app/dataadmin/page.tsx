@@ -21,10 +21,8 @@ import IconFileDocumentEditOutline from "@/components/icons/IconFileDocumentEdit
 import SnackBar from "@/components/SnackBar";
 import AddUserAdminForm from "@/components/userform/AddUserAdminForm";
 import EditUserAdminForm from "@/components/userform/EditUserAdminForm";
-import AddUsermodalForm from "@/components/userform/AddUserModalForm";
-import EditUserModalForm from "@/components/userform/EditUserModalForm";
 
-const DataUser = () => {
+const DataAdmin = () => {
   const router = useRouter();
   const [dataUser, setDataUser] = useState([]);
   const [dataRole, setDataRole] = useState([]);
@@ -59,7 +57,7 @@ const DataUser = () => {
     console.log("Error parsing token from localStorage:", e);
   }
 
-  const getUserAll = async () => {
+  const getAdminAll = async () => {
     try {
       axios
         .get("http://localhost:3030/list-user", {
@@ -70,7 +68,7 @@ const DataUser = () => {
             page: page, // ganti dengan nilai yang sesuai
             size: rowsPerPage, // ganti dengan nilai yang sesuai
             search: searchQuery,
-            isAdmin : 'User'
+            isAdmin : 'Admin'
           },
         })
         .then((response) => {
@@ -111,7 +109,7 @@ const DataUser = () => {
     }
   };
   useEffect(() => {
-    getUserAll();
+    getAdminAll();
     getRoleAll();
   }, [searchQuery]);
 
@@ -146,7 +144,7 @@ const DataUser = () => {
 
   const handleSearchChange = (event: any) => {
     setSearchQuery(event);
-    getUserAll();
+    getAdminAll();
   };
   const handleDeleteClick = (userId: string) => {
     setSelectedUserId(userId);
@@ -161,7 +159,7 @@ const DataUser = () => {
           <div className="flex flex-col gap-1 m-0">
             <div>
               <h2 className="pl-10 pt-8 pb-0 m-0 font-bold text-2xl">
-                DATA SISWA
+                DATA GURU
               </h2>
             </div>
             <div className="flex flex-row justify-end pr-10 pt-0">
@@ -195,7 +193,6 @@ const DataUser = () => {
                       <TableCell align="right">Full Name</TableCell>
                       <TableCell align="right">No. Hp</TableCell>
                       <TableCell align="right">Email</TableCell>
-                      <TableCell align="right">Kelas</TableCell>
                       <TableCell align="right">Username</TableCell>
                       <TableCell align="right">Role</TableCell>
                       <TableCell align="right">Action</TableCell>
@@ -216,7 +213,6 @@ const DataUser = () => {
                           <TableCell align="right">{row.fullName}</TableCell>
                           <TableCell align="right">{row.noHp}</TableCell>
                           <TableCell align="right">{row.email}</TableCell>
-                          <TableCell align="right">{row.kelas}</TableCell>
                           <TableCell align="right">{row.username}</TableCell>
                           <TableCell align="right">{row.name}</TableCell>
                           <TableCell className="flex flex-row gap-4 justify-end">
@@ -258,25 +254,25 @@ const DataUser = () => {
           page="datauser"
           onClosed={() => {
             setShowModal(false);
-            getUserAll();
+            getAdminAll();
           }}
         />
-        <AddUsermodalForm
+        <AddUserAdminForm
           isOpen={showModalAdd}
           roleData={dataRole}
           onClosed={() => {
             setShowModalAdd(false);
-            getUserAll();
+            getAdminAll();
           }}
         />
-        <EditUserModalForm
+        <EditUserAdminForm
           isOpen={showModalEdit}
           Id={selectedUserId}
           roleData={dataRole}
           dataEdit={dataEdit}
           onClosed={() => {
             setShowModalEdit(false);
-            getUserAll();
+            getAdminAll();
           }}
         />
       </div>
@@ -284,4 +280,4 @@ const DataUser = () => {
   );
 };
 
-export default DataUser;
+export default DataAdmin;

@@ -79,6 +79,9 @@ const Header = () => {
         <div className="px-7 py-2 hover:bg-white hover:rounded-full hover:px-7 hover:py-2 hover:text-black">
           <button onClick={() => router.push("/datauser")}>Data Siswa</button>
         </div>
+        <div className="px-7 py-2 hover:bg-white hover:rounded-full hover:px-7 hover:py-2 hover:text-black">
+          <button onClick={() => router.push("/dataadmin")}>Data Guru</button>
+        </div>
       </>
     );
     const studentItems = (

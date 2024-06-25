@@ -13,7 +13,7 @@ type Props = {
   dataEdit: any;
   onClosed: () => void;
 };
-const EditUserAdminForm = ({
+const EditUserModalForm = ({
   isOpen,
   Id,
   roleData = [],
@@ -57,7 +57,8 @@ const EditUserAdminForm = ({
           lastName != "" &&
           email != "" &&
           username != "" &&
-          noHp != ""
+          noHp != "" &&
+          kelas != ""
         ) {
           const response = await axios
             .patch(
@@ -66,6 +67,7 @@ const EditUserAdminForm = ({
                 firstName,
                 lastName,
                 email,
+                kelas,
                 username,
                 noHp,
               },
@@ -200,7 +202,7 @@ const EditUserAdminForm = ({
       <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
         <div className="lex items-center justify-center bg-gray-100">
           <div className="bg-white rounded-lg shadow-lg p-8 max-w-screen-md w-full">
-            <h2 className="text-2xl font-bold mb-4">Edit Data Guru</h2>
+            <h2 className="text-2xl font-bold mb-4">Edit Data Siswa</h2>
             <div className="md:flex md:flex-row md:gap-16 sm:flex sm:flex-col sm:gap-4">
               {/* <div>
                 <label className="block text-sm font-medium text-gray-700">
@@ -279,7 +281,7 @@ const EditUserAdminForm = ({
                   <p className="text-red-500 text-[10px]">{errorFieldEmpty}</p>
                 )}
               </div>
-              {/* <div className="mb-4">
+              <div className="mb-4">
                 <label className="block text-sm font-medium text-gray-700">
                   Class
                 </label>
@@ -297,7 +299,10 @@ const EditUserAdminForm = ({
                 {errorFieldEmpty && (
                   <p className="text-red-500 text-[10px]">{errorFieldEmpty}</p>
                 )}
-              </div> */}
+              </div>
+              
+            </div>
+            <div className="md:flex md:flex-row md:gap-16 sm:flex sm:flex-col sm:gap-2">
               <div className="mb-4">
                 <label className="block text-sm font-medium text-gray-700">
                   No. Handphone
@@ -320,30 +325,6 @@ const EditUserAdminForm = ({
                   <p className="text-red-500 text-[10px]">{errorFieldEmpty}</p>
                 )}
               </div>
-            </div>
-            <div className="md:flex md:flex-row md:gap-16 sm:flex sm:flex-col sm:gap-2">
-              {/* <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700">
-                  No. Handphone
-                </label>
-                <input
-                  type="text"
-                  value={noHp}
-                  onChange={(e) => handleChangeNoHP(e.target?.value)}
-                  className="ps-2 mt-1 block w-80 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                  required
-                  placeholder="No. Handphone"
-                />
-                <p className="text-[10px] pb-0 text-gray-400">
-                  Example: 0812XXXX
-                </p>
-                {noHpErrorMessage && (
-                  <div className="text-red-500 mt-2">{noHpErrorMessage}</div>
-                )}
-                {errorFieldEmpty && (
-                  <p className="text-red-500 text-[10px]">{errorFieldEmpty}</p>
-                )}
-              </div> */}
               <div className="mb-4">
                 <label className="block text-sm font-medium text-gray-700">
                   Username
@@ -392,4 +373,4 @@ const EditUserAdminForm = ({
   }
 };
 
-export default EditUserAdminForm;
+export default EditUserModalForm;

@@ -211,8 +211,17 @@ export const getSequenceASCLaporan = async (req, res) => {
     let size = req.query.size;
     let search = req.query.search;
     let userId = req.query.userId;
-    if (userId != null && userId != undefined) {
+    let startDate = req.query.startDate;
+    let endDate = req.query.endDate;
+    if (userId != null && userId != undefined && userId != "") {
       filter += ` and tmu.id = ${userId} `;
+    }
+    if(startDate != null && startDate != undefined && startDate != "" && endDate != ""  && endDate != null && endDate != undefined){
+      filter += ` and ( to_char(tl."tanggalLaporan", 'YYYY-MM-DD') >= '${startDate}' and to_char(tl."tanggalLaporan", 'YYYY-MM-DD') <= '${endDate}' ) `
+    }else if (startDate != null && startDate != undefined && startDate != "" && endDate == "" && endDate == null && endDate == undefined){
+      filter += ` and to_char(tl."tanggalLaporan", 'YYYY-MM-DD') >= '${startDate}' `
+    }else if (startDate == null && startDate == undefined && startDate == "" && endDate != "" && endDate != null && endDate != undefined){
+      filter += ` and to_char(tl."tanggalLaporan", 'YYYY-MM-DD') <= '${endDate}' `
     }
 
     let searchColumn =
@@ -253,10 +262,21 @@ export const getSequenceASCLaporan = async (req, res) => {
     if (total.length > 0) {
       totalData = total[0].totaldata;
     }
+    let totalOmzet = 0;
+    let totalModal = 0;
+    response.map((element) => {
+      totalModal += element.JumlahModal;
+      totalOmzet += element.jumlahOmzet;
+    });
+    let sumModalOmzet = {
+      omzet: totalOmzet,
+      modal: totalModal
+    };
     responsePagination.page = parseInt(page);
     responsePagination.size = parseInt(size);
     responsePagination.total = parseInt(totalData);
     responsePagination.data = response;
+    responsePagination.SumDescription = sumModalOmzet;
     responsePagination.error = false;
     responsePagination.errorMessage = "Sukses";
     res.status(200).json(responsePagination);

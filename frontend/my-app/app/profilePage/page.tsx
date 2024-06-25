@@ -1,11 +1,13 @@
 "use client";
 import Header from "@/components/Header";
+import SnackBar from "@/components/SnackBar";
 import axios from "axios";
 import Link from "next/link";
-import router from "next/router";
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 
 const ProfilePage = () => {
+  const router = useRouter();
   const [modal, setModal] = useState("");
   const [omzet, setOmzet] = useState("");
   const [firstName, setFirstName] = useState("");
@@ -16,6 +18,9 @@ const ProfilePage = () => {
   const [password, setPassword] = useState("");
   const [noHp, setNoHp] = useState("");
   const [fullName, setFullName] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
+  const [errorType, setErrorType] = useState("");
+  const [showSnackBar, setSnackBar] = useState(false);
 
   let token = null;
   try {
@@ -84,6 +89,42 @@ const ProfilePage = () => {
     } catch (error) {
       console.log("Error fetching products: ", error);
     }
+  };
+  const handleSubmit = async () => {
+      const response = await axios
+      .patch(
+        `http://localhost:3030/user/${user?.id}`,
+        {
+          firstName,
+          lastName,
+          email,
+          kelas,
+          username,
+          noHp,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`, // Add your token or any other header here
+          },
+        }
+      )
+      .then((response) => {
+        setErrorType("success");
+        setErrorMessage("Edit data Berhasil ");
+        setTimeout(() => {
+          setSnackBar(true);
+        }, 1000);
+      })
+      .catch((e) => {
+        console.log("error :", e);
+        setErrorType("error");
+        setErrorMessage(
+          "Add User Gagal " + e.response.data.response.errorMessage
+        );
+        setTimeout(() => {
+          setSnackBar(true);
+        }, 1000);
+      });
   };
   useEffect(() => {
     getDataOmzetModal();
@@ -199,10 +240,17 @@ const ProfilePage = () => {
           />
         </label>
 
-        <button className="w-full bg-indigo-600 text-white py-2 px-4 rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+        <button onClick={() => handleSubmit()} className="w-full bg-indigo-600 text-white py-2 px-4 rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
           Update profile
         </button>
       </div>
+      <SnackBar
+          isOpen={showSnackBar}
+          message={errorMessage}
+          type={errorType}
+          duration={5000}
+          onClose={() => setSnackBar(false)}
+        />
     </main>
   );
 };

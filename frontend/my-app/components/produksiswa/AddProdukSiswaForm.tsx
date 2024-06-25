@@ -49,7 +49,7 @@ const AddGaleriBeritaForm = ({ isOpen, userData = [], onClosed }: Props) => {
   const handlerSubmit = async () => {
     try {
       const userId = user?.name != "Admin" ? user?.id : userIdState;
-      if (fileName != "" && namaProduk != "" && tanggal != "") {
+      if (fileName != "" && namaProduk != "") {
         //post file
         let payloadFormData = new FormData();
         if (fileName) {
@@ -70,7 +70,6 @@ const AddGaleriBeritaForm = ({ isOpen, userData = [], onClosed }: Props) => {
               userId: userId,
               fileName: response.data.response.data,
               keterangan: keterangan,
-              tanggalProduk: tanggal,
               namaProduk: namaProduk,
             };
             axios
@@ -216,7 +215,7 @@ const AddGaleriBeritaForm = ({ isOpen, userData = [], onClosed }: Props) => {
                 </div>
               </div>
               <div className="md:flex md:flex-row md:gap-16 sm:flex sm:flex-col sm:gap-4">
-                <div className="mb-4">
+                {/* <div className="mb-4">
                   <label className="block text-sm font-medium text-gray-700">
                     Tanggal
                   </label>
@@ -232,12 +231,12 @@ const AddGaleriBeritaForm = ({ isOpen, userData = [], onClosed }: Props) => {
                       {errorFieldEmpty}
                     </p>
                   )}
-                </div>
+                </div> */}
               </div>
               <div>
                 <div className="mb-4">
                   <label className="block text-sm font-medium text-gray-700">
-                    File
+                    Photo Produk
                   </label>
                   <input
                     type="file"
@@ -316,7 +315,7 @@ const AddGaleriBeritaForm = ({ isOpen, userData = [], onClosed }: Props) => {
                 </div>
               </div>
               <div className="md:flex md:flex-row md:gap-16 sm:flex sm:flex-col sm:gap-4">
-                <div className="mb-4">
+                {/* <div className="mb-4">
                   <label className="block text-sm font-medium text-gray-700">
                     Tanggal
                   </label>
@@ -332,7 +331,7 @@ const AddGaleriBeritaForm = ({ isOpen, userData = [], onClosed }: Props) => {
                       {errorFieldEmpty}
                     </p>
                   )}
-                </div>
+                </div> */}
               </div>
               <div>
                 <div className="mb-4">

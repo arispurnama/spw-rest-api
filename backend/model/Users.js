@@ -18,10 +18,10 @@ const Users = db.define('TB_MD_USER', {
     lastName: {
         type: DataTypes.STRING,
         allowNull: false,
-    },
+    }, 
     kelas: {
         type: DataTypes.STRING,
-        allowNull: false,
+        allowNull: true,
     },
     email: {
         type: DataTypes.STRING,

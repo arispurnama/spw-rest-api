@@ -126,7 +126,7 @@ export default function homepage() {
             />
           </div>
         </div>
-        <Box sx={{ width: 1500, height: 650, overflowY: "scroll" }}>
+        <Box sx={{ width: 1500, height: 610, overflowY: "scroll" }}>
           <ImageList variant="masonry" cols={3} gap={8}>
             {DataGaleriBerita?.map((item: any) => (
               <ImageListItem key={item.img}>
