@@ -11,6 +11,7 @@ type Props = {
   Id: string;
   roleData: any;
   dataEdit: any;
+  userDataAdmin: any;
   onClosed: () => void;
 };
 const EditUserModalForm = ({
@@ -18,6 +19,7 @@ const EditUserModalForm = ({
   Id,
   roleData = [],
   dataEdit,
+  userDataAdmin = [],
   onClosed,
 }: Props) => {
   if (!isOpen) {
@@ -30,6 +32,8 @@ const EditUserModalForm = ({
     const [username, setUsername] = useState(dataEdit?.username);
     const [noHp, setNoHp] = useState(dataEdit?.noHp);
     const [roleId, setRoleId] = useState(dataEdit?.roleId);
+    const [parentId, setParentId] = useState(dataEdit?.parentId);
+    const [isActive, setIsActive] = useState(dataEdit?.isActive);
 
     const [errorMessage, setErrorMessage] = useState("");
     const [successMessage, setSuccessMessage] = useState("");
@@ -58,7 +62,7 @@ const EditUserModalForm = ({
           email != "" &&
           username != "" &&
           noHp != "" &&
-          kelas != ""
+          kelas != "" 
         ) {
           const response = await axios
             .patch(
@@ -70,6 +74,8 @@ const EditUserModalForm = ({
                 kelas,
                 username,
                 noHp,
+                parentId,
+                isActive
               },
               {
                 headers: {
@@ -115,6 +121,8 @@ const EditUserModalForm = ({
       setKelas("");
       setUsername("");
       setNoHp("");
+      setIsActive("");
+      setParentId("");
     };
     const handleClose = async () => {
       try {
@@ -196,7 +204,12 @@ const EditUserModalForm = ({
     const handleChange = (event: SelectChangeEvent) => {
       setRoleId(event.target.value as string);
     };
-
+    const handleChangeParentId = (event: SelectChangeEvent) => {
+      setParentId(event.target.value as string);
+    };
+    const handleChangeIsActive = (event: SelectChangeEvent) => {
+      setIsActive(event.target.value as string);
+    };
     console.log("role ", roleData);
     return (
       <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
@@ -300,7 +313,6 @@ const EditUserModalForm = ({
                   <p className="text-red-500 text-[10px]">{errorFieldEmpty}</p>
                 )}
               </div>
-              
             </div>
             <div className="md:flex md:flex-row md:gap-16 sm:flex sm:flex-col sm:gap-2">
               <div className="mb-4">
@@ -342,7 +354,67 @@ const EditUserModalForm = ({
                 )}
               </div>
             </div>
+            <div className="md:flex md:flex-row md:gap-16 sm:flex sm:flex-col sm:gap-2">
+              <div className="mb-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-4">
+                    Active Status
+                  </label>
+                  <Select
+                    labelId="demo-multiple-active-status-label"
+                    id="demo-multiple-active-status"
+                    value={String(isActive)} // Ensure the value is a string
+                    onChange={(e) => setIsActive(e.target.value === "true")} // Convert string back to boolean
+                    label="Active Status"
+                    className="w-80 h-10"
+                  >
+                    {[
+                      { id: true, name: "Yes" },
+                      { id: false, name: "No" },
+                    ].map((option) => (
+                      <MenuItem
+                        key={option.id.toString()}
+                        value={option.id.toString()}
+                      >
+                        {option.name}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                  {errorFieldEmpty && (
+                    <p className="text-red-500 text-[10px]">
+                      {errorFieldEmpty}
+                    </p>
+                  )}
+                </div>
+              </div>
 
+              <div className="mb-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-4">
+                    Guru
+                  </label>
+                  <Select
+                    labelId="demo-multiple-name-label"
+                    id="demo-multiple-name"
+                    value={parentId}
+                    onChange={handleChangeParentId}
+                    label="Name"
+                    className="w-80 h-10"
+                  >
+                    {userDataAdmin?.map((name: any) => (
+                      <MenuItem key={name.id} value={name.id}>
+                        {name.firstName + " " + name.lastName}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                  {errorFieldEmpty && (
+                    <p className="text-red-500 text-[10px]">
+                      {errorFieldEmpty}
+                    </p>
+                  )}
+                </div>
+              </div>
+            </div>
             <button
               type="button"
               onClick={() => handleSubmit()}

@@ -195,6 +195,7 @@ const DataAdmin = () => {
                       <TableCell align="right">Email</TableCell>
                       <TableCell align="right">Username</TableCell>
                       <TableCell align="right">Role</TableCell>
+                      <TableCell align="right">Active</TableCell>
                       <TableCell align="right">Action</TableCell>
                     </TableRow>
                   </TableHead>
@@ -215,6 +216,7 @@ const DataAdmin = () => {
                           <TableCell align="right">{row.email}</TableCell>
                           <TableCell align="right">{row.username}</TableCell>
                           <TableCell align="right">{row.name}</TableCell>
+                          <TableCell align="right">{row.isActive ? "Yes" : "No"}</TableCell>
                           <TableCell className="flex flex-row gap-4 justify-end">
                             <button
                               onClick={() => handleEditClick(row.id, row)}

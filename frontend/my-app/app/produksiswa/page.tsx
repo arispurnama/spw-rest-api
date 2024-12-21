@@ -107,6 +107,7 @@ const DataProdukSiswa = () => {
             page: -1, // ganti dengan nilai yang sesuai
             size: -1, // ganti dengan nilai yang sesuai
             userId: user?.name == "Admin" ? null : user?.id,
+            isAdmin : 'User'
           },
         })
         .then((response) => {

@@ -9,9 +9,15 @@ import MenuItem from "@mui/material/MenuItem";
 type Props = {
   isOpen: boolean;
   roleData: any;
+  userDataAdmin: any;
   onClosed: () => void;
 };
-const AddUsermodalForm = ({ isOpen, roleData = [], onClosed }: Props) => {
+const AddUsermodalForm = ({
+  isOpen,
+  roleData = [],
+  userDataAdmin = [],
+  onClosed,
+}: Props) => {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
@@ -20,6 +26,7 @@ const AddUsermodalForm = ({ isOpen, roleData = [], onClosed }: Props) => {
   const [password, setPassword] = useState("");
   const [noHp, setNoHp] = useState("");
   const [roleId, setRoleId] = useState("");
+  const [parentId, setParentId] = useState("");
 
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
@@ -51,7 +58,8 @@ const AddUsermodalForm = ({ isOpen, roleData = [], onClosed }: Props) => {
         kelas != "" &&
         password != "" &&
         username != "" &&
-        noHp != ""
+        noHp != "" &&
+        parentId != ""
       ) {
         const response = await axios
           .post(
@@ -64,6 +72,7 @@ const AddUsermodalForm = ({ isOpen, roleData = [], onClosed }: Props) => {
               password,
               username,
               noHp,
+              parentId,
             },
             {
               headers: {
@@ -112,6 +121,7 @@ const AddUsermodalForm = ({ isOpen, roleData = [], onClosed }: Props) => {
     setUsername("");
     setPassword("");
     setNoHp("");
+    setParentId("");
   };
   const handleClose = async () => {
     try {
@@ -184,44 +194,23 @@ const AddUsermodalForm = ({ isOpen, roleData = [], onClosed }: Props) => {
     }
   };
   const handleEmailChange = (event: any) => {
-    const value  = event;
+    const value = event;
     setEmail(event);
     validateEmail(event);
   };
   const handleChange = (event: SelectChangeEvent) => {
     setRoleId(event.target.value as string);
   };
-
+  const handleChangeParentId = (event: SelectChangeEvent) => {
+    setParentId(event.target.value as string);
+  };
   console.log("role ", roleData);
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div className="lex items-center justify-center bg-gray-100">
         <div className="bg-white rounded-lg shadow-lg p-8 max-w-screen-md w-full">
           <h2 className="text-2xl font-bold mb-4">Add Data Siswa</h2>
-          <div className="md:flex md:flex-row md:gap-16 sm:flex sm:flex-col sm:gap-4">
-            {/* <div>
-              <label className="block text-sm font-medium text-gray-700">
-                Role
-              </label>
-              <Select
-                labelId="demo-multiple-name-label"
-                id="demo-multiple-name"
-                value={roleId}
-                onChange={handleChange}
-                label="Name"
-                className="w-80 h-10"
-              >
-                {roleData?.map((name: any) => (
-                  <MenuItem key={name.id} value={name.id}>
-                    {name.name}
-                  </MenuItem>
-                ))}
-              </Select>
-              {errorFieldEmpty && (
-                <p className="text-red-500 text-[10px]">{errorFieldEmpty}</p>
-              )}
-            </div> */}
-          </div>
+          <div className="md:flex md:flex-row md:gap-16 sm:flex sm:flex-col sm:gap-4"></div>
           <div className="md:flex md:flex-row md:gap-16 sm:flex sm:flex-col sm:gap-2">
             <div className="mb-4">
               <label className="block text-sm font-medium text-gray-700">
@@ -295,7 +284,6 @@ const AddUsermodalForm = ({ isOpen, roleData = [], onClosed }: Props) => {
                 <p className="text-red-500 text-[10px]">{errorFieldEmpty}</p>
               )}
             </div>
-            
           </div>
           <div className="md:flex md:flex-row md:gap-16 sm:flex sm:flex-col sm:gap-2">
             <div className="mb-4">
@@ -319,6 +307,30 @@ const AddUsermodalForm = ({ isOpen, roleData = [], onClosed }: Props) => {
               {errorFieldEmpty && (
                 <p className="text-red-500 text-[10px]">{errorFieldEmpty}</p>
               )}
+            </div>
+            <div className="mb-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-4">
+                  Guru
+                </label>
+                <Select
+                  labelId="demo-multiple-name-label"
+                  id="demo-multiple-name"
+                  value={parentId}
+                  onChange={handleChangeParentId}
+                  label="Name"
+                  className="w-80 h-10"
+                >
+                  {userDataAdmin?.map((name: any) => (
+                    <MenuItem key={name.id} value={name.id}>
+                      {name.firstName + " " + name.lastName}
+                    </MenuItem>
+                  ))}
+                </Select>
+                {errorFieldEmpty && (
+                  <p className="text-red-500 text-[10px]">{errorFieldEmpty}</p>
+                )}
+              </div>
             </div>
           </div>
           <div className="md:flex md:flex-row md:gap-16 sm:flex sm:flex-col sm:gap-2">

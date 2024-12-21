@@ -63,7 +63,8 @@ const Header = () => {
         </div>
         <div className="px-7 py-2 hover:bg-white hover:rounded-full hover:px-7 hover:py-2 hover:text-black">
           <button onClick={() => router.push("/laporanomzet")}>
-            Laporan Omzet
+            <p>Pencatatan and Laporan</p>
+            <p>Omzet</p>
           </button>
         </div>
         <div className="px-7 py-2 hover:bg-white hover:rounded-full hover:px-7 hover:py-2 hover:text-black">
@@ -91,7 +92,8 @@ const Header = () => {
         </div>
         <div className="px-7 py-2 hover:bg-white hover:rounded-full hover:px-7 hover:py-2 hover:text-black">
           <button onClick={() => router.push("/laporanomzet")}>
-            Laporan Omzet
+            <p>Pencatatan and Laporan</p>
+            <p>Omzet</p>
           </button>
         </div>
         <div className="px-7 py-2 hover:bg-white hover:rounded-full hover:px-7 hover:py-2 hover:text-black">
@@ -142,7 +144,9 @@ const Header = () => {
                 clipRule="evenodd"
               />
             </svg>
-            <p className="text-xs">{user?.firstName} {user?.lastName} - {user?.name}</p>
+            <p className="text-xs">
+              {user?.firstName} {user?.lastName} - {user?.name}
+            </p>
           </div>
           {dropdownOpen && (
             <ul className="absolute right-0 mt-2 w-48 bg-white text-black shadow-lg">
@@ -185,18 +189,37 @@ const Header = () => {
           </div>
         </div>
         <div className="flex items-center md:hidden">
-                    <button onClick={toggleMenu}>
-                        <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            {isOpen ? (
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
-                            ) : (
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16m-7 6h7" />
-                            )}
-                        </svg>
-                    </button>
-                </div>
-        <div className={`md:flex sm:flex sm:flex-col md:flex-row md:gap-2 sm:gap-2 md:items-center sm:items-center flex flex-col gap-2 items-center ${isOpen ? "block" : "hidden"} md:block sm:block`}> 
-        {/* //className="flex flex-row gap-2 items-center" */}
+          <button onClick={toggleMenu}>
+            <svg
+              className="w-6 h-6"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              {isOpen ? (
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              ) : (
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M4 6h16M4 12h16m-7 6h7"
+                />
+              )}
+            </svg>
+          </button>
+        </div>
+        <div
+          className={`md:flex sm:flex sm:flex-col md:flex-row md:gap-2 sm:gap-2 md:items-center sm:items-center flex flex-col gap-2 items-center ${
+            isOpen ? "block" : "hidden"
+          } md:block sm:block`}
+        >
+          {/* //className="flex flex-row gap-2 items-center" */}
           {renderMenuItems()}
         </div>
       </div>

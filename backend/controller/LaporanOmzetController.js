@@ -14,7 +14,7 @@ export const exportLaporan = async (req, res) => {
   const path = "D:\\Tugas Akhir\\Project\\FullStack-1\\file\\"; // Path to download excel
   // Column for data in excel. key must match data key
   worksheet.columns = [
-    { header: "S no.", key: "s_no", width: 10 },
+    { header: "no.", key: "s_no", width: 10 },
     { header: "First Name", key: "firstName", width: 10 },
     { header: "Last Name", key: "lastName", width: 10 },
     { header: "Full Name", key: "fullName", width: 10 },
@@ -81,9 +81,9 @@ export const getListLaporanOmzet = async (req, res) => {
     let searchColumn =
       'tl.id, tl."userId",tmu."fullName", tmu."noHp", tl."tanggalLaporan", tl."jumlahOmzet",tl."laporanMingguan", tl."JumlahModal", to_char(tl."tanggalLaporan", ' +
       "'YYYY-MM-DD'" +
-      '), tl.keterangan, tl."createdAt", tl."updatedAt", tl."deletedAt", tl."isDeleted", tl."isApproved", tmu."firstName", tmu."lastName"';
+      '), tl.keterangan, tl."createdAt", tl."updatedAt", tl."deletedAt", tl."HasReport",tl."isDeleted", tl."isApproved", tmu."firstName", tmu."lastName"';
     let query =
-      'SELECT count(*) over () TOTALDATA, tmu."fullName", tmu."noHp",tl.id, tl."userId",tl."laporanMingguan", to_char(tl."tanggalLaporan", ' +
+      'SELECT count(*) over () TOTALDATA, tmu."fullName", tmu."noHp",tl.id,tl."HasReport", tl."userId",tl."laporanMingguan", to_char(tl."tanggalLaporan", ' +
       "'YYYY-MM-DD'" +
       ')  as tanggalLaporan, tl."jumlahOmzet", tl."JumlahModal", tl."buktiTransaksi", tl.keterangan, tl."isApproved", tl."createdAt", tl."updatedAt", tl."deletedAt", tl."isDeleted", tmu."firstName", tmu."lastName" FROM public."TB_TR_LAPORAN" tl inner join public."TB_MD_USER" tmu on tl."userId" = tmu.id where tl."isDeleted" = false and tmu."isDeleted" = false ';
     let paggination = PaginationHelper(page, size);
@@ -431,6 +431,52 @@ export const approveLaporan = async (req, res) => {
       result.email,
       "Notification Approve Report",
       "Your report has been approved!!!",
+      html
+    );
+    response.data = result;
+    response.error = false;
+    response.errorMessage = "Sukses";
+    res.status(201).json({ response });
+  } catch (error) {
+    console.log("Approve error : ", error);
+    response.error = true;
+    response.errorMessage = error.message;
+    res.status(500).json({ response });
+  }
+};
+
+export const LaporkanPencatatan = async (req, res) => {
+  const response = new Object();
+  try {
+    const dataLaporan = await LaporanOmzet.findOne({
+      where: {
+        id: req.params.id,
+      },
+    });
+    let userId = dataLaporan.userId;
+    const result = await Users.findOne({
+      where: {
+        id: userId,
+      },
+    });
+    const resultSuperior = await Users.findOne({
+      where: {
+        id: result.parentId,
+      },
+    });
+    let payload = {
+      HasReport: true,
+    };
+    await LaporanOmzet.update(payload, {
+      where: {
+        id: req.params.id,
+      },
+    });
+    let html = ``;
+    await sendEmail(
+      resultSuperior.email,
+      "Notification Report",
+      `You have a report email from ${result.fullName}`,
       html
     );
     response.data = result;

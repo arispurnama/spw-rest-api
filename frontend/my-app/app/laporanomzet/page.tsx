@@ -23,6 +23,7 @@ import IconFileDocumentEditOutline from "@/components/icons/IconFileDocumentEdit
 import AddLaporanOmzetForm from "@/components/laporanomzet/AddLaporanOmzetForm";
 import { button } from "@nextui-org/react";
 import ApproveModal from "@/components/laporanomzet/ApproveModal";
+import LaporkanPencatatanModal from "@/components/laporanomzet/LaporkanPencatatanModal";
 
 const DataLaporanOmzet = () => {
   const router = useRouter();
@@ -42,6 +43,7 @@ const DataLaporanOmzet = () => {
   const [userIdApprove, setUserIdApprove] = useState("");
   const [laporanId, setLaporanId] = useState("");
   const [approveShow, setApproveShow] = useState(false);
+  const [reportRecordingShow, setReportRecordingShow] = useState(false);
 
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
@@ -113,6 +115,7 @@ const DataLaporanOmzet = () => {
             page: -1, // ganti dengan nilai yang sesuai
             size: -1, // ganti dengan nilai yang sesuai
             userId: user?.name == "Admin" ? null : user?.id,
+            isAdmin: "User",
           },
         })
         .then((response) => {
@@ -171,6 +174,10 @@ const DataLaporanOmzet = () => {
   const handleApproveClick = (Id: string) => {
     setLaporanId(Id);
     setApproveShow(true);
+  };
+  const handleLaporkanClick = (Id: string) => {
+    setLaporanId(Id);
+    setReportRecordingShow(true);
   };
   const handleDownloadFile = async (name: string) => {
     await downloadService(name);
@@ -289,6 +296,7 @@ const DataLaporanOmzet = () => {
                           </TableCell>
                           <TableCell className="flex flex-row gap-4 justify-end">
                             {user?.name == "Admin" ? (
+                              
                               !row.isApproved ? (
                                 <>
                                   <button
@@ -313,35 +321,29 @@ const DataLaporanOmzet = () => {
                                       />
                                     </svg>
                                   </button>
-                                  <button
-                                    onClick={() => handleEditClick(row.id, row)}
-                                    title="Edit Laporan Omzet"
-                                  >
-                                    <IconFileDocumentEditOutline />
-                                  </button>
-                                  <button
-                                    onClick={() => handleDeleteClick(row.id)}
-                                    title="Delete Laporan Omzet"
-                                  >
-                                    <IconTrashBinOutline />
-                                  </button>
+                                  
                                 </>
                               ) : (
-                                <>
-                                  <button
-                                    onClick={() => handleEditClick(row.id, row)}
-                                  >
-                                    <IconFileDocumentEditOutline />
-                                  </button>
-                                  <button
-                                    onClick={() => handleDeleteClick(row.id)}
-                                  >
-                                    <IconTrashBinOutline />
-                                  </button>
-                                </>
+                                ""
                               )
                             ) : (
-                              <>
+                              ""
+                            )}
+                            {!row.HasReport ? (
+                                <>
+                                  <button
+                                    onClick={() => handleLaporkanClick(row.id)}
+                                    title="Laporkan Pencatatan Omzet"
+                                  >
+                                  <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.5"><path stroke-linejoin="round" d="M17 12h-7m0 0l3 3m-3-3l3-3"/><path d="M7 16V8m15 4c0 4.714 0 7.071-1.465 8.535C19.072 22 16.714 22 12 22s-7.071 0-8.536-1.465C2 19.072 2 16.714 2 12s0-7.071 1.464-8.536C4.93 2 7.286 2 12 2c4.714 0 7.071 0 8.535 1.464c.974.974 1.3 2.343 1.41 4.536"/></g></svg>
+                                  </button>
+                                  
+                                </>
+                              ) : (
+                                
+                                ""
+                              )}
+                            <>
                                 <button
                                   onClick={() => handleEditClick(row.id, row)}
                                 >
@@ -353,7 +355,6 @@ const DataLaporanOmzet = () => {
                                   <IconTrashBinOutline />
                                 </button>
                               </>
-                            )}
                           </TableCell>
                         </TableRow>
                       ))}
@@ -392,6 +393,15 @@ const DataLaporanOmzet = () => {
           page="laporanomzet"
           onClosed={() => {
             setApproveShow(false);
+            getAllDataLaporanOmzet();
+          }}
+        />
+        <LaporkanPencatatanModal
+          isOpen={reportRecordingShow}
+          Id={laporanId}
+          page="laporanomzet"
+          onClosed={() => {
+            setReportRecordingShow(false);
             getAllDataLaporanOmzet();
           }}
         />

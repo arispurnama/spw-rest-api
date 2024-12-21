@@ -63,6 +63,11 @@ const LaporanOmzet = db.define('TB_TR_LAPORAN', {
         type: DataTypes.BOOLEAN,
         allowNull: true,
     },
+    HasReport: {
+        type: DataTypes.BOOLEAN,
+        allowNull: true,
+        defaultValue: false
+    },
 }, {
     freezeTableName: true
 })

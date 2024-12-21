@@ -107,6 +107,7 @@ const DataGaleriBerita = () => {
             size: -1, // ganti dengan nilai yang sesuai
             //search: searchQuery,
             userId: user?.name == "Admin" ? null : user?.id,
+            isAdmin : 'User'
           },
         })
         .then((response) => {

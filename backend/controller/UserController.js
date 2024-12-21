@@ -28,9 +28,9 @@ export const getListUsers = async (req, res) => {
       filter +=  ` and roles.name = '${isAdmin}' `
     }
     let searchColumn =
-      'users."id", users."fullName", users."noHp", users."firstName", users."lastName", users."kelas", users."email", users."username", users."password", users."roleId", users."createdAt", users."updatedAt", users."deletedAt", users."isDeleted", roles.name';
+      'users."id", users."isActive",users."fullName", users."noHp", users."parentId",users."firstName", users."lastName", users."kelas", users."email", users."username", users."password", users."roleId", users."createdAt", users."updatedAt", users."deletedAt", users."isDeleted", roles.name';
     let query =
-      'SELECT count(*) over () TOTALDATA, users."id", users."fullName", users."noHp", users."firstName", users."lastName", users."kelas", users."email", users."username", users."password", users."roleId", users."createdAt", users."updatedAt", users."deletedAt", users."isDeleted", roles.name FROM public."TB_MD_USER" as users INNER JOIN public."TB_MD_ROLE" as roles on users."roleId" = roles.id where users."isDeleted" = false ';
+      'SELECT count(*) over () TOTALDATA, users."id", users."isActive",users."parentId",users."fullName", users."noHp", users."firstName", users."lastName", users."kelas", users."email", users."username", users."password", users."roleId", users."createdAt", users."updatedAt", users."deletedAt", users."isDeleted", roles.name FROM public."TB_MD_USER" as users INNER JOIN public."TB_MD_ROLE" as roles on users."roleId" = roles.id where users."isDeleted" = false ';
     let paggination = PaginationHelper(page, size);
     let queryString = QueryHelper(
       query,
@@ -73,6 +73,36 @@ export const getListUsers = async (req, res) => {
     responsePagination.error = true;
     responsePagination.errorMessage = error.message;
     console.log(error.message);
+  }
+};
+export const getOptionAdminUsers = async (req, res) => {
+  console.log("Request received at /user/option");
+  const responsePagination = new Object();
+  try {
+    let query =
+      `SELECT count(*) over () TOTALDATA, users."id", users."fullName", users."noHp", users."firstName", users."lastName", users."kelas", users."email", users."username", users."password", users."roleId", users."createdAt", users."updatedAt", users."deletedAt", users."isDeleted", roles.name FROM public."TB_MD_USER" as users INNER JOIN public."TB_MD_ROLE" as roles on users."roleId" = roles.id where users."isDeleted" = false and roles."name" = 'Admin'`;
+    let queryString = QueryHelper(
+      query,
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+    );
+    const response = await db.query(queryString, {
+      type: QueryTypes.SELECT,
+    });
+
+    responsePagination.data = response;
+    responsePagination.error = false;
+    responsePagination.errorMessage = "Sukses";
+    res.status(200).json(responsePagination);
+  } catch (error) {
+    console.error("Error in /user/option:", error.message);
+    responsePagination.error = true;
+    responsePagination.errorMessage = error.message;
+    res.status(500).json(responsePagination);
   }
 };
 export const createUsers = async (req, res) => {
@@ -272,7 +302,7 @@ export const Login = async (req, res) => {
   try {
     let filter = "";
     const { username, password } = req.body;
-    let query = `SELECT users."id", users."firstName", users."lastName", users."kelas", users."email", users."username", users."password", users."roleId", users."createdAt", users."updatedAt", users."deletedAt", users."isDeleted", roles.name FROM public."TB_MD_USER" as users INNER JOIN public."TB_MD_ROLE" as roles on users."roleId" = roles.id where users."isDeleted" = false and users."deletedAt" is null`;
+    let query = `SELECT users."id", users."firstName", users."lastName", users."kelas", users."email", users."username", users."password", users."roleId", users."createdAt", users."updatedAt", users."deletedAt", users."isDeleted",users."isActive", roles.name FROM public."TB_MD_USER" as users INNER JOIN public."TB_MD_ROLE" as roles on users."roleId" = roles.id where users."isDeleted" = false and users."deletedAt" is null`;
 
     if (username != "") {
       filter += ` and users."username" = '${username}' `;
@@ -295,7 +325,11 @@ export const Login = async (req, res) => {
       response.errorMessage = "Authentication failed, username password salah";
       return res.status(401).json({ response });
     }
-
+    if(objUser.isActive == false){
+      response.error = true;
+      response.errorMessage = "user is no longer active";
+      return res.status(500).json({ response });
+    }
     const passwordMatch = bcrypt.compareSync(password, objUser.password);
     if (!passwordMatch) {
       response.error = true;

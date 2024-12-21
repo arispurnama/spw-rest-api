@@ -1,9 +1,12 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
-
-const AddUserForm = () => {
+import { MenuItem, Select, SelectChangeEvent } from "@mui/material";
+type Props = {
+  userDataAdmin: any;
+};
+const AddUserForm = ({ userDataAdmin = [] }: Props) => {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
@@ -11,6 +14,7 @@ const AddUserForm = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [noHp, setNoHp] = useState("");
+  const [parentId, setParentId] = useState("");
 
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
@@ -21,7 +25,7 @@ const AddUserForm = () => {
   const [emailError, setEmailError] = useState("");
   const [classError, setClassError] = useState("");
   const [errorFieldEmpty, setErrorFieldEmpty] = useState("");
-
+  
   const handleSubmit = async () => {
     try {
       if (
@@ -31,7 +35,8 @@ const AddUserForm = () => {
         kelas != "" &&
         password != "" &&
         username != "" &&
-        noHp != ""
+        noHp != "" &&
+        parentId != ""
       ) {
         const response = await axios
           .post("http://localhost:3030/register", {
@@ -42,6 +47,7 @@ const AddUserForm = () => {
             password,
             username,
             noHp,
+            parentId
           })
           .then((response) => {
             console.log(response);
@@ -146,11 +152,13 @@ const AddUserForm = () => {
     }
   };
   const handleEmailChange = (event: any) => {
-    const value  = event;
+    const value = event;
     setEmail(value);
     validateEmail(value);
   };
-
+  const handleChange = (event: SelectChangeEvent) => {
+    setParentId(event.target.value as string);
+  };
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
       <div className="bg-white rounded-lg shadow-lg p-8 max-w-screen-md w-full">
@@ -249,6 +257,30 @@ const AddUserForm = () => {
             {errorFieldEmpty && (
               <p className="text-red-500 text-[10px]">{errorFieldEmpty}</p>
             )}
+          </div>
+          <div className="mb-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-4">
+                Guru
+              </label>
+              <Select
+                labelId="demo-multiple-name-label"
+                id="demo-multiple-name"
+                value={parentId}
+                onChange={handleChange}
+                label="Name"
+                className="w-80 h-10"
+              >
+                {userDataAdmin?.map((name: any) => (
+                  <MenuItem key={name.id} value={name.id}>
+                    {name.firstName +" "+ name.lastName} 
+                  </MenuItem>
+                ))}
+              </Select>
+              {errorFieldEmpty && (
+                <p className="text-red-500 text-[10px]">{errorFieldEmpty}</p>
+              )}
+            </div>
           </div>
         </div>
         <div className="md:flex md:flex-row md:gap-16 sm:flex sm:flex-col sm:gap-2">

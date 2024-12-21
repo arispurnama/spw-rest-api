@@ -11,6 +11,10 @@ const Users = db.define('TB_MD_USER', {
         primaryKey: true,
         autoIncrement:true,
     },
+    parentId: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+    },
     firstName: {
         type: DataTypes.STRING,
         allowNull: false,
@@ -46,6 +50,11 @@ const Users = db.define('TB_MD_USER', {
     noHp:{
         type: DataTypes.STRING,
         allowNull:false
+    },
+    isActive:{
+        type: DataTypes.BOOLEAN,
+        allowNull:false,
+        defaultValue: true,
     },
     createdAt: {
         type: DataTypes.DATE,

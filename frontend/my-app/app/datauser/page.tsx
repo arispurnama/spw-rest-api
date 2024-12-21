@@ -35,10 +35,27 @@ const DataUser = () => {
   const [showModalAdd, setShowModalAdd] = useState(false);
   const [dataEdit, setDataEdit] = useState();
   const [showModalEdit, setShowModalEdit] = useState(false);
-
+  const [dataAdmin, setDataAdmin] = useState([]);
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
-
+  const getDataAdminAll = async () => {
+    try {
+      axios
+        .get("http://localhost:3030/admin/option", {})
+        .then((response) => {
+          console.log("response get all user :", response);
+          setDataAdmin(response.data.data);
+        })
+        .catch((e) => {
+          console.log("error :", e);
+          if (e.response.status === 401) {
+            console.error("Unauthorized access - perhaps you need to log in?");
+          }
+        });
+    } catch (error) {
+      console.log("Error fetching products: ", error);
+    }
+  };
   const handleChangePage = (event: unknown, newPage: number) => {
     setPage(newPage);
   };
@@ -70,7 +87,7 @@ const DataUser = () => {
             page: page, // ganti dengan nilai yang sesuai
             size: rowsPerPage, // ganti dengan nilai yang sesuai
             search: searchQuery,
-            isAdmin : 'User'
+            isAdmin: "User",
           },
         })
         .then((response) => {
@@ -113,6 +130,7 @@ const DataUser = () => {
   useEffect(() => {
     getUserAll();
     getRoleAll();
+    getDataAdminAll();
   }, [searchQuery]);
 
   const handleEditClick = (userId: string, data: any) => {
@@ -198,6 +216,7 @@ const DataUser = () => {
                       <TableCell align="right">Kelas</TableCell>
                       <TableCell align="right">Username</TableCell>
                       <TableCell align="right">Role</TableCell>
+                      <TableCell align="right">Active</TableCell>
                       <TableCell align="right">Action</TableCell>
                     </TableRow>
                   </TableHead>
@@ -219,6 +238,9 @@ const DataUser = () => {
                           <TableCell align="right">{row.kelas}</TableCell>
                           <TableCell align="right">{row.username}</TableCell>
                           <TableCell align="right">{row.name}</TableCell>
+                          <TableCell align="right">
+                            {row.isActive ? "Yes" : "No"}
+                          </TableCell>
                           <TableCell className="flex flex-row gap-4 justify-end">
                             <button
                               onClick={() => handleEditClick(row.id, row)}
@@ -226,8 +248,10 @@ const DataUser = () => {
                             >
                               <IconFileDocumentEditOutline />
                             </button>
-                            <button onClick={() => handleDeleteClick(row.id)} 
-                              title="Delete Siswa">
+                            <button
+                              onClick={() => handleDeleteClick(row.id)}
+                              title="Delete Siswa"
+                            >
                               <IconTrashBinOutline />
                             </button>
                           </TableCell>
@@ -264,6 +288,7 @@ const DataUser = () => {
         <AddUsermodalForm
           isOpen={showModalAdd}
           roleData={dataRole}
+          userDataAdmin={dataAdmin}
           onClosed={() => {
             setShowModalAdd(false);
             getUserAll();
@@ -274,6 +299,7 @@ const DataUser = () => {
           Id={selectedUserId}
           roleData={dataRole}
           dataEdit={dataEdit}
+          userDataAdmin={dataAdmin}
           onClosed={() => {
             setShowModalEdit(false);
             getUserAll();

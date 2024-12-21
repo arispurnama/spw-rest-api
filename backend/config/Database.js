@@ -1,9 +1,10 @@
 import {Sequelize} from "sequelize"
 
 // Option 3: Passing parameters separately (other dialects)
-const sequelize = new Sequelize('SPW', 'postgres', '1234', {
+const sequelize = new Sequelize('SPW', 'postgres', 'postgres', {
     host: 'localhost',
-    dialect: 'postgres'
+    dialect: 'postgres',
+    port:5434
 });
 export const connection = async () => {
 
