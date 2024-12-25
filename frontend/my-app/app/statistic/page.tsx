@@ -160,7 +160,7 @@ const SummaryStatistik = () => {
             size: -1, // ganti dengan nilai yang sesuai
             //search: searchQuery,
             //userId: user?.name == "Admin" ? null : user?.id,
-            isAdmin : 'User'
+            isAdmin: "User",
           },
         })
         .then((response) => {
@@ -175,6 +175,27 @@ const SummaryStatistik = () => {
         });
     } catch (error) {
       console.log("Error fetching products: ", error);
+    }
+  };
+  const handleDownload = async (ArgStartDate = "", ArgEndDate = "", ArgUserID = "") => {
+    try {
+      const params: { [key: string]: string } = {};
+      if (ArgStartDate) params.startDate = ArgStartDate;
+      if (ArgEndDate) params.endDate = ArgEndDate;
+      if(ArgUserID) params.userId = ArgUserID;
+      const response = await axios.get("http://localhost:3030/export-laporan", {
+        params, // Directly pass params here
+        responseType: "blob", // Important for handling binary data
+      });
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", "data.xlsx"); // Specify the file name
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch (error) {
+      console.error("Error downloading the file:", error);
     }
   };
   const currentYear = new Date().getFullYear();
@@ -338,6 +359,14 @@ const SummaryStatistik = () => {
                     ))}
                   </Select>
                 </div>
+              </div>
+              <div className="mt-5 flex justify-center md:block">
+                <button
+                  onClick={() => handleDownload(startDate, endDate, userIdLaporan)}
+                  className="px-6 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg transition-all"
+                >
+                  Download Laporan
+                </button>
               </div>
               <div className="flex flex-row justify-end">
                 <div className="flex gap-4 pb-3">

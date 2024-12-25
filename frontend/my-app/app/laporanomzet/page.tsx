@@ -44,6 +44,8 @@ const DataLaporanOmzet = () => {
   const [laporanId, setLaporanId] = useState("");
   const [approveShow, setApproveShow] = useState(false);
   const [reportRecordingShow, setReportRecordingShow] = useState(false);
+  const [startDate, setStartDate] = useState();
+  const [EndDate, setEndDate] = useState();
 
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
@@ -133,9 +135,13 @@ const DataLaporanOmzet = () => {
     }
   };
 
-  const handleDownload = async () => {
+  const handleDownload = async (ArgStartDate = "", ArgEndDate = "") => {
     try {
+      const params: { [key: string]: string } = {};
+      if (ArgStartDate) params.startDate = ArgStartDate;
+      if (ArgEndDate) params.endDate = ArgEndDate;
       const response = await axios.get("http://localhost:3030/export-laporan", {
+        params, // Directly pass params here
         responseType: "blob", // Important for handling binary data
       });
       const url = window.URL.createObjectURL(new Blob([response.data]));
@@ -194,6 +200,46 @@ const DataLaporanOmzet = () => {
                 DATA LAPORAN OMZET
               </h2>
             </div>
+            {user?.name === "Admin" ? (
+              <>
+                <div className="flex flex-col md:flex-row md:justify-end md:gap-4 md:pr-9 sm:gap-3 sm:pr-1 m-10">
+                  <div className="mb-4 w-full md:w-auto">
+                    <label className="block text-sm font-medium text-gray-700">
+                      Start Date
+                    </label>
+                    <input
+                      type="date"
+                      value={startDate}
+                      onChange={(e: any) => setStartDate(e.target.value)}
+                      className="mt-1 block w-full md:w-80 py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                      required
+                    />
+                  </div>
+                  <div className="mb-4 w-full md:w-auto">
+                    <label className="block text-sm font-medium text-gray-700">
+                      End Date
+                    </label>
+                    <input
+                      type="date"
+                      value={EndDate}
+                      onChange={(e: any) => setEndDate(e.target.value)}
+                      className="mt-1 block w-full md:w-80 py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                      required
+                    />
+                  </div>
+                  <div className="mt-5 flex justify-center md:block">
+                    <button
+                      onClick={() => handleDownload(startDate, EndDate)}
+                      className="px-6 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg transition-all"
+                    >
+                      Download Laporan
+                    </button>
+                  </div>
+                </div>
+              </>
+            ) : (
+              ""
+            )}
             <div className="flex flex-row justify-end pr-9 pt-0">
               <div className="flex gap-4 p-3">
                 <input
@@ -205,16 +251,6 @@ const DataLaporanOmzet = () => {
                     console.log(searchQuery);
                   }}
                 />
-                {user?.name === "Admin" ? (
-                  <button
-                    onClick={() => handleDownload()}
-                    className="px-6 py-2 bg-green-400 rounded-lg"
-                  >
-                    Download Laporan
-                  </button>
-                ) : (
-                  ""
-                )}
 
                 <button
                   onClick={() => setShowModalAdd(true)}
@@ -296,7 +332,6 @@ const DataLaporanOmzet = () => {
                           </TableCell>
                           <TableCell className="flex flex-row gap-4 justify-end">
                             {user?.name == "Admin" ? (
-                              
                               !row.isApproved ? (
                                 <>
                                   <button
@@ -321,7 +356,6 @@ const DataLaporanOmzet = () => {
                                       />
                                     </svg>
                                   </button>
-                                  
                                 </>
                               ) : (
                                 ""
@@ -330,31 +364,45 @@ const DataLaporanOmzet = () => {
                               ""
                             )}
                             {!row.HasReport ? (
-                                <>
-                                  <button
-                                    onClick={() => handleLaporkanClick(row.id)}
-                                    title="Laporkan Pencatatan Omzet"
+                              <>
+                                <button
+                                  onClick={() => handleLaporkanClick(row.id)}
+                                  title="Laporkan Pencatatan Omzet"
+                                >
+                                  <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    width="25"
+                                    height="25"
+                                    viewBox="0 0 24 24"
                                   >
-                                  <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.5"><path stroke-linejoin="round" d="M17 12h-7m0 0l3 3m-3-3l3-3"/><path d="M7 16V8m15 4c0 4.714 0 7.071-1.465 8.535C19.072 22 16.714 22 12 22s-7.071 0-8.536-1.465C2 19.072 2 16.714 2 12s0-7.071 1.464-8.536C4.93 2 7.286 2 12 2c4.714 0 7.071 0 8.535 1.464c.974.974 1.3 2.343 1.41 4.536"/></g></svg>
-                                  </button>
-                                  
-                                </>
-                              ) : (
-                                
-                                ""
-                              )}
-                            <>
-                                <button
-                                  onClick={() => handleEditClick(row.id, row)}
-                                >
-                                  <IconFileDocumentEditOutline />
-                                </button>
-                                <button
-                                  onClick={() => handleDeleteClick(row.id)}
-                                >
-                                  <IconTrashBinOutline />
+                                    <g
+                                      fill="none"
+                                      stroke="currentColor"
+                                      stroke-linecap="round"
+                                      stroke-width="1.5"
+                                    >
+                                      <path
+                                        stroke-linejoin="round"
+                                        d="M17 12h-7m0 0l3 3m-3-3l3-3"
+                                      />
+                                      <path d="M7 16V8m15 4c0 4.714 0 7.071-1.465 8.535C19.072 22 16.714 22 12 22s-7.071 0-8.536-1.465C2 19.072 2 16.714 2 12s0-7.071 1.464-8.536C4.93 2 7.286 2 12 2c4.714 0 7.071 0 8.535 1.464c.974.974 1.3 2.343 1.41 4.536" />
+                                    </g>
+                                  </svg>
                                 </button>
                               </>
+                            ) : (
+                              ""
+                            )}
+                            <>
+                              <button
+                                onClick={() => handleEditClick(row.id, row)}
+                              >
+                                <IconFileDocumentEditOutline />
+                              </button>
+                              <button onClick={() => handleDeleteClick(row.id)}>
+                                <IconTrashBinOutline />
+                              </button>
+                            </>
                           </TableCell>
                         </TableRow>
                       ))}

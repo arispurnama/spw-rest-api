@@ -35,8 +35,7 @@ const AddUserForm = ({ userDataAdmin = [] }: Props) => {
         kelas != "" &&
         password != "" &&
         username != "" &&
-        noHp != "" &&
-        parentId != ""
+        noHp != "" 
       ) {
         const response = await axios
           .post("http://localhost:3030/register", {

@@ -12,6 +12,21 @@ export const exportLaporan = async (req, res) => {
   const workbook = new excelJS.Workbook(); // Create a new workbook
   const worksheet = workbook.addWorksheet("data"); // New Worksheet
   const path = "D:\\Tugas Akhir\\Project\\FullStack-1\\file\\"; // Path to download excel
+
+  const { startDate, endDate , userId} = req.query;
+  console.log("Request Parameters:", { startDate, endDate });
+  
+  let filter = "";
+  if (startDate != null && startDate != undefined) {
+    filter += ` and tl."tanggalLaporan" >= '${startDate}' `;
+  }
+  if (endDate != null && endDate != undefined) {
+    filter += ` and tl."tanggalLaporan" <= '${endDate}' `;
+  }
+  
+  if (userId != null && userId != undefined) {
+    filter += ` and tmu.id = '${userId}' `;
+  }
   // Column for data in excel. key must match data key
   worksheet.columns = [
     { header: "no.", key: "s_no", width: 10 },
@@ -30,11 +45,10 @@ export const exportLaporan = async (req, res) => {
     'SELECT count(*) over () TOTALDATA, tmu."fullName", tmu."noHp",tl.id, tl."userId",tl."laporanMingguan", to_char(tl."tanggalLaporan", ' +
     "'YYYY-MM-DD'" +
     ')  as tanggalLaporan, tl."jumlahOmzet", tl."JumlahModal", tl."buktiTransaksi", tl.keterangan, tl."isApproved", tl."createdAt", tl."updatedAt", tl."deletedAt", tl."isDeleted", tmu."firstName", tmu."lastName" FROM public."TB_TR_LAPORAN" tl inner join public."TB_MD_USER" tmu on tl."userId" = tmu.id where tl."isDeleted" = false and tmu."isDeleted" = false ';
-  let queryString = QueryHelper(query, "", "", "", "", "", "");
+  let queryString = QueryHelper(query, filter, "", "", "", "", "");
   const response = await db.query(queryString, {
     type: QueryTypes.SELECT,
   });
-  console.log("responsee  : ", response);
   // Looping through User data
   let counter = 1;
   response.forEach((user) => {
@@ -284,6 +298,76 @@ export const getSequenceASCLaporan = async (req, res) => {
     responsePagination.error = true;
     responsePagination.errorMessage = error.message;
     console.log(error.message);
+  }
+};
+export const exportDataLaporanSummary = async (req, res) => {
+  const workbook = new excelJS.Workbook(); // Create a new workbook
+  const worksheet = workbook.addWorksheet("data"); // New Worksheet
+  const path = "D:\\Tugas Akhir\\Project\\FullStack-1\\file\\"; // Path to download excel
+
+  const { startDate, endDate , userId} = req.query;
+  console.log("Request Parameters:", { startDate, endDate });
+  
+  let filter = "";
+  if (startDate != null && startDate != undefined) {
+    filter += ` and tl."tanggalLaporan" >= '${startDate}' `;
+  }
+  if (endDate != null && endDate != undefined) {
+    filter += ` and tl."tanggalLaporan" <= '${endDate}' `;
+  }
+  
+  if (userId != null && userId != undefined) {
+    filter += ` and tmu.id = '${userId}' `;
+  }
+  // Column for data in excel. key must match data key
+  worksheet.columns = [
+    { header: "no.", key: "s_no", width: 10 },
+    { header: "First Name", key: "firstName", width: 10 },
+    { header: "Last Name", key: "lastName", width: 10 },
+    { header: "Full Name", key: "fullName", width: 10 },
+    { header: "Modal", key: "JumlahModal", width: 10 },
+    { header: "Omzet", key: "jumlahOmzet", width: 10 },
+    { header: "Laporan Mingguan", key: "laporanMingguan", width: 10 },
+    { header: "Keterangan", key: "keterangan", width: 10 },
+  ];
+  //
+  let query =
+    'SELECT count(*) over () TOTALDATA, tmu."fullName", tmu."noHp",tl.id, tl."userId",tl."laporanMingguan", to_char(tl."tanggalLaporan", ' +
+    "'YYYY-MM-DD'" +
+    ')  as tanggalLaporan, tl."jumlahOmzet", tl."JumlahModal", tl."buktiTransaksi", tl.keterangan, tl."isApproved", tl."createdAt", tl."updatedAt", tl."deletedAt", tl."isDeleted", tmu."firstName", tmu."lastName" FROM public."TB_TR_LAPORAN" tl inner join public."TB_MD_USER" tmu on tl."userId" = tmu.id where tl."isDeleted" = false and tmu."isDeleted" = false ';
+  let queryString = QueryHelper(query, filter, "", "", "", "", "");
+  const response = await db.query(queryString, {
+    type: QueryTypes.SELECT,
+  });
+  // Looping through User data
+  let counter = 1;
+  response.forEach((user) => {
+    user.s_no = counter;
+    worksheet.addRow(user); // Add data in worksheet
+    counter++;
+  });
+  // Making first line in excel bold
+  worksheet.getRow(1).eachCell((cell) => {
+    cell.font = { bold: true };
+  });
+  try {
+    // Write to buffer
+    const buffer = await workbook.xlsx.writeBuffer();
+
+    // Set headers for file download
+    res.setHeader(
+      "Content-Type",
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    );
+    res.setHeader("Content-Disposition", 'attachment; filename="data.xlsx"');
+
+    // Send buffer
+    res.send(buffer);
+  } catch (err) {
+    res.send({
+      status: "error",
+      message: "Something went wrong",
+    });
   }
 };
 export const getSummaryChartlaporan = async (req, res) => {
